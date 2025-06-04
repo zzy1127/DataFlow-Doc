@@ -14,7 +14,7 @@ import { defineUserConfig } from 'vuepress'
 import { plumeTheme } from 'vuepress-theme-plume'
 
 export default defineUserConfig({
-  base: '/DataFlow-doc/', // 部署路径，建议使用 GitHub Pages 时设置为 /<repo_name>/
+  base: '/DataFlow-Doc/', // 部署路径，建议使用 GitHub Pages 时设置为 /<repo_name>/
   lang: 'en-US',
   locales: {
     '/': {
