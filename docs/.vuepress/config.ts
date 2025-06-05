@@ -18,12 +18,12 @@ export default defineUserConfig({
   lang: 'en-US',
   locales: {
     '/': {
-      title: 'DataFlow-doc',
+      title: 'DataFlow Documentation',
       lang: 'en-US',
       description: 'Documentation for modern data processing pipeline.',
     },
     '/zh/': {
-      title: 'DataFlow-doc',
+      title: 'DataFlow中文文档',
       lang: 'zh-CN',
       description: 'Documentation for modern data processing pipeline.',
     },
