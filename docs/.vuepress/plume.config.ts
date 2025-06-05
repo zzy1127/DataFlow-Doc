@@ -18,12 +18,12 @@ import { enNotes, zhNotes } from './notes'
  * @see https://theme-plume.vuejs.press/config/basic/
  */
 export default defineThemeConfig({
-  logo: 'https://theme-plume.vuejs.press/plume.png',
-
+  logo: '/DataFlow-01.png',
+  logoDark: '/DataFlow-02.png',
   appearance: true,  // 配置 深色模式
 
   social: [
-    { icon: 'github', link: '/' },
+    { icon: 'github', link: 'https://github.com/Open-DataFlow/DataFlow' },
   ],
   // navbarSocialInclude: ['github'], // 允许显示在导航栏的 social 社交链接
   // aside: true, // 页内侧边栏， 默认显示在右侧
@@ -58,8 +58,8 @@ export default defineThemeConfig({
        * @see https://theme-plume.vuejs.press/config/basic/#profile
        */
       profile: {
-        avatar: 'https://theme-plume.vuejs.press/plume.png',
-        name: 'DataFlow-doc',
+        avatar: '/DataFlow-01.png',
+        name: 'DataFlow documentation',
         description: 'Documentation for modern data processing pipeline.',
         // circle: true,
         // location: '',
@@ -85,9 +85,9 @@ export default defineThemeConfig({
        * @see https://theme-plume.vuejs.press/config/basic/#profile
        */
       profile: {
-        avatar: 'https://theme-plume.vuejs.press/plume.png',
-        name: 'DataFlow-doc',
-        description: 'Documentation for modern data processing pipeline.',
+        avatar: '/DataFlow-01.png',
+        name: 'DataFlow中文文档',
+        description: '现代数据处理管道的文档',
         // circle: true,
         // location: '',
         // organization: '',

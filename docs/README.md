@@ -7,9 +7,9 @@ config:
     full: true
     background: tint-plate
     hero:
-      name: Theme Plume
-      tagline: VuePress Next Theme
-      text: A simple, feature-rich, document & blog
+      name: Open DataFlow
+      tagline: Pipeline for data processing in LLM era.
+      text: Do everthing you want
       actions:
         -
           theme: brand
@@ -18,5 +18,4 @@ config:
         -
           theme: alt
           text: Github →
-          link: https://github.com/pengzhanbo/vuepress-theme-plume
----
+          link: https://github.com/Open-DataFlow/DataFlow
