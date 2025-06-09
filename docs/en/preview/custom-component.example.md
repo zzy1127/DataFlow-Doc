@@ -1,10 +1,8 @@
 ---
-title: Custom Component
-tags:
-  - preview
-  - component
-createTime: 2025/06/04 18:33:18
-permalink: /article/ot7igh8v/
+title: custom-component.example
+createTime: 2025/06/09 11:25:43
+permalink: /en/article/gmxa3tty/
 ---
+
 
 <CustomComponent />
