@@ -29,6 +29,13 @@ export const enNavbar = defineNavbarConfig([
     icon: 'material-symbols:article-outline'
   },
   {
+    text: 'Developer Guide',
+    items: [
+      { text: "logging", link: '/en/dev_guide/logging.md' },
+      { text: "testcase", link: '/en/dev_guide/testcase.md' },
+    ]
+  },
+  {
     text: 'Notes',
     items: [
       { text: 'Demo', link: '/en/notes/demo/README.md' }
@@ -57,6 +64,13 @@ export const zhNavbar = defineNavbarConfig([
     text: 'API 参考',
     link: '/zh/blog/',
     icon: 'material-symbols:article-outline'
+  },
+  {
+    text: '开发者指南',
+    items: [
+      { text: "日志", link: '/zh/dev_guide/logging.md' },
+      { text: "测试用例", link: '/zh/dev_guide/testcase.md' },
+    ]
   },
   {
     text: '笔记',
