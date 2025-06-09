@@ -12,12 +12,13 @@
 import { viteBundler } from '@vuepress/bundler-vite'
 import { defineUserConfig } from 'vuepress'
 import { plumeTheme } from 'vuepress-theme-plume'
+import { redirectPlugin } from '@vuepress/plugin-redirect'
 
 export default defineUserConfig({
   base: '/DataFlow-Doc/', // 部署路径，建议使用 GitHub Pages 时设置为 /<repo_name>/
   lang: 'en-US',
   locales: {
-    '/': {
+    '/en/': {
       title: 'DataFlow Documentation',
       lang: 'en-US',
       description: 'Documentation for modern data processing pipeline.',
@@ -56,7 +57,7 @@ export default defineUserConfig({
      * 博客
      * @see https://theme-plume.vuejs.press/config/basic/#blog
      */
-    // blog: false, // 禁用博客
+    blog: false, // 禁用博客
     // blog: {
     //   postList: true, // 是否启用文章列表页
     //   tags: true, // 是否启用标签页
@@ -189,5 +190,13 @@ export default defineUserConfig({
      * @see https://theme-plume.vuejs.press/guide/features/encryption/
      */
     // encrypt: {},
+
   }),
+  plugins : [
+    // 重定向插件
+    redirectPlugin({
+      autoLocale: true, // 自动根据语言重定向
+    }),
+  ]
 })
+

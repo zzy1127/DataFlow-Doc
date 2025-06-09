@@ -40,3 +40,8 @@ To customize a domain name, please refer to [Github Pages](https://docs.github.c
 
 - [vuepress](https://vuepress.vuejs.org/)
 - [vuepress-theme-plume](https://theme-plume.vuejs.press/)
+
+
+## 好用插件：
+- 重定向相关
+npm i -D @vuepress/plugin-redirect@next

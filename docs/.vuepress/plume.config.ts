@@ -53,7 +53,7 @@ export default defineThemeConfig({
   // },
 
   locales: {
-    '/': {
+    '/en/': {
       /**
        * @see https://theme-plume.vuejs.press/config/basic/#profile
        */

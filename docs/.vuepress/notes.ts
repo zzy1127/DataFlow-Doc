@@ -41,8 +41,8 @@ const enDemoNote = defineNoteConfig({
  * （enDemoNote 为参考示例，如果不需要它，请删除）
  */
 export const enNotes = defineNotesConfig({
-  dir: 'notes',
-  link: '/',
+  dir: 'en/notes',
+  link: '/en/',
   notes: [enDemoNote],
 })
 
