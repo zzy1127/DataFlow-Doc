@@ -98,64 +98,11 @@ permalink: /zh/demo/92inyi3j/
 
 ### 参考值
 为更好的提供数据质量参考，我们使用以上指标对VATEX数据集([链接](https://huggingface.co/datasets/lmms-lab/VATEX))进行评估，得到的指标数值分布如下:
-<table class="tg"><thead>
-  <tr>
-    <th class="tg-0pky">指标</th>
-    <th class="tg-0pky">名称</th>
-    <th class="tg-0pky">简介</th>
-    <th class="tg-0pky">均值</th>
-    <th class="tg-0pky">方差</th>
-    <th class="tg-0pky">最大值</th>
-    <th class="tg-0pky">最小值</th>
-  </tr></thead>
-<tbody>
-  <tr>
-    <td class="tg-0pky" rowspan="3">EMScorer</td>
-    <td class="tg-0pky">figr_F</td>
-    <td class="tg-0pky">使用EMScorer模块得到的评分，视频和文本在细粒度层面的相似度越高，分数越高</td>
-    <td class="tg-0pky">0.2712</td>
-    <td class="tg-0pky">0.0003667</td>
-    <td class="tg-0pky">0.3461</td>
-    <td class="tg-0pky">0.1987</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">cogr</td>
-    <td class="tg-0pky">使用EMScorer模块得到的评分，视频和文本在粗粒度层面的相似度越高，分数越高</td>
-    <td class="tg-0pky">0.3106</td>
-    <td class="tg-0pky">0.0009184</td>
-    <td class="tg-0pky">0.4144</td>
-    <td class="tg-0pky">0.18</td>
-  </tr>
-    <tr>
-    <td class="tg-0pky">full_F</td>
-    <td class="tg-0pky">使用EMScorer模块得到的评分，取以上两种评分的算术平均数</td>
-    <td class="tg-0pky">0.2909</td>
-    <td class="tg-0pky">0.0005776</td>
-    <td class="tg-0pky">0.3712</td>
-    <td class="tg-0pky">0.3807</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky" rowspan="3">PACScorer</td>
-    <td class="tg-0pky">figr_F</td>
-    <td class="tg-0pky">使用PACScorer模块得到的评分，视频和文本在细粒度层面的相似度越高，分数越高</td>
-    <td class="tg-0pky">0.36553</td>
-    <td class="tg-0pky">0.0004902</td>
-    <td class="tg-0pky">0.4456</td>
-    <td class="tg-0pky">0.2778</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">cogr</td>
-    <td class="tg-0pky">使用PACScorer模块得到的评分，视频和文本在粗粒度层面的相似度越高，分数越高</td>
-    <td class="tg-0pky">0.4160</td>
-    <td class="tg-0pky">0.001021</td>
-    <td class="tg-0pky">0.5222</td>
-    <td class="tg-0pky">0.2510</td>
-  </tr>
-    <tr>
-    <td class="tg-0pky">full_F</td>
-    <td class="tg-0pky">使用PACScorer模块得到的评分，取以上两种评分的算术平均数</td>
-    <td class="tg-0pky">0.3908</td>
-    <td class="tg-0pky">0.0006854</td>
-    <td class="tg-0pky">0.4761</td>
-    <td class="tg-0pky">0.2681</td>
-  </tr>
+| Metric     | Name    | Description                                                                                                                                      | Mean    | Variance   | Max    | Min    |
+|------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------|---------|------------|--------|--------|
+| EMScorer   | figr_F  | The score obtained using the EMScorer module. The higher the similarity between the video and text at a fine-grained level, the higher the score | 0.2712  | 0.0003667  | 0.3461 | 0.1987 |
+|            | cogr    | The score obtained using the EMScorer module. The higher the similarity between the video and text at a coarse-grained level, the higher the score | 0.3106  | 0.0009184  | 0.4144 | 0.18   |
+|            | full_F  | The score obtained using the EMScorer module, which is the arithmetic mean of the above two scores                                               | 0.2909  | 0.0005776  | 0.3712 | 0.3807 |
+| PACScorer  | figr_F  | The score obtained using the PACScorer module. The higher the similarity between the video and text at a fine-grained level, the higher the score | 0.36553 | 0.0004902  | 0.4456 | 0.2778 |
+|            | cogr    | The score obtained using the PACScorer module. The higher the similarity between the video and text at a coarse-grained level, the higher the score | 0.4160  | 0.001021   | 0.5222 | 0.2510 |
+|            | full_F  | The score obtained using the PACScorer module, which is the arithmetic mean of the above two scores                                              | 0.3908  | 0.0006854  | 0.4761 | 0.2681 |
