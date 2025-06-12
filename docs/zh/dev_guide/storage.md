@@ -66,6 +66,7 @@ DataFlow数据表的结构如下
 使用该方法写入的新数据eval列数据清空。
 
 - ``write_eval(self, data: list[dict], **kwargs)``: data参数中是原数据的id和新数据的分数(float类型)和信息(str类型)。要求的可变参数如下：
+    * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。    
     * ``score_key``: data参数中分数对应的关键字，若data字段的形式为``[{'id': xxx, 'score1': xxx}]``，则此处应传入'score1'。
     * ``algo_name``: 算子名称，可以默认使用``self.__class__.__name__``
     * !``info_key``: data参数中需要额外存储的信息，若data字段的形式为``[{'id': xxx, 'score1': xxx, 'info1': xxx}]``，则此处应传入'info1'。
