@@ -1,7 +1,7 @@
 ---
 title: new_algo
 createTime: 2025/06/12 12:00:00
-permalink: /zh/article/01bvnqb1/
+permalink: /zh/article/cQHaDRiS/
 ---
 
 ## New Algorithm
