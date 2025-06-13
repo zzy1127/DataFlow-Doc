@@ -9,7 +9,7 @@ permalink: /zh/guide/install/
 
 DataFlow的文本流水线部分的依赖环境可以通过以下指令安装(要求系统已经安装conda):
 
-```
+```shell
 conda create -n dataflow_pipe python=3.10
 pip install -e .[text]
 ```

@@ -13,8 +13,12 @@ config:
       actions:
         -
           theme: brand
-          text: 博客
-          link: /zh/blog/
+          text: 简介
+          link: /zh/notes/guide/basicinfo/intro.md
+        -
+          theme: brand
+          text: 快速开始
+          link: /zh/notes/guide/quickstart/install.md
         -
           theme: alt
           text: Github →
