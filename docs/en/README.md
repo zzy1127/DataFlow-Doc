@@ -13,8 +13,12 @@ config:
       actions:
         -
           theme: brand
-          text: Blog
-          link: /en/blog/
+          text: Introduction
+          link: /en/notes/guide/basicinfo/intro.md
+        -
+          theme: brand
+          text: Quick Start
+          link: /en/notes/guide/quickstart/install.md
         -
           theme: alt
           text: Github →

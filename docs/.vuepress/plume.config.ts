@@ -11,8 +11,8 @@
  */
 
 import { defineThemeConfig } from 'vuepress-theme-plume'
-import { enNavbar, zhNavbar } from './navbar'
-import { enNotes, zhNotes } from './notes'
+import { enNavbar, zhNavbar } from './navbars/index.js'
+import { enNotes, zhNotes } from './notes/index.js'
 
 /**
  * @see https://theme-plume.vuejs.press/config/basic/

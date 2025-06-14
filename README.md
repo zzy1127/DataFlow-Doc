@@ -1,6 +1,7 @@
 # data-flow-doc
 
-The Site is generated using [vuepress](https://vuepress.vuejs.org/) and [vuepress-theme-plume](https://github.com/pengzhanbo/vuepress-theme-plume)
+这个是[https://github.com/Open-DataFlow/DataFlow](https://github.com/Open-DataFlow/DataFlow)的文档。
+
 
 ## Install
 
@@ -11,30 +12,27 @@ npm i
 ## Usage
 
 ```sh
-# start dev server
+# start dev server 一般用这个，可以动态热渲染所有markdown的修改
 npm run docs:dev
-# build for production
+# build for production 这个主要是上传github之前测试下有无bug，有bug的话github无法渲染page的。
 npm run docs:build
-# preview production build in local
-npm run docs:preview
-# update vuepress and theme
-npm run vp-update
 ```
 
-## Deploy to GitHub Pages
+## 基本开发结构介绍：
+基本都是一式两份，英语一份，汉语一份。
 
-The plume theme has been created with GitHub Actions: `.github/workflows/docs-deploy.yml`. You also need to make the following settings in the GitHub repository:
+上方的导航栏配置主要在这个文件夹下：[navbars](./docs/.vuepress/navbars/)
+各个文章的侧边栏主要是在这个文件夹下配置[sidebar](./docs/.vuepress/notes/)，可以手动可以自动，参考模板文档的[Sidebar配置](https://theme-plume.vuejs.press/config/theme/#sidebar)
 
-- [ ] `settings > Actions > General`, Scroll to the bottom of the page, under `Workflow permissions`, check `Read and write permissions`, and click the save button.
-
-- [ ] `settings > Pages`, In `Build and deployment`, select `Deploy from a branch` for `Source`, choose `gh-pages` for `Branch`, and click the save button.
-  (The `gh-pages` branch may not exist upon first creation. You can complete the above setup first, push the code to the main branch, wait for `github actions` to finish, and then proceed with the setup.)
-
-- [ ] Modify the `base` option in `docs/.vuepress/config.ts`:
-  - If you are planning to deploy to `https://<USERNAME>.github.io/`, you can skip this step as `base` defaults to `"/"`.
-  - If you are planning to deploy to `https://<USERNAME>.github.io/<REPO>/`, meaning your repository URL is `https://github.com/<USERNAME>/<REPO>`, set `base` to `"/<REPO>/"`.
-
-To customize a domain name, please refer to [Github Pages](https://docs.github.com/zh/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)
+如果开启了`npm run docs:dev`，在新建markdown的时候，会在markdown头部有一些配置前缀，这里简要介绍下：
+```yaml
+---
+title: 框架设计 # 这个标题会用来作为sidebar的标题
+createTime: 2025/06/13 14:59:56 # 不太重要
+icon: material-symbols:deployed-code-outline # 可选，侧边栏展示时的小logo
+permalink: /zh/guide/framework/ # 这个自动生成的是8位码，可以自行修改以简明展示，注意不能和现有的其他md的路径重复。
+---
+```
 
 ## Documents
 
