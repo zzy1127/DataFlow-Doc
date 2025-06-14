@@ -23,4 +23,14 @@ git pull upstream main
 git push origin main
 ```
 
-在提交修改到自己账户的fork仓库后，发起pull request，发起之前，请**确保没有修改无关部分** 并 **仔细检查修改部分的正确性**。发起时请在comment部分对修改进行描述。
+在提交修改到自己账户的fork仓库后，发起pull request。
+
+如果不熟悉git相关操作，请在进行操作时遵循如下注意事项:
+
+1. ``git add`` : 对修改过的文件/文件夹逐个执行``git add``, 不要执行 ``git add .``。如果该命令运行时间过长，**极大概率是将大文件放入了暂存区**，请立即停止并进行检查。
+
+2. ``git commit`` : 提交信息尽量清晰准确。
+
+3. ``git push``:  执行该指令时，请指明push到的远程仓库及分支，如果不熟悉git相关操作，请在push之前执行``git remote -v`` 查看每个远程仓库的别名对应的URL以明确。
+
+4. 发起PR: 发起PR前请点击``Files changed``仔细检查是否有不应该提交的文件修改。
