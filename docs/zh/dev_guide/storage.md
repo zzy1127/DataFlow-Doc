@@ -28,7 +28,24 @@ DataFlow数据表的结构如下
 | eval_algorithm_{$i} | TEXT                | 描述第 i 个算法是什么                                       |
 | eval_info_{$i}      | TEXT                | 报错                                                         |
 
-读取数据的接口如下：
+
+### 数据库接口使用Quick Start
+
+读取数据:
+- 类型为String：``read_str``
+- 类型为JSON：``read_json``
+
+写入数据:
+- 添加新的合成数据（如问题改写）:
+    * 如果数据类型为String: ``write_str``
+    * 数据类型为JSON: ``write_json``
+
+- 添加标签（分数/类别/其它与原数据深度绑定的信息）:
+    * 标签是可数的（如分数，有限类别）: ``write_eval`` 该接口将在数据的``eval_score``列写入标签。
+        + 如果有额外的添加信息需求（如评分理由），仍然可以通过调用该接口写入``eval_info``列。
+    * 标签是不可数的（如根据原问题数据生成的答案）: ``write_data`` 该接口直接修改数据的``data``列，并可通过参数对其它列进行修改。
+
+### 接口及其参数介绍
 
 - ``read_str(self, key_list: list[str], **kwargs)``: data字段为string类型时使用，key_list为想要读取出的字段组成的列表，类型限制为``list[str]``，可变参数中必须含有以下几种参数：
     * ``category``: 数据的类型，如"reasoning", "text", "code"
@@ -55,7 +72,7 @@ DataFlow数据表的结构如下
     * ``syn``: 是否为合成数据，合成数据的具体格式，在""（非合成数据）, "syn"（合成数据）, "syn_q"（合成问题数据）, "syn_a"（合成答案数据）, "syn_qa"（合成QA对数据）中选择 
     * ``pipeline_id``: 当前pipeline的id，要求在配置文件中传入。
     * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。
-使用该方法写入的新数据eval列数据清空。
+使用该方法将在数据库中加入新的行，新数据eval列数据清空。
 
 - ``write_json(self, data: list[dict], **kwargs)``: data参数中是需要写入的数据,字典中id关键字对应的是原数据的id,data关键字下的数据要求为``dict``类型。可变参数中需要的参数如下：
     * ``category``: 数据的类型，如"reasoning", "text", "code"
@@ -63,14 +80,16 @@ DataFlow数据表的结构如下
     * ``syn``: 是否为合成数据，合成数据的具体格式，在""（非合成数据）, "syn"（合成数据）, "syn_q"（合成问题数据）, "syn_a"（合成答案数据）, "syn_qa"（合成QA对数据）中选择 
     * ``pipeline_id``: 当前pipeline的id，要求在配置文件中传入。
     * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。
-使用该方法写入的新数据eval列数据清空。
+使用该方法将在数据库中加入新的行，新数据eval列数据清空。
 
 - ``write_eval(self, data: list[dict], **kwargs)``: data参数中是原数据的id和新数据的分数(float类型)和信息(str类型)。要求的可变参数如下：
     * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。    
     * ``score_key``: data参数中分数对应的关键字，若data字段的形式为``[{'id': xxx, 'score1': xxx}]``，则此处应传入'score1'。
     * ``algo_name``: 算子名称，可以默认使用``self.__class__.__name__``
     * !``info_key``: data参数中需要额外存储的信息，若data字段的形式为``[{'id': xxx, 'score1': xxx, 'info1': xxx}]``，则此处应传入'info1'。
+使用该方法将对数据库中原数据所在的行的eval列进行修改。
 
 - ``write_data(self, data: list[dict], **kwargs)``: data参数中是原数据的id和新的data字段的数据。要求的可变参数如下：
     * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。
     * !``__some_keys__``: 如果data其他非eval字段需要修改，可以传入可变参数中。
+使用该方法将对数据库中原数据所在的行的data列进行修改。
