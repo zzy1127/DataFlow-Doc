@@ -78,8 +78,8 @@ bash ReasoningPipeline/pipeline_full.sh
   • `golden_answer`: ground-truth answer  
   • `Synth_or_Input`: `input` (original data) or `synth` (synthesized by the pipeline)  
   • `Difficulty`: score from 0 to 10 
-  • `primary_category`: main math branch  
-  • `secondary_category`: subcategory  
+  • `primary_category`: primary category of math problem
+  • `secondary_category`: secondary category of math problem
 - Example:
   ```json
   {
@@ -103,8 +103,8 @@ All steps are implemented as operators driven by `pipeline_step.py` and configur
 ### 4.1 Question Processing Operators
 
 1. **MathProblemFilter**  
-   Function: Remove non-math questions  
-   Command:
+   - Function: Remove non-math questions  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/MathProblemFilter.yaml \
@@ -113,8 +113,8 @@ All steps are implemented as operators driven by `pipeline_step.py` and configur
    ```
 
 2. **QuestionGenerator**  
-   Function: Prompt a large model to synthesize new math questions  
-   Command:
+   - Function: Prompt a large model to synthesize new math questions  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/QuestionGenerator.yaml \
@@ -123,8 +123,8 @@ All steps are implemented as operators driven by `pipeline_step.py` and configur
    ```
 
 3. **QuestionVerify**  
-   Function: Filter out questions with incorrect or missing conditions using MathQ-Verify  
-   Command:
+   - Function: Filter out questions with incorrect or missing conditions using [MathQ-Verify](https://arxiv.org/abs/2505.13903)
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/QuestionVerify.yaml \
@@ -133,8 +133,8 @@ All steps are implemented as operators driven by `pipeline_step.py` and configur
    ```
 
 4. **QuestionDifficultyClassifier**  
-   Function: Score and classify difficulty according to Omni-Math prompts  
-   Command:
+   - Function: Score and classify difficulty according to [Omni-Math](https://arxiv.org/abs/2410.07985) prompts  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/QuestionDifficultyClassifier.yaml \
@@ -143,8 +143,8 @@ All steps are implemented as operators driven by `pipeline_step.py` and configur
    ```
 
 5. **QuestionCategoryClassifier**  
-   Function: Categorize questions into MSC-2020 main and subcategories  
-   Command:
+   - Function: Referring to the [MSC-2020](https://msc2020.org/) classification, the problems are clustered into seven primary categories and several secondary categories.
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/QuestionCategoryClassifier.yaml \
@@ -154,11 +154,11 @@ All steps are implemented as operators driven by `pipeline_step.py` and configur
 
 ### 4.2 Pipeline Brancher (AnswerPipelineRoot)
 
-Function: Split data into two streams based on the presence of golden answers  
-Output files:  
-- `*_withGT.jsonl` (with golden answers)  
-- `*_withoutGT.jsonl` (without golden answers)  
-Command:
+- Function: Split data into two streams based on the presence of golden answers  
+- Output files:  
+  - `*_withGT.jsonl` (with golden answers)  
+  - `*_withoutGT.jsonl` (without golden answers)  
+- Command:
 ```bash
 python pipeline_step.py \
   --yaml_path ReasoningPipeline/yaml/AnswerPipelineRoot.yaml \
@@ -168,11 +168,11 @@ python pipeline_step.py \
 
 ### 4.3 Golden Answer Processing Operators
 
-(Executed only on the “with golden answer” branch)
+Executed only on the “with golden answer” branch
 
 1. **AnswerGenerator**  
-   Function: Generate answers with detailed CoT  
-   Command:
+   - Function: Generate answers with detailed CoT (Chain of Thought)
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/AnswerGenerator.yaml \
@@ -181,8 +181,8 @@ python pipeline_step.py \
    ```
 
 2. **AnswerFormatFilter**  
-   Function: Discard answers that don’t match the expected format  
-   Command:
+   - Function: Discard answers that don’t match the expected format  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/AnswerFormatFilter.yaml \
@@ -191,8 +191,8 @@ python pipeline_step.py \
    ```
 
 3. **AnswerLengthFilter**  
-   Function: Remove answers that are too long or too short  
-   Command:
+   - Function: Remove answers that are too long or too short  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/AnswerLengthFilter.yaml \
@@ -201,8 +201,8 @@ python pipeline_step.py \
    ```
 
 4. **AnswerGroundTruthFilter**  
-   Function: Use Qwen2.5-Math and Math-Verify to extract and verify the final answer  
-   Command:
+   - Function: Use [Qwen2.5-Math](https://github.com/QwenLM/Qwen2.5-Math) and [Math-Verify](https://github.com/huggingface/Math-Verify) to extract and verify the final answer  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/ReasonerAnsSelection.yaml \
@@ -211,8 +211,8 @@ python pipeline_step.py \
    ```
 
 5. **AnswerNgramFilter**  
-   Function: Deduplicate QA pairs with an n-gram similarity filter  
-   Command:
+   - Function: Deduplicate QA pairs with an n-gram similarity filter  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/ReasonerNgramFilter.yaml \
@@ -222,11 +222,11 @@ python pipeline_step.py \
 
 ### 4.4 No Golden Answer Processing Operators
 
-(Executed only on the “without golden answer” branch)
+Executed only on the “without golden answer” branch
 
 1. **PseudoAnswerGenerator**  
-   Function: Generate multiple candidate answers, then vote to select the majority as a pseudo-answer  
-   Command:
+   - Function: Generate multiple candidate answers, then vote to select the majority as a pseudo-answer  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/PseudoAnswerGenerator.yaml \
@@ -235,8 +235,8 @@ python pipeline_step.py \
    ```
 
 2. **AnswerFormatFilter**  
-   Function: Discard answers not conforming to the expected format  
-   Command:
+   - Function: Discard answers not conforming to the expected format  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/ReasonerFormatFilter_withoutGT.yaml \
@@ -245,8 +245,8 @@ python pipeline_step.py \
    ```
 
 3. **AnswerLengthFilter**  
-   Function: Remove answers that are too long or too short  
-   Command:
+   - Function: Remove answers that are too long or too short  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/ReasonerLengthFilter_withoutGT.yaml \
@@ -255,8 +255,8 @@ python pipeline_step.py \
    ```
 
 4. **AnswerNgramFilter**  
-   Function: Deduplicate QA pairs with an n-gram similarity filter  
-   Command:
+   - Function: Deduplicate QA pairs with an n-gram similarity filter  
+   - Command:
    ```bash
    python pipeline_step.py \
      --yaml_path ReasoningPipeline/yaml/ReasonerNgramFilter_withoutGT.yaml \
