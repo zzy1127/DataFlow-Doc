@@ -1,5 +1,6 @@
 ---
-title: 强推理数据合成流水线  
+title: 强推理数据合成流水线
+icon: mdi:brain
 createTime: 2025/06/16 13:08:42  
 permalink: /zh/guide/reasoningpipeline_zh/  
 ---
@@ -39,7 +40,7 @@ bash ReasoningPipeline/pipeline_withoutGT.sh
 bash ReasoningPipeline/pipeline_full.sh
 ```
 
-> 这三个脚本会调用对应的 YAML 配置，依次执行各模块，并在指定的目录下生成各阶段中间文件。
+> 这三个脚本会调用对应的 YAML 配置，依次执行各算子，并在指定的目录下生成各阶段中间文件。
 
 ---
 
@@ -93,11 +94,11 @@ bash ReasoningPipeline/pipeline_full.sh
 
 ---
 
-## 4. 流程与模块
+## 4. 流程与算子
 
-整个流水线由若干模块组成，每个模块对应一个 `yaml` 配置，通过 `pipeline_step.py` 驱动执行。
+整个流水线由若干算子组成，每个算子对应一个 `yaml` 配置，通过 `pipeline_step.py` 驱动执行。
 
-### 4.1 问题处理模块
+### 4.1 问题处理算子
 
 1. **数学问题过滤器 (MathProblemFilter)**  
    - 功能：剔除所有非数学类问题  
@@ -163,9 +164,9 @@ bash ReasoningPipeline/pipeline_full.sh
     --step_type generator
   ```
 
-### 4.3 标准答案处理模块
+### 4.3 标准答案处理算子
 
-本模块仅在“含标准答案”支线上执行。
+本算子仅在“含标准答案”支线上执行。
 
 1. **答案生成器 (AnswerGenerator)**  
    - 功能：提示推理模型生成带长链推理的解答  
@@ -216,9 +217,9 @@ bash ReasoningPipeline/pipeline_full.sh
        --step_name AnswerNgramFilter \
        --step_type process
      ```
-### 4.4 无标准答案处理模块
+### 4.4 无标准答案处理算子
 
-本模块仅在“无标准答案”支线上执行。
+本算子仅在“无标准答案”支线上执行。
 
 1. **伪答案生成器 (PseudoAnswerGenerator)**  
    - 功能：通过大模型为一个问题生成多个解答，投票选出出现次数最多的解答作为伪答案  
