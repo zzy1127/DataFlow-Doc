@@ -75,7 +75,7 @@ bash ReasoningPipeline/pipeline_full.sh
   - `output`：模型生成的解答  
   - `golden_answer`：标准答案  
   - `Synth_or_Input`：`input`（原始数据）或 `synth`（流水线合成）  
-  - `Difficulty`：难度分（0–5）  
+  - `Difficulty`：难度分（0–10）  
   - `primary_category`：主要类别  
   - `secondary_category`：次要类别  
 - **示例**：

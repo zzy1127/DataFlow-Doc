@@ -19,7 +19,7 @@ This pipeline natively handles four input scenarios:
 3. Question + Existing Solution  
 4. Any combination of the above  
 
-Under the hood, it’s split into three stages—**Question Processing**, **Branch Scheduling**, and **Answer Processing**—all orchestrated by configurable YAML specs and a unified `pipeline_step.py`. With a single command you trigger the entire workflow and produce intermediate outputs at every stage.
+Under the hood, it’s split into three stages—**Question Processing**, **Branch Scheduling**, and **Answer Processing**—all orchestrated by configurable YAML specs and a unified `pipeline_step.py`. With a single command you trigger the entire pipeline and produce intermediate outputs at every stage.
 
 ---
 
@@ -52,8 +52,8 @@ bash ReasoningPipeline/pipeline_full.sh
 
 - Supported formats: `json`, `jsonl`  
 - Required fields:  
-  • `question`: the math problem prompt  
-  • `answer`: golden answer (if available)  
+  • `instruction`: the math problem prompt  
+  • `golden_answer`: golden answer (if available)  
   • `solution`: any existing solution or CoT  
 - Optional fields are ignored—keep only what you need to avoid conflicts.  
 - Example (`json`):
@@ -76,8 +76,8 @@ bash ReasoningPipeline/pipeline_full.sh
   • `generated_cot`: model-generated chain-of-thought  
   • `output`: model answer  
   • `golden_answer`: ground-truth answer  
-  • `Synth_or_Input`: `input` (original) or `synth` (synthesized)  
-  • `Difficulty`: score from 0 to 5  
+  • `Synth_or_Input`: `input` (original data) or `synth` (synthesized by the pipeline)  
+  • `Difficulty`: score from 0 to 10 
   • `primary_category`: main math branch  
   • `secondary_category`: subcategory  
 - Example:
@@ -96,7 +96,7 @@ bash ReasoningPipeline/pipeline_full.sh
 
 ---
 
-## 4. Workflow & Operators
+## 4. Pipeline & Operators
 
 All steps are implemented as operators driven by `pipeline_step.py` and configured via YAML.
 
@@ -166,7 +166,7 @@ python pipeline_step.py \
   --step_type generator
 ```
 
-### 4.3 Standard Answer Processing Operators
+### 4.3 Golden Answer Processing Operators
 
 (Executed only on the “with golden answer” branch)
 
@@ -220,7 +220,7 @@ python pipeline_step.py \
      --step_type process
    ```
 
-### 4.4 No-Golden-Answer Processing Operators
+### 4.4 No Golden Answer Processing Operators
 
 (Executed only on the “without golden answer” branch)
 
