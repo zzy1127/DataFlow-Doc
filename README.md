@@ -29,7 +29,7 @@ npm run docs:build
 ---
 title: 框架设计 # 这个标题会用来作为sidebar的标题
 createTime: 2025/06/13 14:59:56 # 不太重要
-icon: material-symbols:deployed-code-outline # 可选，侧边栏展示时的小logo
+icon: material-symbols:deployed-code-outline # 可选，侧边栏展示时的小logo，从这个网址选烧包小logo https://icon-sets.iconify.design/
 permalink: /zh/guide/framework/ # 这个自动生成的是8位码，可以自行修改以简明展示，注意不能和现有的其他md的路径重复。
 ---
 ```
