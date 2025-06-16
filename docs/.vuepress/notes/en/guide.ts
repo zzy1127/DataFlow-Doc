@@ -12,6 +12,7 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
+                'ReasoningPipeline',
                 // 'usage',
                 // 'project-structure',
                 // 'write',
