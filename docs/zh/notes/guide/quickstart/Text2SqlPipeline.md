@@ -1,6 +1,6 @@
 ---
 title: Text-to-SQL数据合成流水线
-icon: material-symbols-light--checkbook-outline-rounded
+icon: material-symbols-light:checkbook-outline-rounded
 createTime: 2025/06/17 02:00:31  
 permalink: /zh/guide/text2sqlpipeline/  
 ---

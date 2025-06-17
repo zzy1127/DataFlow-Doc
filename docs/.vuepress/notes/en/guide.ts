@@ -13,6 +13,7 @@ export const Guide: ThemeNote = defineNoteConfig({
             items: [
                 'install',
                 'ReasoningPipeline',
+                'Text2SqlPipeline'
                 // 'usage',
                 // 'project-structure',
                 // 'write',
