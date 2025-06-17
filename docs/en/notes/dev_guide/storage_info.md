@@ -1,114 +1,100 @@
 ---
-title: 存储模块
+title: Storage Module
 createTime: 2025/06/12 12:00:01
 permalink: /en/dev_guide/storage_info/
 ---
 
-# Storage 模块
+# Storage Module
 
-DataFlow实现了向量数据库的相关接口，下面以MyScaleStorage为例进行介绍。
+DataFlow implements interfaces for vector databases. Below is an introduction using MyScaleStorage as an example.
 
-DataFlow数据表的结构如下
-<!-- 
-| 字段名              | 类型                | 描述                                                         |
-|---------------------|---------------------|--------------------------------------------------------------|
-| id                  | uuid                 | Primary Key                                                  |
-| data                | TEXT/JSON                    | 数据本身                                                    |
-| pipeline_id         | uuid   |                                                              |
-| stage               | int                 | 算子的排序                                                  |
-| eval_stage          | int                 | 算子目前经过 eval 的次数                                    |
-| raw_data_id         | int                 | Foreign Key，原始数据 id                                    |
-| task_id             | TEXT                | 就是任务的 id                                               |
-| category            | categorical         | 数据类型（数学/代码/科学数据/...）建议多选格式              |
-| description         | TEXT                | 数据的描述（比如 xx 公司的 xx 数据）                        |
-| format              | categorical         | 数据格式（PT, SFT_Single, SFT_Multi, RLHF 其中一种数据类型）|
-| Operator_Type       | categorical         | 算子类型（针对 Text/Math... 还是通用算子）                 |
-| Synthetic           | categorical         | 是否是合成数据？（完全合成/合成 Answer/合成 Question/不是合成）|
-| eval_score_{$i}     | float / BOOL / int  | 第 i 个算法添加的内容                                       |
-| eval_algorithm_{$i} | TEXT                | 描述第 i 个算法是什么                                       |
-| eval_info_{$i}      | TEXT                | 报错                                                         | -->
+The structure of a DataFlow data table is as follows:
 
-| 字段名              | 类型                | 描述                                                         |
-|---------------------|---------------------|--------------------------------------------------------------|
-| id                  | uuid                | Primary Key                                                  |
-| data                | TEXT/JSON           | 数据本身                                                    |
-| pipeline_id         | uuid                |                                                              |
-| stage               | int                 | 算子的排序                                                  |
-| eval_stage          | int                 | 算子目前经过 eval 的次数                                    |
-| raw_data_id         | int                 | Foreign Key，原始数据 id                                    |
-| task_id             | TEXT                | 就是任务的 id                                               |
-| category            | categorical         | 数据类型（数学/代码/科学数据/...）建议多选格式              |
-| description         | TEXT                | 数据的描述（比如 xx 公司的 xx 数据）                        |
-| format              | categorical         | 数据格式（PT, SFT_Single, SFT_Multi, RLHF 其中一种数据类型）|
-| Operator_Type       | categorical         | 算子类型（针对 Text/Math... 还是通用算子）                 |
-| Synthetic           | categorical         | 是否是合成数据？（完全合成/合成 Answer/合成 Question/不是合成）|
-| eval_score_{\$i}     | float / BOOL / int  | 第 i 个算法添加的内容                                       |
-| eval_algorithm_{\$i} | TEXT                | 描述第 i 个算法是什么                                       |
-| eval_info_{\$i}      | TEXT                | 报错                                                         |
+| Field Name           | Type               | Description                                                                 |
+|----------------------|--------------------|-----------------------------------------------------------------------------|
+| id                   | uuid               | Primary Key                                                                 |
+| data                 | TEXT/JSON          | The actual data                                                             |
+| pipeline_id          | uuid               |                                                                             |
+| stage                | int                | Order of the operator in the pipeline                                       |
+| eval_stage           | int                | Number of times the data has been evaluated                                 |
+| raw_data_id          | int                | Foreign Key, ID of the raw data                                             |
+| task_id              | TEXT               | Task ID                                                                     |
+| category             | categorical        | Data type (math/code/scientific/etc.), recommended in multi-label format   |
+| description          | TEXT               | Description of the data (e.g., data from company X)                         |
+| format               | categorical        | Data format (PT, SFT_Single, SFT_Multi, RLHF, etc.)                         |
+| Operator_Type        | categorical        | Type of operator (Text/Math-specific or general)                            |
+| Synthetic            | categorical        | Whether the data is synthetic (fully synthetic/synthetic answer/question/none) |
+| eval_score_{\$i}      | float / BOOL / int | Content added by algorithm $i                                               |
+| eval_algorithm_{\$i}  | TEXT               | Description of algorithm $i                                                 |
+| eval_info_{\$i}       | TEXT               | Error information                                                           |
+
+### Quick Start for Using Database Interfaces
+
+Reading data:
+- For String type: `read_str`
+- For JSON type: `read_json`
+
+Writing data:
+- Adding new synthetic data (e.g., rewritten questions):
+  * For String type: `write_str`
+  * For JSON type: `write_json`
+
+- Adding labels (scores/categories/other metadata tied to original data):
+  * If the label is countable (e.g., score, finite category): use `write_eval`, which writes to the `eval_score` column.
+    + To add additional info (e.g., scoring rationale), also use this method to write to the `eval_info` column.
+  * If the label is uncountable (e.g., an answer generated from the original question): use `write_data`, which modifies the `data` column and allows modification of other fields via parameters.
+
+### Interface and Parameter Descriptions
+
+### Read Interfaces
+
+- `read_str(self, key_list: list[str], **kwargs)`: Use when `data` is of string type. `key_list` is a list of fields to read. Required `kwargs`:
+  * `category`: Data type (e.g., "reasoning", "text", "code")
+  * `pipeline_id`: Current pipeline ID (from config)
+  * `stage`: Current operator stage (from config)
+  * `eval_stage`: Number of eval columns to read (from config)
+    + `maxmin_scores`: If `eval_stage` > 0, provide score filters as `read_min_score` and `read_max_score` in `list[float]` format. Example:
+    ``maxmin_scores = [dict(zip(['min_score', 'max_score'], list(_))) for _ in zip(self.read_min_score, self.read_max_score)]
+    ``
+  * !`format`: Data format, as in the table
+  * !`!syn`: Synthetic data format - choose from "", "syn", "syn_q", "syn_a", "syn_qa"
 
 
+Returns data as a `list[dict]` with default `id` as the primary key.
 
-### 数据库接口使用Quick Start
+- `read_json(self, key_list: list[str], **kwargs)`: Use when `data` is JSON. Same as `read_str`, but returns `data` as a `dict`.
 
-读取数据:
-- 类型为String：``read_str``
-- 类型为JSON：``read_json``
+### Write Interfaces
 
-写入数据:
-- 添加新的合成数据（如问题改写）:
-    * 如果数据类型为String: ``write_str``
-    * 数据类型为JSON: ``write_json``
+- `write_str(self, data: list[dict], **kwargs)`: The `data` parameter contains the data to be written. In the dictionary, the key `id` corresponds to the ID of the original data, and the data under the `data` key must be of type `str`. The required parameters in `**kwargs` are as follows:
+    * `category`: The type of data, such as "reasoning", "text", "code"
+    * `format`: Data format, refer to the table structure
+    * `syn`: Whether the data is synthetic. Choose from "" (not synthetic), "syn" (synthetic), "syn_q" (synthetic question), "syn_a" (synthetic answer), "syn_qa" (synthetic QA pair)
+    * `pipeline_id`: The ID of the current pipeline, must be provided in the config file
+    * `stage`: The position of the current operator in the pipeline + 1, must be provided in the config file
 
-- 添加标签（分数/类别/其它与原数据深度绑定的信息）:
-    * 标签是可数的（如分数，有限类别）: ``write_eval`` 该接口将在数据的``eval_score``列写入标签。
-        + 如果有额外的添加信息需求（如评分理由），仍然可以通过调用该接口写入``eval_info``列。
-    * 标签是不可数的（如根据原问题数据生成的答案）: ``write_data`` 该接口直接修改数据的``data``列，并可通过参数对其它列进行修改。
+This method will add new rows to the database. The eval columns for the new data will be cleared.
 
-### 接口及其参数介绍
+- `write_json(self, data: list[dict], **kwargs)`: The `data` parameter contains the data to be written. In the dictionary, the key `id` corresponds to the ID of the original data, and the data under the `data` key must be of type `dict`. The required parameters in `**kwargs` are as follows:
+    * `category`: The type of data, such as "reasoning", "text", "code"
+    * `format`: Data format, refer to the table structure
+    * `syn`: Whether the data is synthetic. Choose from "" (not synthetic), "syn" (synthetic), "syn_q" (synthetic question), "syn_a" (synthetic answer), "syn_qa" (synthetic QA pair)
+    * `pipeline_id`: The ID of the current pipeline, must be provided in the config file
+    * `stage`: The position of the current operator in the pipeline + 1, must be provided in the config file
 
-- ``read_str(self, key_list: list[str], **kwargs)``: data字段为string类型时使用，key_list为想要读取出的字段组成的列表，类型限制为``list[str]``，可变参数中必须含有以下几种参数：
-    * ``category``: 数据的类型，如"reasoning", "text", "code"
-    * ``format``: 数据格式，参考表结构
-    * ``syn``: 是否为合成数据，合成数据的具体格式，在""（非合成数据）, "syn"（合成数据）, "syn_q"（合成问题数据）, "syn_a"（合成答案数据）, "syn_qa"（合成QA对数据）中选择 
-    * ``pipeline_id``: 当前pipeline的id，要求在配置文件中传入。
-    * ``stage``: 当前算子在pipeline中的位置，要求在配置文件中传入。
-    * ``eval_stage``: 当前算子想要读出的数据中含有eval数据的列数，要求在配置文件中传入。
-        + !``maxmin_scores``: 若``eval_stage``大于0，读入时可能需要对分数进行最大值和最小值的筛选，要求在配置文件中传入list[float]形式的read_min_score和read_max_score。传入时的格式可以参考``maxmin_scores=[dict(zip(['min_score', 'max_score'], list(_))) for _ in list(zip(self.read_min_score, self.read_max_score))]``
+This method will add new rows to the database. The eval columns for the new data will be cleared.
 
-返回的数据为list[dict]类型,其中默认带有主键,存储在id关键字下。
+- `write_eval(self, data: list[dict], **kwargs)`: The `data` parameter includes the original data ID and the new score (of type float) and information (of type str). The required parameters in `**kwargs` are as follows:
+    * `stage`: The position of the current operator in the pipeline + 1, must be provided in the config file    
+    * `score_key`: The key corresponding to the score in the data parameter. If the data field is in the form `[{'id': xxx, 'score1': xxx}]`, this should be `'score1'`
+    * `algo_name`: Name of the operator, can default to `self.__class__.__name__`
+    * `info_key`: Extra information to be stored. If the data field is in the form `[{'id': xxx, 'score1': xxx, 'info1': xxx}]`, this should be `'info1'`
 
-- ``read_json(self, key_list: list[str], **kwargs)``: data字段为JSON类型时使用, 使用方法与``read_str()``相同，此处返回的数据中data字段下为dict类型的数据。
+This method modifies the eval columns of the existing row in the database.
 
-- ``read_str_by_stage(self, key_list: list[str], **kwargs)``: data字段为str类型时使用，可变参数中不需要有``format``和``syn``。
+- `write_data(self, data: list[dict], **kwargs)`: The `data` parameter includes the original data ID and the new content for the `data` field. The required parameters in `**kwargs` are as follows:
+    * `stage`: The position of the current operator in the pipeline + 1, must be provided in the config file
+    * `__some_keys__`: If other non-eval fields in the data need to be modified, they can be passed in as additional keyword arguments
+        + Note: The `syn` parameter here should be changed to `Synthetic`, otherwise an error will be raised.
 
-- ``read_json_by_stage(self, key_list: list[str], **kwargs)``: data字段为JSON类型时使用，可变参数中不需要有``format``和``syn``。
-
-写入数据的接口如下：
-
-- ``write_str(self, data: list[dict], **kwargs)``: data参数中是需要写入的数据,字典中id关键字对应的是原数据的id,data关键字下的数据要求为``str``类型。可变参数中需要的参数如下：
-    * ``category``: 数据的类型，如"reasoning", "text", "code"
-    * ``format``: 数据格式，参考表结构
-    * ``syn``: 是否为合成数据，合成数据的具体格式，在""（非合成数据）, "syn"（合成数据）, "syn_q"（合成问题数据）, "syn_a"（合成答案数据）, "syn_qa"（合成QA对数据）中选择 
-    * ``pipeline_id``: 当前pipeline的id，要求在配置文件中传入。
-    * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。
-使用该方法将在数据库中加入新的行，新数据eval列数据清空。
-
-- ``write_json(self, data: list[dict], **kwargs)``: data参数中是需要写入的数据,字典中id关键字对应的是原数据的id,data关键字下的数据要求为``dict``类型。可变参数中需要的参数如下：
-    * ``category``: 数据的类型，如"reasoning", "text", "code"
-    * ``format``: 数据格式，参考表结构
-    * ``syn``: 是否为合成数据，合成数据的具体格式，在""（非合成数据）, "syn"（合成数据）, "syn_q"（合成问题数据）, "syn_a"（合成答案数据）, "syn_qa"（合成QA对数据）中选择 
-    * ``pipeline_id``: 当前pipeline的id，要求在配置文件中传入。
-    * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。
-使用该方法将在数据库中加入新的行，新数据eval列数据清空。
-
-- ``write_eval(self, data: list[dict], **kwargs)``: data参数中是原数据的id和新数据的分数(float类型)和信息(str类型)。要求的可变参数如下：
-    * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。    
-    * ``score_key``: data参数中分数对应的关键字，若data字段的形式为``[{'id': xxx, 'score1': xxx}]``，则此处应传入'score1'。
-    * ``algo_name``: 算子名称，可以默认使用``self.__class__.__name__``
-    * !``info_key``: data参数中需要额外存储的信息，若data字段的形式为``[{'id': xxx, 'score1': xxx, 'info1': xxx}]``，则此处应传入'info1'。
-使用该方法将对数据库中原数据所在的行的eval列进行修改。
-
-- ``write_data(self, data: list[dict], **kwargs)``: data参数中是原数据的id和新的data字段的数据。要求的可变参数如下：
-    * ``stage``: 当前算子在pipeline中的位置+1，要求在配置文件中传入。
-    * !``__some_keys__``: 如果data其他非eval字段需要修改，可以传入可变参数中。
-使用该方法将对数据库中原数据所在的行的data列进行修改。
+This method modifies the `data` column of the existing row in the database.
