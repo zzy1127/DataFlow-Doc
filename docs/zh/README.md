@@ -7,9 +7,9 @@ config:
     full: true
     background: tint-plate
     hero:
-      name: Open DataFlow
-      tagline: 数据流处理扩增全流程框架
-      text: 反正啥都能干
+      name: DataFlow
+      tagline: 数据清洗扩增评估全流程框架
+      text: 好数据，好结果
       actions:
         -
           theme: brand

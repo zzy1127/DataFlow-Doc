@@ -7,9 +7,9 @@ config:
     full: true
     background: tint-plate
     hero:
-      name: Open DataFlow
+      name: DataFlow
       tagline: Pipeline for data processing in LLM era.
-      text: Do everthing you want
+      text: Better Data, Better results.
       actions:
         -
           theme: brand
