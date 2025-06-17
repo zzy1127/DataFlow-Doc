@@ -8,7 +8,7 @@ config:
     background: tint-plate
     hero:
       name: DataFlow
-      tagline: 数据清洗扩增评估全流程框架
+      tagline: 数据清洗, 扩增, 评估框架
       text: 好数据，好结果
       actions:
         -
