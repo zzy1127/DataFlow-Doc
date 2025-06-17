@@ -56,6 +56,7 @@ export const zhNavbar = defineNavbarConfig([
     },
     {
         text: '开发者指南',
+        icon: "material-symbols:keyboard-alt-outline-rounded",
         // items: [
         //     { text: "PR规范", link: '/zh/notes/dev_guide/pull_request.md' },
         //     { text: "日志", link: '/zh/notes/dev_guide/logging.md' },
