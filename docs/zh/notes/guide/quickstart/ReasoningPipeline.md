@@ -266,7 +266,7 @@ bash ReasoningPipeline/pipeline_Pretrain.sh
        --step_type process
      ```
 
-### 4.5 无标准答案处理算子
+### 4.5 格式转换算子
 
 这部分算子主要做最终的格式转换，以支持特定下游任务的接口格式。
 
