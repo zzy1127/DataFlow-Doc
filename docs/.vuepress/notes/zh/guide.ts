@@ -27,6 +27,17 @@ export const Guide: ThemeNote = defineNoteConfig({
             ],
         },
         {
+            text: "算子",
+            collapsed: false,
+            icon: "",
+            prefix: 'operators',
+            items: [
+                "text_process",
+                "image_process",
+                "video_process",
+            ]
+        },
+        {
             text: "评价指标",
             collapsed: false,
             icon: 'material-symbols:analytics-outline',
@@ -40,17 +51,7 @@ export const Guide: ThemeNote = defineNoteConfig({
                 // "video_process",
             ]
         },
-        {
-            text: "算子",
-            collapsed: false,
-            icon: "",
-            prefix: 'operators',
-            items: [
-                "text_process",
-                "image_process",
-                "video_process",
-            ]
-        }
+
         // {
         //     text: '写作',
         //     icon: 'fluent-mdl2:edit-create',

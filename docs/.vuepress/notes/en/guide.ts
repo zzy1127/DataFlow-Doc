@@ -35,6 +35,17 @@ export const Guide: ThemeNote = defineNoteConfig({
             ],
         },
         {
+            text: 'Operators',
+            collapsed: false,
+            icon: '',
+            prefix: 'operators',
+            items: [
+                "text_process",
+                "image_process",
+                "video_process",
+            ]
+        },
+        {
             text: 'Evaluation Metrics',
             collapsed: false,
             icon: 'material-symbols:analytics-outline',
@@ -49,16 +60,5 @@ export const Guide: ThemeNote = defineNoteConfig({
                 // "video_process",
             ]
         },
-        {
-            text: 'Operators',
-            collapsed: false,
-            icon: '',
-            prefix: 'operators',
-            items: [
-                "text_process",
-                "image_process",
-                "video_process",
-            ]
-        }
     ],
 })
