@@ -34,13 +34,81 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 
 ## 3. Data Format  
 
-### 3.1 Database Configuration  
+### 3.1 Database Configuration
 
-Since the pipeline involves database parsing and execution, database information must be provided.  
+When parsing and executing databases, it is necessary to configure the corresponding database information.
 
-- `tables.json`: Database schema definition file (JSON format)  
-- `Database`: Contains SQLite3 database files in the format `{db_id}.db`  
+- **Schema Definition File**: `tables.json` (JSON format)
+  - **Description**: This file is used to define the schema information of the database.
+  - **Reference**: The `tables.json` file in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).
+  - **Example**:
+    ```json
+    [
+      {
+        "db_id": "banking",
+        "table_names_original": ["accounts", "customers", "transactions"],
+        "table_names": ["Accounts", "Customers", "Transactions"],
+        "column_names_original": [
+          [-1, "*"],
+          [0, "account_id"],
+          [0, "customer_id"],
+          [0, "balance"],
+          [1, "customer_id"],
+          [1, "name"],
+          [1, "email"],
+          [2, "transaction_id"],
+          [2, "account_id"],
+          [2, "amount"],
+          [2, "date"]
+        ],
+        "column_names": [
+          [-1, "*"],
+          [0, "Account ID"],
+          [0, "Customer ID"],
+          [0, "Balance"],
+          [1, "Customer ID"],
+          [1, "Name"],
+          [1, "Email"],
+          [2, "Transaction ID"],
+          [2, "Account ID"],
+          [2, "Amount"],
+          [2, "Date"]
+        ],
+        "column_types": [
+          "text",
+          "integer",
+          "integer",
+          "real",
+          "integer",
+          "text",
+          "text",
+          "integer",
+          "integer",
+          "real",
+          "date"
+        ],
+        "primary_keys": [1, 4, 7],
+        "foreign_keys": [
+          [2, 4],
+          [8, 1]
+        ]
+      }
+    ]
+    ```
 
+- **Database Folder**: Contains executable database files
+  - **Description**: The database folder stores the actual database files. It contains multiple databases (`db_id_i`), and each database should have an SQLite file (`db_id_i.sqlite`).
+  - **Reference**: The `database` folder in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).
+  - **Structure Example**:
+    ```
+    - database
+      - db_id_1
+        - db_id_1.sqlite
+      - db_id_2
+        - db_id_2.sqlite
+      - db_id_3
+        - db_id_3.sqlite
+    ```
 ### 3.2 Input Data  
 
 - **Supported Formats**: `json`, `jsonl`  
