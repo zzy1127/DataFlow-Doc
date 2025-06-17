@@ -1,5 +1,5 @@
 ---
-title: image_metrics
+title: 图像数据评估指标
 createTime: 2025/06/09 11:43:42
 permalink: /zh/guide/654hng98/
 ---

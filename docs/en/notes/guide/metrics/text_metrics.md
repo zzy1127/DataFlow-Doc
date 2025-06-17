@@ -1,7 +1,7 @@
 ---
-title: text_metrics
+title: Text Data Evaluation Metrics
 createTime: 2025/06/09 11:43:25
-permalink: /en/demo/s762pn9l/
+permalink: /en/guide/s762pn9l/
 ---
 
 # Text Data Evaluation Metrics

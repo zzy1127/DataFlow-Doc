@@ -50,8 +50,8 @@ bash ReasoningPipeline/pipeline_full.sh
 
 - **支持格式**：`json`、`jsonl`  
 - **必需字段**：  
-  - `question`：问题文本  
-  - `answer`：标准答案  
+  - `instruction`：问题文本  
+  - `golden_answer`：标准答案  
   - `solution`：已有解答或推理过程  
 - **可选字段**：其它字段会被忽略，但建议只保留必要字段，避免与后续处理冲突。  
 - **示例**（`json`）：

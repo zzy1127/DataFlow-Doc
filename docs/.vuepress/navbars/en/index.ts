@@ -16,29 +16,46 @@ export const enNavbar = defineNavbarConfig([
         // link: '/en/guide/',
         icon: 'icon-park-outline:guide-board',
         items: [
+
             {
-                text: 'Installation',
-                link: '/en/note/guide/quickstart/install.md',
-                icon: 'material-symbols-light:download-rounded'
+                text: 'Basic Info',
+                items: [
+                    {
+                        text: 'Introduction',
+                        link: '/en/notes/guide/basicinfo/intro.md',
+                        icon: 'mdi:tooltip-text-outline',
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: 'Framework Design',
+                        link: '/en/notes/guide/basicinfo/framework.md',
+                        icon: 'material-symbols:auto-transmission-sharp',
+                        activeMatch: '^/guide/'
+                    },
+                ]
+            },
+            {
+                text: 'Quick Start',
+                items: [
+                    {
+                        text: 'Installation',
+                        link: '/en/notes/guide/quickstart/install.md',
+                        icon: 'material-symbols-light:download-rounded',
+                        activeMatch: '^/guide/'
+                    },
+
+                ]
             },
         ]
     },
     {
         text: 'API Reference',
-        link: '/en/blog/',
+        link: '/en/notes/api/1.home.md',
         icon: 'material-symbols:article-outline'
     },
     {
         text: 'Developer Guide',
-        items: [
-            { text: "logging", link: '/en/dev_guide/logging.md' },
-            { text: "testcase", link: '/en/dev_guide/testcase.md' },
-        ]
-    },
-    {
-        text: 'Notes',
-        items: [
-            { text: 'Demo', link: '/en/notes/demo/README.md' }
-        ]
+        icon: "material-symbols:build-outline-sharp",
+        link: '/en/notes/dev_guide/1.index_guide.md',
     },
 ])

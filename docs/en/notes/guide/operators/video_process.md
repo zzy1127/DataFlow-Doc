@@ -1,7 +1,7 @@
 ---
-title: video_process
+title: Video Data Processors
 createTime: 2025/06/09 11:43:25
-permalink: /en/demo/nz3gjjdu/
+permalink: /en/guide/nz3gjjdu/
 ---
 
 # Video Data Processing
