@@ -9,7 +9,7 @@ config:
     hero:
       name: DataFlow
       tagline: 数据清洗, 扩增, 评估框架
-      text: 好数据，好结果
+      text: 好数据，好模型
       actions:
         -
           theme: brand

@@ -33,11 +33,21 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'metrics',
             items: [
                 "text_metrics",
-                "text_process",
                 "gen_text_metrics",
                 "image_metrics",
-                "image_process",
+                // "image_process",
                 "video_metrics",
+                // "video_process",
+            ]
+        },
+        {
+            text: "算子",
+            collapsed: false,
+            icon: "",
+            prefix: 'operators',
+            items: [
+                "text_process",
+                "image_process",
                 "video_process",
             ]
         }
