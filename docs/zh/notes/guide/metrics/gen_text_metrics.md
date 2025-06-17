@@ -1,5 +1,5 @@
 ---
-title: gen_text_metrics
+title: 生成文本评估指标
 createTime: 2025/06/09 11:43:42
 permalink: /zh/guide/cazde3lz/
 ---

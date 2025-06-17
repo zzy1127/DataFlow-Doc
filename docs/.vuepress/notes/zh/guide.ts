@@ -8,7 +8,7 @@ export const Guide: ThemeNote = defineNoteConfig({
         {
             text: '基本信息',
             collapsed: false,
-            icon: 'carbon:idea',
+            icon: 'material-symbols-light:chat-info',
             prefix: 'basicinfo',
             items: [
                 'intro',

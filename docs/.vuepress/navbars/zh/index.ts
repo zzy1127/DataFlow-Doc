@@ -23,13 +23,13 @@ export const zhNavbar = defineNavbarConfig([
                             {
                                 text: '简介',
                                 link: '/zh/notes/guide/basicinfo/intro.md',
-                                icon: 'material-symbols-light:download-rounded',
+                                icon: 'mdi:tooltip-text-outline',
                                 activeMatch: '^/guide/'
                             },
                             {
                                 text: '框架设计',
                                 link: '/zh/notes/guide/basicinfo/framework.md',
-                                icon: 'material-symbols-light:download-rounded',
+                                icon: 'material-symbols:auto-transmission-sharp',
                                 activeMatch: '^/guide/'
                             },
                 ]

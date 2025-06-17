@@ -1,7 +1,7 @@
 ---
-title: video_metrics
+title: Video Data Evaluation Metrics
 createTime: 2025/06/09 11:43:25
-permalink: /en/demo/zqsddulh/
+permalink: /en/guide/zqsddulh/
 ---
 
 # Video Data Evaluation Metrics

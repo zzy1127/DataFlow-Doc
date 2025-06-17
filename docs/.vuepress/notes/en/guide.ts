@@ -6,6 +6,16 @@ export const Guide: ThemeNote = defineNoteConfig({
     link: '/guide/',
     sidebar: [
         {
+            text: 'Basic Info',
+            collapsed: false,
+            icon: 'carbon:idea',
+            prefix: 'basicinfo',
+            items: [
+                'intro',
+                'framework',
+            ],
+        },
+        {
             text: 'Quick Start',
             collapsed: false,
             icon: 'carbon:idea',
@@ -24,46 +34,19 @@ export const Guide: ThemeNote = defineNoteConfig({
             ],
         },
         {
-            text: 'Write',
-            icon: 'fluent-mdl2:edit-create',
+            text: 'Evaluation Metrics',
             collapsed: false,
+            icon: 'material-symbols:analytics-outline',
+            prefix: 'metrics',
             items: [
-                {
-                    text: 'markdown',
-                    icon: 'material-symbols:markdown-outline',
-                    prefix: 'markdown',
-                    collapsed: true,
-                    items: [
-                        'basic',
-                        'extensions',
-                        'icons',
-                        'mark',
-                        'plot',
-                        'abbr',
-                        'annotation',
-                        'card',
-                        'steps',
-                        'file-tree',
-                        'tabs',
-                        'timeline',
-                        'demo-wrapper',
-                        'collapse',
-                        'npm-to',
-                        'caniuse',
-                        'include',
-                    ],
-                },
-            ],
-        },
-        {
-            text: 'Customization',
-            icon: 'material-symbols:dashboard-customize-outline-rounded',
-            collapsed: false,
-            prefix: 'custom',
-            items: [
-                'home',
-                'style',
-            ],
-        },
+                "text_metrics",
+                "text_process",
+                "gen_text_metrics",
+                "image_metrics",
+                "image_process",
+                "video_metrics",
+                "video_process",
+            ]
+        }
     ],
 })
