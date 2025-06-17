@@ -55,7 +55,7 @@ export const enNavbar = defineNavbarConfig([
     },
     {
         text: 'Developer Guide',
-        icon: "material-symbols:keyboard-alt-outline-rounded",
+        icon: "material-symbols:build-outline-sharp",
         link: '/en/notes/dev_guide/1.index_guide.md',
     },
 ])
