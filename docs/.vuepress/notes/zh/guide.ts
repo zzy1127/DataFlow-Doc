@@ -8,7 +8,7 @@ export const Guide: ThemeNote = defineNoteConfig({
         {
             text: '基本信息',
             collapsed: false,
-            icon: 'material-symbols-light:chat-info',
+            icon: 'carbon:idea',
             prefix: 'basicinfo',
             items: [
                 'intro',
@@ -26,6 +26,15 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'ReasoningPipeline',
                 'Text2SqlPipeline'
             ],
+        },
+        {
+            text: "Dataflow-Agent数据治理",
+            collapsed: false,
+            icon: '',
+            prefix: 'agent',
+            items: [
+                "agent_for_data"
+            ]
         },
         {
             text: "算子",
