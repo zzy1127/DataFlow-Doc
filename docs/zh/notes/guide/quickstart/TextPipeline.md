@@ -92,7 +92,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 3. **删除表情符号 (RemoveEmojiRefiner)**  
-   - 功能：删除表情符号  
+   - 功能：删除表情符号，如
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -102,7 +102,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 4. **删除 HTML 标签 (HtmlUrlRemoverRefiner)**  
-   - 功能：删除 HTML 标签  
+   - 功能：删除 HTML 标签，如\<tag\>
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -122,7 +122,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 6. **敏感词过滤 (BlocklistFilter)**  
-   - 功能：过滤含屏蔽词较多的文本  
+   - 功能：过滤含屏蔽词较多的文本，屏蔽词列表见[List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) 
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -132,7 +132,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 7. **单词数量过滤 (WordNumberFilter)**  
-   - 功能：文本单词数量过滤  
+   - 功能：文本单词数量过滤，保留单词数据在[20, 100000]中的文本（可调）
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -142,7 +142,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 8. **冒号结尾过滤 (ColonEndFilter)**  
-   - 功能：过滤冒号结尾文本  
+   - 功能：过滤以冒号结尾的文本
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -152,7 +152,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 9. **语句数量过滤 (SentenceNumberFilter)**  
-   - 功能：过滤语句数量异常的文本  
+   - 功能：过滤句子数量异常的文本，保留句子数量范围为[3, 7500]（可调）
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -162,7 +162,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 10. **省略号结尾过滤 (LineEndWithEllipsisFilter)**  
-    - 功能：按比例过滤以省略号结尾的文本  
+    - 功能：过滤省略号结尾句子比例大于0.3的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -182,7 +182,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
       ```
 
 12. **平均单词长度过滤 (MeanWordLengthFilter)**  
-    - 功能：文本平均单词长度过滤  
+    - 功能：文本平均单词长度过滤, 保留平均单词长度在[3, 10]的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -192,7 +192,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
       ```
 
 13. **符号/单词比例过滤 (SymbolWordRatioFilter)**  
-    - 功能：过滤符号/单词比例过大的文本  
+    - 功能：过滤符号（如#）/单词比例大于0.4的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -202,7 +202,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
       ```
 
 14. **HTML 标签过滤 (HtmlEntityFilter)**  
-    - 功能：过滤 HTML 标签多的文本  
+    - 功能：过滤含HTML标签的文本，如nbsp, lt, gt等
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -212,7 +212,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
       ```
 
 15. **ID Card 过滤 (IDCardFilter)**  
-    - 功能：过滤含 ID Card 的文本  
+    - 功能：隐私保护，过滤含 ID Card 相关信息的文本，如：”身份证“，”ID NO.“等
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -232,7 +232,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
       ```
 
 17. **特殊符号过滤 (SpecialCharacterFilter)**  
-    - 功能：过滤特殊符号多的文本  
+    - 功能：过滤含有特殊符号（如r"u200e"）的文本
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -242,7 +242,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
       ```
 
 18. **水印过滤 (WatermarkFilter)**  
-    - 功能：过滤含水印的文本  
+    - 功能：过滤含水印的文本，如“Watermark”, "Copyright"等。
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -251,18 +251,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-19. **停用词过滤 (StopWordFilter)**  
-    - 功能：过滤停用词比例少的文本  
-    - 命令：
-      ```bash
-      python pipeline_step.py \
-        --yaml_path text_pipeline/yaml/StopWordFilter.yaml \
-        --step_name StopWordFilter \
-        --step_type process
-      ```
-
-20. **括号比例过滤 (CurlyBracketFilter)**  
-    - 功能：过滤括号比例高的文本  
+19. **括号比例过滤 (CurlyBracketFilter)**  
+    - 功能：过滤括号比例高(大于0.025)的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -271,8 +261,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-21. **大写字母比例过滤 (CapitalWordsFilter)**  
-    - 功能：过滤大写字母比例高的文本  
+20. **大写字母比例过滤 (CapitalWordsFilter)**  
+    - 功能：过滤大写字母比例高（大于0.2）的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -281,8 +271,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-22. **Lorem Ipsum 过滤 (LoremIpsumFilter)**  
-    - 功能：过滤含 lorem ipsum 的文本  
+21. **Lorem Ipsum 过滤 (LoremIpsumFilter)**  
+    - 功能：过滤含 lorem ipsum 的文本。lorem ipsum为常用于排版设计的随机假文。
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -291,8 +281,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-23. **Unique 单词过滤 (UniqueWordsFilter)**  
-    - 功能：过滤 unique 单词少的文本  
+22. **Unique 单词过滤 (UniqueWordsFilter)**  
+    - 功能：过滤独立单词比例小于0.1的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -301,8 +291,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-24. **字符数量过滤 (CharNumberFilter)**  
-    - 功能：过滤字符数少的文本  
+23. **字符数量过滤 (CharNumberFilter)**  
+    - 功能：过滤字符数少于100的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -311,8 +301,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-25. **项目符号开头过滤 (LineStartWithBulletpointFilter)**  
-    - 功能：过滤以项目符号开头多的文本  
+24. **项目符号开头过滤 (LineStartWithBulletpointFilter)**  
+    - 功能：过滤以项目符号开头比例大于0.9的文本（可调）  
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -321,8 +311,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-26. **含 Javascript 过滤 (LineWithJavascriptFilter)**  
-    - 功能：过滤含 Javascript 多的文本  
+25. **含 Javascript 过滤 (LineWithJavascriptFilter)**  
+    - 功能：过滤含 Javascript 数量大于3的文本（可调）
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -331,8 +321,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 
-27. **文本质量打分器 (PairQualFilter)**  
-    - 功能：使用质量打分器进行文本质量打分  
+26. **文本质量打分器 (PairQualFilter)**  
+    - 功能：使用质量打分器进行文本质量打分。该质量打分器基于bge模型，支持中英双语，使用gpt对文本成对比较打分后训练而成。
     - 命令：
       ```bash
       python pipeline_step.py \
@@ -348,7 +338,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
 在**流水线1**的基础上，添加如下算子：
 
 1. **预训练数据合成 (PretrainGenerator)**  
-- 功能：使用Qwen2.5-7b根据种子文档合成类 Phi-4 风格QA问答对数据
+- 功能：使用llm根据种子文档合成类 Phi-4 风格QA问答对数据
 - 命令：
   ```bash
   python pipeline_step.py \
@@ -358,7 +348,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
   ```
 
 2. **Qurating质量打分过滤 (QuratingFilter)**
-- 功能：从 writing_style、required_expertise、facts_and_trivia、educational_value 四个维度打分并过滤合成后的文本
+- 功能：从 writing_style、required_expertise、facts_and_trivia、educational_value 四个维度打分并过滤合成后的文本。[模型地址](https://github.com/princeton-nlp/QuRating)
 - 命令：
   ```bash
   python pipeline_step.py \
@@ -370,7 +360,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
 ### 4.3 SFT数据过滤流水线
 
 1. **输出长度过滤 (WordNumberFilter)**  
-   - 功能：按照 output 长度过滤数据，保留长度为20-1000之间
+   - 功能：按照 output 长度过滤数据，保留长度为20-1000之间（可调）
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -380,7 +370,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 2. **指令 IFD 分数过滤 (SuperfilteringFilter)**  
-   - 功能：按照指令 IFD 分数过滤数据  
+   - 功能：按照指令 IFD 分数过滤数据。[模型地址](https://github.com/tianyi-lab/Superfiltering)
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -390,7 +380,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 3. **指令质量得分过滤 (DeitaQualityFilter)**  
-   - 功能：按照指令质量得分过滤数据  
+   - 功能：按照指令质量得分过滤数据。[模型地址](https://huggingface.co/hkust-nlp/deita-quality-scorer)
    - 命令：
      ```bash
      python pipeline_step.py \
@@ -400,7 +390,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
      ```
 
 4. **Instruction 标签数过滤 (InstagFilter)**  
-   - 功能：按照 instruction 标签数过滤数据  
+   - 功能：按照 instruction 标签数过滤数据。[模型地址](https://github.com/OFA-Sys/InsTag)
    - 命令：
      ```bash
      python pipeline_step.py \
