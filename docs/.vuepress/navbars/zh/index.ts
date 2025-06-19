@@ -23,13 +23,13 @@ export const zhNavbar = defineNavbarConfig([
                             {
                                 text: '简介',
                                 link: '/zh/notes/guide/basicinfo/intro.md',
-                                icon: 'material-symbols-light:download-rounded',
+                                icon: 'mdi:tooltip-text-outline',
                                 activeMatch: '^/guide/'
                             },
                             {
                                 text: '框架设计',
                                 link: '/zh/notes/guide/basicinfo/framework.md',
-                                icon: 'material-symbols-light:download-rounded',
+                                icon: 'material-symbols:auto-transmission-sharp',
                                 activeMatch: '^/guide/'
                             },
                 ]
@@ -43,6 +43,24 @@ export const zhNavbar = defineNavbarConfig([
                         icon: 'material-symbols-light:download-rounded',
                         activeMatch: '^/guide/'
                     },
+                    {
+                        text: "纯文本流水线",
+                        link: '/zh/notes/guide/quickstart/TextPipeline.md',
+                        icon: 'mdi:file-text',
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text:"强推理数据合成流水线",
+                        link:"/zh/notes/guide/quickstart/ReasoningPipeline.md",
+                        icon: "mdi:brain",
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "Text-to-SQL数据合成流水线",
+                        link: "/zh/notes/guide/quickstart/Text2SqlPipeline.md",
+                        icon: "material-symbols-light:checkbook-outline-rounded",
+                        activeMatch: '^/guide/'
+                    }
                 ]
             },
 
@@ -56,6 +74,7 @@ export const zhNavbar = defineNavbarConfig([
     },
     {
         text: '开发者指南',
+        icon: "material-symbols:build-outline-sharp",
         // items: [
         //     { text: "PR规范", link: '/zh/notes/dev_guide/pull_request.md' },
         //     { text: "日志", link: '/zh/notes/dev_guide/logging.md' },

@@ -1,5 +1,5 @@
 ---
-title: image_process
+title: 图像数据处理器
 createTime: 2025/06/09 11:43:42
 permalink: /zh/guide/3gvkge59/
 ---

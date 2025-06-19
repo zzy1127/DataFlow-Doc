@@ -8,7 +8,7 @@ export const Guide: ThemeNote = defineNoteConfig({
         {
             text: '基本信息',
             collapsed: false,
-            icon: 'carbon:idea',
+            icon: 'material-symbols-light:chat-info',
             prefix: 'basicinfo',
             items: [
                 'intro',
@@ -22,8 +22,21 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
+                `TextPipeline`,
                 'ReasoningPipeline',
+                'Text2SqlPipeline'
             ],
+        },
+        {
+            text: "算子",
+            collapsed: false,
+            icon: "",
+            prefix: 'operators',
+            items: [
+                "text_process",
+                "image_process",
+                "video_process",
+            ]
         },
         {
             text: "评价指标",
@@ -32,14 +45,14 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'metrics',
             items: [
                 "text_metrics",
-                "text_process",
                 "gen_text_metrics",
                 "image_metrics",
-                "image_process",
+                // "image_process",
                 "video_metrics",
-                "video_process",
+                // "video_process",
             ]
-        }
+        },
+
         // {
         //     text: '写作',
         //     icon: 'fluent-mdl2:edit-create',

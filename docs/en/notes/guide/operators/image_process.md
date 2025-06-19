@@ -1,7 +1,7 @@
 ---
-title: image_process
+title: Image Data Processors
 createTime: 2025/06/09 11:43:25
-permalink: /en/demo/zq7npeyf/
+permalink: /en/guide/zq7npeyf/
 ---
 
 # Introduction to Image Data Processors

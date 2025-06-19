@@ -1,7 +1,7 @@
 ---
-title: image_metrics
+title: Image Data Evaluation Metrics
 createTime: 2025/06/09 11:43:25
-permalink: /en/demo/lcyxng2w/
+permalink: /en/guide/lcyxng2w/
 ---
 
 # Image Data Evaluation Metrics

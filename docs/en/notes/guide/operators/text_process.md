@@ -1,7 +1,8 @@
 ---
-title: text_process
+title: Text Data Processors
+
 createTime: 2025/06/09 11:43:25
-permalink: /en/demo/mq07gwz4/
+permalink: /en/guide/mq07gwz4/
 ---
 
 # Text Data Processing

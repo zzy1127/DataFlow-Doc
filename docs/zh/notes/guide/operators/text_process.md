@@ -1,5 +1,5 @@
 ---
-title: text_process
+title: 文本数据处理器
 createTime: 2025/06/09 11:43:42
 permalink: /zh/guide/q07ou7d9/
 ---

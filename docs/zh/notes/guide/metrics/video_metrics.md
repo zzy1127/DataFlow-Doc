@@ -1,5 +1,5 @@
 ---
-title: video_metrics
+title: 视频数据评估指标
 createTime: 2025/06/09 11:43:42
 permalink: /zh/guide/92inyi3j/
 ---
