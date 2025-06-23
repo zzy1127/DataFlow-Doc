@@ -7,7 +7,7 @@ permalink: /zh/guide/q07ou7d9/
 
 # 文本数据处理
 ## 概览
-DataFlow目前支持的文本数据处理主要针对于数据点层面，可以分为以下三种类型，分别是数据改写器、数据去重器和数据过滤器。
+DataFlow目前支持的文本数据处理主要针对于数据点层面，可以分为以下四种类型，分别是数据改写器、数据去重器、数据过滤器和数据生成器。
 <table class="tg">
   <thead>
     <tr>
@@ -26,6 +26,11 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
       <td class="tg-0pky">数据去重器</td>
       <td class="tg-0pky">6</td>
       <td class="tg-0pky">通过哈希等方法进行数据点去重</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">数据生成器</td>
+      <td class="tg-0pky">2</td>
+      <td class="tg-0pky">根据种子文档生成特定格式数据</td>
     </tr>
     <tr>
       <td class="tg-0pky">数据过滤器</td>
@@ -187,6 +192,33 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
       <td class="tg-0pky">SFT</td>
       <td class="tg-0pky">结合MinHash与LSH，通过将集合中的元素哈希成一个较小的签名（通常是一个固定长度的整数或比特串），从而以很小的内存占用和低计算成本比较两个集合之间的相似度。</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1811.04633">Paper</a></td>
+    </tr>
+  </tbody>
+</table>
+
+## 数据生成器
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">名称</th>
+      <th class="tg-0pky">适用类型</th>
+      <th class="tg-0pky">简介</th>
+      <th class="tg-0pky">官方仓库或论文</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tg-0pky">PretrainGenerator</td>
+      <td class="tg-0pky">预训练</td>
+      <td class="tg-0pky">使用预训练文档数据合成类phi-4问答数据对，使用QA格式复述文档</td>
+      <td class="tg-0pky"><a href="https://arxiv.org/pdf/2401.16380">Paper</a></td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">SupervisedFinetuneGenerator</td>
+      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">根据种子文档合成SFT格式QA数据对，并返回原文信息</td>
+      <td class="tg-0pky">-</td>
     </tr>
   </tbody>
 </table>
