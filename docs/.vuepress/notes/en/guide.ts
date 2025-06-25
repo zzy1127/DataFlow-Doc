@@ -41,7 +41,6 @@ export const Guide: ThemeNote = defineNoteConfig({
             icon: 'material-symbols:analytics-outline',
             prefix: 'general_operators',
             items: [
-                "gen_text_evaluation_operators",
                 "text_evaluation_operators",
                 "text_process_operators",
                 "text_generate_operators",
