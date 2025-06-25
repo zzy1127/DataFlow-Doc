@@ -9,7 +9,7 @@ permalink: /en/guide/text_process_operators/
 
 ## Overview
 
-DataFlow currently supports text data processing at the data point level, categorized into four types: refiners, deduplicators, generators and filters.
+DataFlow currently supports text data processing at the data point level, categorized into three types: refiners, deduplicators and filters.
 
 <table class="tg">
   <thead>
