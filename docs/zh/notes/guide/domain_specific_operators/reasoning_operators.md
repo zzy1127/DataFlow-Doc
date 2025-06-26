@@ -106,6 +106,35 @@ permalink: /zh/guide/Reasoning_operators/
 </table>
 
 
+## 算子接口调用说明
+
+特别地，对于指定存储路径等或是调用模型的算子，我们提供了封装后的**模型接口**以及**存储对象接口**，可以通过以下方式为算子进行模型API参数预定义：
+
+```python
+from dataflow.llmserving import APILLMServing_request
+
+api_llm_serving = APILLMServing_request(
+                api_url="your_api_url",
+                model_name="model_name",
+                max_workers=5
+        )
+```
+可以通过以下方式为算子进行存储参数预定义：
+
+```python
+from dataflow.utils.storage import FileStorage
+
+ self.storage = FileStorage(
+            first_entry_file_name="your_file_path",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl", # jsonl, json, ...
+        )
+```
+
+后文使用的`api_llm_serving`以及`self.storage`即为此处已定义的接口对象，完整调用示例可参考`test/test_reasoning.py`。
+
+对于传参，算子对象的构造函数主要传递与算子配置相关的信息，配置后可以一配置多调用；而`X.run()`函数传递与IO相关的`key`信息，详细可见后文算子说明示例。
 
 ## 详细算子说明
 
@@ -117,13 +146,12 @@ permalink: /zh/guide/Reasoning_operators/
 
 **输入参数：**
 
-- `input_key`：输入问题字段名（默认："question"）
-- `output_key`：输出答案字段名（默认："generated_answer"）
-- `model_name`：使用的大语言模型名称
-
-**输出参数：**
-
-- `generated_answer`：生成的标准答案
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入问题字段名（默认："question"）
+  - `output_key`：输出答案字段名（默认："generated_answer"）
 
 **主要特性：**
 
@@ -135,10 +163,12 @@ permalink: /zh/guide/Reasoning_operators/
 **使用示例：**
 
 ```python
-answer_gen = AnswerGenerator()
-result = answer_gen.run(storage,
-                       input_key="math_problem",
-                       output_key="solution")
+answer_gen = AnswerGenerator(llm_serving=api_llm_serving)
+result = answer_gen.run(
+          storage=self.storage.step(),
+          input_key="question",
+          output_key="generated_answer"
+          )
 ```
 
 #### 2. PseudoAnswerGenerator
@@ -147,12 +177,12 @@ result = answer_gen.run(storage,
 
 **输入参数：**
 
-- `input_key`：输入问题字段名（默认："question"）
-- `output_key`：输出答案字段名（默认："pseudo_answer"）
-
-**输出参数：**
-
-- `pseudo_answer`：选择的最优答案
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入问题字段名（默认："question"）
+  - `output_key`：输出答案字段名（默认："pseudo_answer"）
 
 **主要特性：**
 
@@ -164,10 +194,12 @@ result = answer_gen.run(storage,
 **使用示例：**
 
 ```python
-pseudo_gen = PseudoAnswerGenerator()
-result = pseudo_gen.run(storage,
-                       input_key="problem_text",
-                       output_key="best_answer")
+pseudo_gen = PseudoAnswerGenerator(llm_serving=api_llm_serving)
+result = pseudo_gen.run(
+          storage=self.storage.step(),
+          input_key="question",
+          output_key="pseudo_answer"
+          )
 ```
 
 #### 3. QuestionGenerator
@@ -176,13 +208,13 @@ result = pseudo_gen.run(storage,
 
 **输入参数：**
 
-- `input_key`：输入原始问题字段名（默认："source_question"）
-- `output_key`：输出新问题字段名（默认："generated_question"）
-- `num_questions`：每个问题生成新问题数量（默认：3）
-
-**输出参数：**
-
-- `generated_questions`：生成的新问题列表
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+  - `num_prompts`：每个问题生成新问题数量（默认：3）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入原始问题字段名（默认："source_question"）
+  - `output_key`：输出新问题字段名（默认："generated_question"）
 
 **主要特性：**
 
@@ -194,11 +226,15 @@ result = pseudo_gen.run(storage,
 **使用示例：**
 
 ```python
-question_gen = QuestionGenerator()
-result = question_gen.run(storage,
-                         input_key="base_problem",
-                         output_key="new_problems",
-                         num_questions=5)
+question_gen = QuestionGenerator(
+                num_prompts=3,  # from 1 to k
+                llm_serving=api_llm_serving
+                )
+result = question_gen.run(
+          storage=self.storage.step(),
+          input_key="source_question",
+          output_key="generated_question"
+          )
 ```
 
 ### 处理算子
@@ -209,12 +245,9 @@ result = question_gen.run(storage,
 
 **输入参数：**
 
-- `input_key`：输入答案字段名（默认："generated_cot"）
-- `result_key`：结果字段名
-
-**输出参数：**
-
-- 格式检查通过返回1，否则返回0
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入答案字段名（默认："generated_cot"）
 
 **主要特性：**
 
@@ -227,7 +260,10 @@ result = question_gen.run(storage,
 
 ```python
 filter_op = AnswerFormatterFilter()
-result = filter_op.run(storage, input_key="answer_text")
+result = filter_op.run(
+          storage=self.storage.step(),
+          input_key="generated_cot"
+          ) 
 ```
 
 #### 2. AnswerGroundTruthFilter
@@ -236,13 +272,12 @@ result = filter_op.run(storage, input_key="answer_text")
 
 **输入参数：**
 
-- `test_answer_key`：预测答案字段名（默认："generated_cot"）
-- `gt_answer_key`：标准答案字段名（默认："golden_answer"）
-- `compare_method`：比较方法（"exact"/"math_verify"）
-
-**输出参数：**
-
-- 匹配成功返回1，否则返回0
+- `__init__()`
+  - `compare_method`：比较方法（"exact" or "math_verify"）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `test_answer_key`：预测答案字段名（默认："generated_cot"）
+  - `gt_answer_key`：标准答案字段名（默认："golden_answer"）
 
 **主要特性：**
 
@@ -254,11 +289,12 @@ result = filter_op.run(storage, input_key="answer_text")
 **使用示例：**
 
 ```python
-filter_op = AnswerGroundTruthFilter()
-result = filter_op.run(storage, 
-                      test_answer_key="pred_answer",
-                      gt_answer_key="true_answer",
-                      compare_method="math_verify")
+filter_op = AnswerGroundTruthFilter(compare_method="math_verify")
+result = filter_op.run(
+          storage=self.storage.step(), 
+          test_answer_key="generated_cot",
+          gt_answer_key="golden_answer"
+          )
 ```
 
 #### 3. AnswerJudger_MathVerify
@@ -267,12 +303,10 @@ result = filter_op.run(storage,
 
 **输入参数：**
 
-- `answer_key`：待验证答案字段名
-- `gt_key`：标准答案字段名
-
-**输出参数：**
-
-- `result_key`：验证结果字段（True/False）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `answer_key`：待验证答案字段名（默认："student_answer"）
+  - `gt_key`：标准答案字段名（默认："correct_answer"）
 
 **主要特性：**
 
@@ -285,9 +319,11 @@ result = filter_op.run(storage,
 
 ```python
 judger_op = AnswerJudger_MathVerify()
-result = judger_op.run(storage,
-                      answer_key="student_answer",
-                      gt_key="correct_answer")
+result = judger_op.run(
+          storage=self.storage.step(),
+          answer_key="student_answer",
+          gt_key="correct_answer"
+          )
 ```
 
 #### 4. AnswerNgramFilter
@@ -296,15 +332,14 @@ result = judger_op.run(storage,
 
 **输入参数：**
 
-- `question_key`：问题字段名（默认："instruction"）
-- `answer_key`：答案字段名（默认："generated_cot"）
-- `min_score`：最小可接受分数（默认：0.1）
-- `max_score`：最大可接受分数（默认：1.0）
-- `ngrams`：n-gram大小（默认：5）
-
-**输出参数：**
-
-- 重复率分数在范围内返回1，否则返回0
+- `__init__()`
+  - `min_score`：最小可接受分数（默认：0.1）
+  - `max_score`：最大可接受分数（默认：1.0）
+  - `ngrams`：n-gram大小（默认：5）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `question_key`：问题字段名（默认："instruction"）
+  - `answer_key`：答案字段名（默认："generated_cot"）
 
 **主要特性：**
 
@@ -316,13 +351,16 @@ result = judger_op.run(storage,
 **使用示例：**
 
 ```python
-ngram_filter = AnswerNgramFilter()
-result = ngram_filter.run(storage,
-                         question_key="problem",
-                         answer_key="solution",
-                         min_score=0.2,
-                         max_score=0.8,
-                         ngrams=3)
+ngram_filter = AnswerNgramFilter(
+                min_score=0.1,
+                max_score=1.0,
+                ngrams=5
+                )
+result = ngram_filter.run(
+          storage=self.storage.step(),
+          question_key="instruction",
+          answer_key="generated_cot"
+          )
 ```
 
 #### 5. AnswerPipelineRoot
@@ -330,13 +368,10 @@ result = ngram_filter.run(storage,
 **功能描述：** 答案处理流程的根节点算子，负责智能分发数据到不同的处理分支。
 
 **输入参数：**
-
-- `input_answer_key`：输入答案字段名（默认："output"）
-- `input_gt_key`：输入标准答案字段名（默认："golden_answer"）
-
-**输出参数：**
-
-- 多个分支的输出文件路径
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_answer_key`：输入答案字段名（默认："output"）
+  - `input_gt_key`：输入标准答案字段名（默认："golden_answer"）
 
 **主要特性：**
 
@@ -349,9 +384,11 @@ result = ngram_filter.run(storage,
 
 ```python
 root_op = AnswerPipelineRoot()
-result = root_op.run(storage,
-                    input_answer_key="raw_answer",
-                    input_gt_key="ground_truth")
+result = root_op.run(
+          storage=self.storage.step(),
+          input_answer_key="output",
+          input_gt_key="golden_answer"
+          )
 ```
 
 #### 6. AnswerTokenLengthFilter
@@ -360,13 +397,12 @@ result = root_op.run(storage,
 
 **输入参数：**
 
-- `input_key`：输入字段名（默认："generated_cot"）
-- `max_answer_token_length`：最大token数（默认：8192）
-- `tokenizer_dir`：分词器路径（默认："Qwen/Qwen2.5-0.5B-Instruct"）
-
-**输出参数：**
-
-- 长度符合要求返回1，否则返回0
+- `__init__()`
+  - `max_answer_token_length`：最大token数（默认：8192）
+  - `tokenizer_dir`：分词器路径（默认："Qwen/Qwen2.5-0.5B-Instruct"）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入字段名（默认："generated_cot"）
 
 **主要特性：**
 
@@ -378,11 +414,14 @@ result = root_op.run(storage,
 **使用示例：**
 
 ```python
-length_filter = AnswerTokenLengthFilter()
-result = length_filter.run(storage,
-                          input_key="answer_text",
-                          max_answer_token_length=4096,
-                          tokenizer_dir="custom/tokenizer")
+length_filter = AnswerTokenLengthFilter(
+                  max_answer_token_length=8192,
+                  tokenizer_dir="Qwen/Qwen2.5-0.5B-Instruct"
+                  )
+result = length_filter.run(
+          storage=self.storage.step(),
+          input_key="generated_cot"
+          )
 ```
 
 #### 7. QuestionFilter
@@ -391,13 +430,12 @@ result = length_filter.run(storage,
 
 **输入参数：**
 
-- `input_key`：输入问题字段名
-- `system_prompt`：系统提示词
-- `llm_serving`：大语言模型服务
-
-**输出参数：**
-
-- 问题质量合格返回True，否则返回False
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+  - `system_prompt`：系统提示词
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入问题字段名（默认："math_problem"）
 
 **主要特性：**
 
@@ -418,10 +456,13 @@ result = length_filter.run(storage,
 
 ```python
 question_filter = QuestionFilter(
-    system_prompt="You are a math problem validator.",
-    llm_serving=llm_service
-)
-result = question_filter.run(storage, input_key="math_problem")
+    llm_serving=api_llm_serving,
+    system_prompt="You are a math problem validator."
+    )
+result = question_filter.run(
+          storage=self.storage.step(),
+          input_key="math_problem"
+          )
 ```
 
 
