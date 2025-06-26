@@ -145,11 +145,6 @@ from dataflow.utils.storage import FileStorage
 **功能描述：** 该算子专门用于生成数学问题的标准答案，通过调用大语言模型进行分步推理和精确计算。
 
 **输入参数：**
-- `__init__()`
-  - `model_name`：使用的大语言模型名称
-- `run()`
-  - `input_key`：输入问题字段名（默认："question"）
-  - `output_key`：输出答案字段名（默认："generated_answer"）
 
 - `__init__()`
   - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
@@ -181,6 +176,7 @@ result = answer_gen.run(
 **功能描述：** 该算子通过生成多个候选答案并使用统计方法选择最优解，实现高质量的伪答案生成。
 
 **输入参数：**
+
 - `__init__()`
   - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
 - `run()`
