@@ -149,13 +149,12 @@ For parameter passing, the constructor of operator objects mainly passes informa
 
 **Input Parameters:**
 
-- `input_key`: Input question field name (default: "question")
-- `output_key`: Output answer field name (default: "generated_answer")
-- `model_name`: Name of the large language model to use
-
-**Output Parameters:**
-
-- `generated_answer`: Generated standard answer
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+- `run()`
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input question field name (default: "question")
+  - `output_key`: Output answer field name (default: "generated_answer")
 
 **Key Features:**
 
@@ -181,12 +180,12 @@ result = answer_gen.run(
 
 **Input Parameters:**
 
-- `input_key`: Input question field name (default: "question")
-- `output_key`: Output answer field name (default: "pseudo_answer")
-
-**Output Parameters:**
-
-- `pseudo_answer`: Selected optimal answer
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+- `run()`
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input question field name (default: "question")
+  - `output_key`: Output answer field name (default: "pseudo_answer")
 
 **Key Features:**
 
@@ -212,13 +211,13 @@ result = pseudo_gen.run(
 
 **Input Parameters:**
 
-- `input_key`: Input original question field name (default: "source_question")
-- `output_key`: Output new question field name (default: "generated_question")
-- `num_questions`: Number of new questions to generate per problem (default: 3)
-
-**Output Parameters:**
-
-- `generated_questions`: List of generated new questions
+- `__init__()`
+  - `num_prompts`: Number of new questions to generate per problem (default: 3)
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+- `run()`
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input original question field name (default: "source_question")
+  - `output_key`: Output new question field name (default: "generated_question")
 
 **Key Features:**
 
@@ -249,12 +248,9 @@ result = question_gen.run(
 
 **Input Parameters:**
 
-- `input_key`: Input answer field name (default: "generated_cot")
-- `result_key`: Result field name
-
-**Output Parameters:**
-
-- Returns 1 if format check passes, 0 otherwise
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input answer field name (default: "generated_cot")
 
 **Key Features:**
 
@@ -279,13 +275,12 @@ result = filter_op.run(
 
 **Input Parameters:**
 
-- `test_answer_key`: Predicted answer field name (default: "generated_cot")
-- `gt_answer_key`: Ground truth answer field name (default: "golden_answer")
-- `compare_method`: Comparison method ("exact"/"math_verify")
-
-**Output Parameters:**
-
-- Returns 1 if match is successful, 0 otherwise
+- `__init__()`
+  - `compare_method`: Comparison method ("exact"/"math_verify")
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `test_answer_key`: Predicted answer field name (default: "generated_cot")
+  - `gt_answer_key`: Ground truth answer field name (default: "golden_answer")
 
 **Key Features:**
 
@@ -311,12 +306,10 @@ result = filter_op.run(
 
 **Input Parameters:**
 
-- `answer_key`: Answer field name to be verified
-- `gt_key`: Ground truth answer field name
-
-**Output Parameters:**
-
-- `result_key`: Verification result field (True/False)
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `answer_key`: Answer field name to be verified
+  - `gt_key`: Ground truth answer field name
 
 **Key Features:**
 
@@ -342,15 +335,14 @@ result = judger_op.run(
 
 **Input Parameters:**
 
-- `question_key`: Question field name (default: "instruction")
-- `answer_key`: Answer field name (default: "generated_cot")
-- `min_score`: Minimum acceptable score (default: 0.1)
-- `max_score`: Maximum acceptable score (default: 1.0)
-- `ngrams`: N-gram size (default: 5)
-
-**Output Parameters:**
-
-- Returns 1 if repetition rate score is within range, 0 otherwise
+- `__init__()`
+  - `min_score`: Minimum acceptable score (default: 0.1)
+  - `max_score`: Maximum acceptable score (default: 1.0)
+  - `ngrams`: N-gram size (default: 5)
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `question_key`: Question field name (default: "instruction")
+  - `answer_key`: Answer field name (default: "generated_cot")
 
 **Key Features:**
 
@@ -380,12 +372,10 @@ result = ngram_filter.run(
 
 **Input Parameters:**
 
-- `input_answer_key`: Input answer field name (default: "output")
-- `input_gt_key`: Input ground truth answer field name (default: "golden_answer")
-
-**Output Parameters:**
-
-- Multiple branch output file paths
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_answer_key`: Input answer field name (default: "output")
+  - `input_gt_key`: Input ground truth answer field name (default: "golden_answer")
 
 **Key Features:**
 
@@ -411,13 +401,12 @@ result = root_op.run(
 
 **Input Parameters:**
 
-- `input_key`: Input field name (default: "generated_cot")
-- `max_answer_token_length`: Maximum token count (default: 8192)
-- `tokenizer_dir`: Tokenizer path (default: "Qwen/Qwen2.5-0.5B-Instruct")
-
-**Output Parameters:**
-
-- Returns 1 if length meets requirements, 0 otherwise
+- `__init__()`
+  - `max_answer_token_length`: Maximum token count (default: 8192)
+  - `tokenizer_dir`: Tokenizer path (default: "Qwen/Qwen2.5-0.5B-Instruct")
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input field name (default: "generated_cot")
 
 **Key Features:**
 
@@ -445,9 +434,12 @@ result = length_filter.run(
 
 **Input Parameters:**
 
-- `input_key`: Input question field name
-- `system_prompt`: System prompt
-- `llm_serving`: Large language model service
+- `__init__()`
+  - `llm_serving`: Large language model service
+  - `system_prompt`: System prompt
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input question field name
 
 **Output Parameters:**
 
