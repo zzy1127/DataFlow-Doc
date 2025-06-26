@@ -108,6 +108,36 @@ Processing operators are primarily responsible for processing, verifying, filter
 
 
 
+## Operator Interface Usage Instructions
+
+Specifically, for operators that specify storage paths or call models, we provide encapsulated **model interfaces** and **storage object interfaces**. You can predefine model API parameters for operators in the following way:
+
+```python
+from dataflow.llmserving import APILLMServing_request
+
+api_llm_serving = APILLMServing_request(
+                api_url="your_api_url",
+                model_name="model_name",
+                max_workers=5
+        )
+```
+
+You can predefine storage parameters for operators in the following way:
+
+```python
+from dataflow.utils.storage import FileStorage
+
+ self.storage = FileStorage(
+            first_entry_file_name="your_file_path",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl", # jsonl, json, ...
+        )
+```
+
+The `api_llm_serving` and `self.storage` used in the following text are the interface objects defined here. Complete usage examples can be found in `test/test_reasoning.py`.
+
+For parameter passing, the constructor of operator objects mainly passes information related to operator configuration, which can be configured once and called multiple times; while the `X.run()` function passes `key` information related to IO. Details can be seen in the operator description examples below.
 
 ## Detailed Operator Descriptions
 
@@ -119,13 +149,12 @@ Processing operators are primarily responsible for processing, verifying, filter
 
 **Input Parameters:**
 
-- `input_key`: Input question field name (default: "question")
-- `output_key`: Output answer field name (default: "generated_answer")
-- `model_name`: Name of the large language model to use
-
-**Output Parameters:**
-
-- `generated_answer`: Generated standard answer
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+- `run()`
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input question field name (default: "question")
+  - `output_key`: Output answer field name (default: "generated_answer")
 
 **Key Features:**
 
@@ -137,10 +166,12 @@ Processing operators are primarily responsible for processing, verifying, filter
 **Usage Example:**
 
 ```python
-answer_gen = AnswerGenerator()
-result = answer_gen.run(storage,
-                       input_key="math_problem",
-                       output_key="solution")
+answer_gen = AnswerGenerator(llm_serving=api_llm_serving)
+result = answer_gen.run(
+          storage=self.storage.step(),
+          input_key="question",
+          output_key="generated_answer"
+          )
 ```
 
 #### 2. PseudoAnswerGenerator
@@ -149,12 +180,12 @@ result = answer_gen.run(storage,
 
 **Input Parameters:**
 
-- `input_key`: Input question field name (default: "question")
-- `output_key`: Output answer field name (default: "pseudo_answer")
-
-**Output Parameters:**
-
-- `pseudo_answer`: Selected optimal answer
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+- `run()`
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input question field name (default: "question")
+  - `output_key`: Output answer field name (default: "pseudo_answer")
 
 **Key Features:**
 
@@ -166,10 +197,12 @@ result = answer_gen.run(storage,
 **Usage Example:**
 
 ```python
-pseudo_gen = PseudoAnswerGenerator()
-result = pseudo_gen.run(storage,
-                       input_key="problem_text",
-                       output_key="best_answer")
+pseudo_gen = PseudoAnswerGenerator(llm_serving=api_llm_serving)
+result = pseudo_gen.run(
+          storage=self.storage.step(),
+          input_key="question",
+          output_key="pseudo_answer"
+          )
 ```
 
 #### 3. QuestionGenerator
@@ -178,13 +211,13 @@ result = pseudo_gen.run(storage,
 
 **Input Parameters:**
 
-- `input_key`: Input original question field name (default: "source_question")
-- `output_key`: Output new question field name (default: "generated_question")
-- `num_questions`: Number of new questions to generate per problem (default: 3)
-
-**Output Parameters:**
-
-- `generated_questions`: List of generated new questions
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+  - `num_prompts`: Number of new questions to generate per problem (default: 3)
+- `run()`
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input original question field name (default: "source_question")
+  - `output_key`: Output new question field name (default: "generated_question")
 
 **Key Features:**
 
@@ -196,11 +229,15 @@ result = pseudo_gen.run(storage,
 **Usage Example:**
 
 ```python
-question_gen = QuestionGenerator()
-result = question_gen.run(storage,
-                         input_key="base_problem",
-                         output_key="new_problems",
-                         num_questions=5)
+question_gen = QuestionGenerator(
+                num_prompts=3,  # from 1 to k
+                llm_serving=api_llm_serving
+                )
+result = question_gen.run(
+          storage=self.storage.step(),
+          input_key="source_question",
+          output_key="generated_question"
+          )
 ```
 
 ### Processing Operators
@@ -211,12 +248,9 @@ result = question_gen.run(storage,
 
 **Input Parameters:**
 
-- `input_key`: Input answer field name (default: "generated_cot")
-- `result_key`: Result field name
-
-**Output Parameters:**
-
-- Returns 1 if format check passes, 0 otherwise
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input answer field name (default: "generated_cot")
 
 **Key Features:**
 
@@ -229,7 +263,10 @@ result = question_gen.run(storage,
 
 ```python
 filter_op = AnswerFormatterFilter()
-result = filter_op.run(storage, input_key="answer_text")
+result = filter_op.run(
+          storage=self.storage.step(),
+          input_key="generated_cot"
+          ) 
 ```
 
 #### 2. AnswerGroundTruthFilter
@@ -238,13 +275,12 @@ result = filter_op.run(storage, input_key="answer_text")
 
 **Input Parameters:**
 
-- `test_answer_key`: Predicted answer field name (default: "generated_cot")
-- `gt_answer_key`: Ground truth answer field name (default: "golden_answer")
-- `compare_method`: Comparison method ("exact"/"math_verify")
-
-**Output Parameters:**
-
-- Returns 1 if match is successful, 0 otherwise
+- `__init__()`
+  - `compare_method`: Comparison method ("exact" or "math_verify")
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `test_answer_key`: Predicted answer field name (default: "generated_cot")
+  - `gt_answer_key`: Ground truth answer field name (default: "golden_answer")
 
 **Key Features:**
 
@@ -256,11 +292,12 @@ result = filter_op.run(storage, input_key="answer_text")
 **Usage Example:**
 
 ```python
-filter_op = AnswerGroundTruthFilter()
-result = filter_op.run(storage, 
-                      test_answer_key="pred_answer",
-                      gt_answer_key="true_answer",
-                      compare_method="math_verify")
+filter_op = AnswerGroundTruthFilter(compare_method="math_verify")
+result = filter_op.run(
+          storage=self.storage.step(), 
+          test_answer_key="generated_cot",
+          gt_answer_key="golden_answer"
+          )
 ```
 
 #### 3. AnswerJudger_MathVerify
@@ -269,12 +306,10 @@ result = filter_op.run(storage,
 
 **Input Parameters:**
 
-- `answer_key`: Answer field name to be verified
-- `gt_key`: Ground truth answer field name
-
-**Output Parameters:**
-
-- `result_key`: Verification result field (True/False)
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `answer_key`: Answer field name to be verified (default: "student_answer")
+  - `gt_key`: Ground truth answer field name (default: "correct_answer")
 
 **Key Features:**
 
@@ -287,9 +322,11 @@ result = filter_op.run(storage,
 
 ```python
 judger_op = AnswerJudger_MathVerify()
-result = judger_op.run(storage,
-                      answer_key="student_answer",
-                      gt_key="correct_answer")
+result = judger_op.run(
+          storage=self.storage.step(),
+          answer_key="student_answer",
+          gt_key="correct_answer"
+          )
 ```
 
 #### 4. AnswerNgramFilter
@@ -298,15 +335,14 @@ result = judger_op.run(storage,
 
 **Input Parameters:**
 
-- `question_key`: Question field name (default: "instruction")
-- `answer_key`: Answer field name (default: "generated_cot")
-- `min_score`: Minimum acceptable score (default: 0.1)
-- `max_score`: Maximum acceptable score (default: 1.0)
-- `ngrams`: N-gram size (default: 5)
-
-**Output Parameters:**
-
-- Returns 1 if repetition rate score is within range, 0 otherwise
+- `__init__()`
+  - `min_score`: Minimum acceptable score (default: 0.1)
+  - `max_score`: Maximum acceptable score (default: 1.0)
+  - `ngrams`: N-gram size (default: 5)
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `question_key`: Question field name (default: "instruction")
+  - `answer_key`: Answer field name (default: "generated_cot")
 
 **Key Features:**
 
@@ -318,13 +354,16 @@ result = judger_op.run(storage,
 **Usage Example:**
 
 ```python
-ngram_filter = AnswerNgramFilter()
-result = ngram_filter.run(storage,
-                         question_key="problem",
-                         answer_key="solution",
-                         min_score=0.2,
-                         max_score=0.8,
-                         ngrams=3)
+ngram_filter = AnswerNgramFilter(
+                min_score=0.1,
+                max_score=1.0,
+                ngrams=5
+                )
+result = ngram_filter.run(
+          storage=self.storage.step(),
+          question_key="instruction",
+          answer_key="generated_cot"
+          )
 ```
 
 #### 5. AnswerPipelineRoot
@@ -333,12 +372,10 @@ result = ngram_filter.run(storage,
 
 **Input Parameters:**
 
-- `input_answer_key`: Input answer field name (default: "output")
-- `input_gt_key`: Input ground truth answer field name (default: "golden_answer")
-
-**Output Parameters:**
-
-- Multiple branch output file paths
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_answer_key`: Input answer field name (default: "output")
+  - `input_gt_key`: Input ground truth answer field name (default: "golden_answer")
 
 **Key Features:**
 
@@ -351,9 +388,11 @@ result = ngram_filter.run(storage,
 
 ```python
 root_op = AnswerPipelineRoot()
-result = root_op.run(storage,
-                    input_answer_key="raw_answer",
-                    input_gt_key="ground_truth")
+result = root_op.run(
+          storage=self.storage.step(),
+          input_answer_key="output",
+          input_gt_key="golden_answer"
+          )
 ```
 
 #### 6. AnswerTokenLengthFilter
@@ -362,13 +401,12 @@ result = root_op.run(storage,
 
 **Input Parameters:**
 
-- `input_key`: Input field name (default: "generated_cot")
-- `max_answer_token_length`: Maximum token count (default: 8192)
-- `tokenizer_dir`: Tokenizer path (default: "Qwen/Qwen2.5-0.5B-Instruct")
-
-**Output Parameters:**
-
-- Returns 1 if length meets requirements, 0 otherwise
+- `__init__()`
+  - `max_answer_token_length`: Maximum token count (default: 8192)
+  - `tokenizer_dir`: Tokenizer path (default: "Qwen/Qwen2.5-0.5B-Instruct")
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input field name (default: "generated_cot")
 
 **Key Features:**
 
@@ -380,11 +418,14 @@ result = root_op.run(storage,
 **Usage Example:**
 
 ```python
-length_filter = AnswerTokenLengthFilter()
-result = length_filter.run(storage,
-                          input_key="answer_text",
-                          max_answer_token_length=4096,
-                          tokenizer_dir="custom/tokenizer")
+length_filter = AnswerTokenLengthFilter(
+                  max_answer_token_length=8192,
+                  tokenizer_dir="Qwen/Qwen2.5-0.5B-Instruct"
+                  )
+result = length_filter.run(
+          storage=self.storage.step(),
+          input_key="generated_cot"
+          )
 ```
 
 #### 7. QuestionFilter
@@ -393,13 +434,12 @@ result = length_filter.run(storage,
 
 **Input Parameters:**
 
-- `input_key`: Input question field name
-- `system_prompt`: System prompt
-- `llm_serving`: Large language model service
-
-**Output Parameters:**
-
-- Returns True if question quality is acceptable, False otherwise
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+  - `system_prompt`: System prompt
+- `run()` 
+  - `storage`: Storage interface object (default: predefined value above)
+  - `input_key`: Input question field name (default: "math_problem")
 
 **Key Features:**
 
@@ -420,9 +460,12 @@ result = length_filter.run(storage,
 
 ```python
 question_filter = QuestionFilter(
-    system_prompt="You are a math problem validator.",
-    llm_serving=llm_service
-)
-result = question_filter.run(storage, input_key="math_problem")
+    llm_serving=api_llm_serving,
+    system_prompt="You are a math problem validator."
+    )
+result = question_filter.run(
+          storage=self.storage.step(),
+          input_key="math_problem"
+          )
 ```
 
