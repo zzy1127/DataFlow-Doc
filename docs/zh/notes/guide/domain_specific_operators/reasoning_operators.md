@@ -166,8 +166,8 @@ from dataflow.utils.storage import FileStorage
 answer_gen = AnswerGenerator(llm_serving=api_llm_serving)
 result = answer_gen.run(
           storage=self.storage.step(),
-          input_key="math_problem",
-          output_key="solution"
+          input_key="question",
+          output_key="generated_answer"
           )
 ```
 
@@ -197,8 +197,8 @@ result = answer_gen.run(
 pseudo_gen = PseudoAnswerGenerator(llm_serving=api_llm_serving)
 result = pseudo_gen.run(
           storage=self.storage.step(),
-          input_key="problem_text",
-          output_key="best_answer"
+          input_key="question",
+          output_key="pseudo_answer"
           )
 ```
 
@@ -209,8 +209,8 @@ result = pseudo_gen.run(
 **输入参数：**
 
 - `__init__()`
-  - `num_prompts`：每个问题生成新问题数量（默认：3）
   - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+  - `num_prompts`：每个问题生成新问题数量（默认：3）
 - `run()`
   - `storage`：存储接口对象（默认：前文预设值）
   - `input_key`：输入原始问题字段名（默认："source_question"）
@@ -227,13 +227,13 @@ result = pseudo_gen.run(
 
 ```python
 question_gen = QuestionGenerator(
-                num_prompts=1,  # from 1 to k
+                num_prompts=3,  # from 1 to k
                 llm_serving=api_llm_serving
                 )
 result = question_gen.run(
           storage=self.storage.step(),
-          input_key="base_problem",
-          output_key="new_problems"
+          input_key="source_question",
+          output_key="generated_question"
           )
 ```
 
@@ -262,7 +262,7 @@ result = question_gen.run(
 filter_op = AnswerFormatterFilter()
 result = filter_op.run(
           storage=self.storage.step(),
-          input_key="answer_text"
+          input_key="generated_cot"
           ) 
 ```
 
@@ -273,7 +273,7 @@ result = filter_op.run(
 **输入参数：**
 
 - `__init__()`
-  - `compare_method`：比较方法（"exact"/"math_verify"）
+  - `compare_method`：比较方法（"exact" or "math_verify"）
 - `run()` 
   - `storage`：存储接口对象（默认：前文预设值）
   - `test_answer_key`：预测答案字段名（默认："generated_cot"）
@@ -292,8 +292,8 @@ result = filter_op.run(
 filter_op = AnswerGroundTruthFilter(compare_method="math_verify")
 result = filter_op.run(
           storage=self.storage.step(), 
-          test_answer_key="pred_answer",
-          gt_answer_key="true_answer"
+          test_answer_key="generated_cot",
+          gt_answer_key="golden_answer"
           )
 ```
 
@@ -305,8 +305,8 @@ result = filter_op.run(
 
 - `run()` 
   - `storage`：存储接口对象（默认：前文预设值）
-  - `answer_key`：待验证答案字段名
-  - `gt_key`：标准答案字段名
+  - `answer_key`：待验证答案字段名（默认："student_answer"）
+  - `gt_key`：标准答案字段名（默认："correct_answer"）
 
 **主要特性：**
 
@@ -352,14 +352,14 @@ result = judger_op.run(
 
 ```python
 ngram_filter = AnswerNgramFilter(
-                min_score=0.2,
-                max_score=0.8,
-                ngrams=3
+                min_score=0.1,
+                max_score=1.0,
+                ngrams=5
                 )
 result = ngram_filter.run(
           storage=self.storage.step(),
-          question_key="problem",
-          answer_key="solution"
+          question_key="instruction",
+          answer_key="generated_cot"
           )
 ```
 
@@ -386,8 +386,8 @@ result = ngram_filter.run(
 root_op = AnswerPipelineRoot()
 result = root_op.run(
           storage=self.storage.step(),
-          input_answer_key="raw_answer",
-          input_gt_key="ground_truth"
+          input_answer_key="output",
+          input_gt_key="golden_answer"
           )
 ```
 
@@ -415,12 +415,12 @@ result = root_op.run(
 
 ```python
 length_filter = AnswerTokenLengthFilter(
-                  max_answer_token_length=4096,
-                  tokenizer_dir="custom/tokenizer"
+                  max_answer_token_length=8192,
+                  tokenizer_dir="Qwen/Qwen2.5-0.5B-Instruct"
                   )
 result = length_filter.run(
           storage=self.storage.step(),
-          input_key="answer_text"
+          input_key="generated_cot"
           )
 ```
 
@@ -431,15 +431,11 @@ result = length_filter.run(
 **输入参数：**
 
 - `__init__()`
-  - `llm_serving`：大语言模型服务
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
   - `system_prompt`：系统提示词
 - `run()` 
   - `storage`：存储接口对象（默认：前文预设值）
-  - `input_key`：输入问题字段名
-
-**输出参数：**
-
-- 问题质量合格返回True，否则返回False
+  - `input_key`：输入问题字段名（默认："math_problem"）
 
 **主要特性：**
 
@@ -460,8 +456,8 @@ result = length_filter.run(
 
 ```python
 question_filter = QuestionFilter(
-    system_prompt="You are a math problem validator.",
-    llm_serving=api_llm_serving
+    llm_serving=api_llm_serving,
+    system_prompt="You are a math problem validator."
     )
 result = question_filter.run(
           storage=self.storage.step(),
