@@ -169,8 +169,8 @@ For parameter passing, the constructor of operator objects mainly passes informa
 answer_gen = AnswerGenerator(llm_serving=api_llm_serving)
 result = answer_gen.run(
           storage=self.storage.step(),
-          input_key="math_problem",
-          output_key="solution"
+          input_key="question",
+          output_key="generated_answer"
           )
 ```
 
@@ -200,8 +200,8 @@ result = answer_gen.run(
 pseudo_gen = PseudoAnswerGenerator(llm_serving=api_llm_serving)
 result = pseudo_gen.run(
           storage=self.storage.step(),
-          input_key="problem_text",
-          output_key="best_answer"
+          input_key="question",
+          output_key="pseudo_answer"
           )
 ```
 
@@ -212,8 +212,8 @@ result = pseudo_gen.run(
 **Input Parameters:**
 
 - `__init__()`
-  - `num_prompts`: Number of new questions to generate per problem (default: 3)
   - `llm_serving`: Large language model interface object to use (default: predefined value above)
+  - `num_prompts`: Number of new questions to generate per problem (default: 3)
 - `run()`
   - `storage`: Storage interface object (default: predefined value above)
   - `input_key`: Input original question field name (default: "source_question")
@@ -230,13 +230,13 @@ result = pseudo_gen.run(
 
 ```python
 question_gen = QuestionGenerator(
-                num_prompts=1,  # from 1 to k
+                num_prompts=3,  # from 1 to k
                 llm_serving=api_llm_serving
                 )
 result = question_gen.run(
           storage=self.storage.step(),
-          input_key="base_problem",
-          output_key="new_problems"
+          input_key="source_question",
+          output_key="generated_question"
           )
 ```
 
@@ -265,7 +265,7 @@ result = question_gen.run(
 filter_op = AnswerFormatterFilter()
 result = filter_op.run(
           storage=self.storage.step(),
-          input_key="answer_text"
+          input_key="generated_cot"
           ) 
 ```
 
@@ -276,7 +276,7 @@ result = filter_op.run(
 **Input Parameters:**
 
 - `__init__()`
-  - `compare_method`: Comparison method ("exact"/"math_verify")
+  - `compare_method`: Comparison method ("exact" or "math_verify")
 - `run()` 
   - `storage`: Storage interface object (default: predefined value above)
   - `test_answer_key`: Predicted answer field name (default: "generated_cot")
@@ -295,8 +295,8 @@ result = filter_op.run(
 filter_op = AnswerGroundTruthFilter(compare_method="math_verify")
 result = filter_op.run(
           storage=self.storage.step(), 
-          test_answer_key="pred_answer",
-          gt_answer_key="true_answer"
+          test_answer_key="generated_cot",
+          gt_answer_key="golden_answer"
           )
 ```
 
@@ -308,8 +308,8 @@ result = filter_op.run(
 
 - `run()` 
   - `storage`: Storage interface object (default: predefined value above)
-  - `answer_key`: Answer field name to be verified
-  - `gt_key`: Ground truth answer field name
+  - `answer_key`: Answer field name to be verified (default: "student_answer")
+  - `gt_key`: Ground truth answer field name (default: "correct_answer")
 
 **Key Features:**
 
@@ -355,14 +355,14 @@ result = judger_op.run(
 
 ```python
 ngram_filter = AnswerNgramFilter(
-                min_score=0.2,
-                max_score=0.8,
-                ngrams=3
+                min_score=0.1,
+                max_score=1.0,
+                ngrams=5
                 )
 result = ngram_filter.run(
           storage=self.storage.step(),
-          question_key="problem",
-          answer_key="solution"
+          question_key="instruction",
+          answer_key="generated_cot"
           )
 ```
 
@@ -390,8 +390,8 @@ result = ngram_filter.run(
 root_op = AnswerPipelineRoot()
 result = root_op.run(
           storage=self.storage.step(),
-          input_answer_key="raw_answer",
-          input_gt_key="ground_truth"
+          input_answer_key="output",
+          input_gt_key="golden_answer"
           )
 ```
 
@@ -419,12 +419,12 @@ result = root_op.run(
 
 ```python
 length_filter = AnswerTokenLengthFilter(
-                  max_answer_token_length=4096,
-                  tokenizer_dir="custom/tokenizer"
+                  max_answer_token_length=8192,
+                  tokenizer_dir="Qwen/Qwen2.5-0.5B-Instruct"
                   )
 result = length_filter.run(
           storage=self.storage.step(),
-          input_key="answer_text"
+          input_key="generated_cot"
           )
 ```
 
@@ -435,15 +435,11 @@ result = length_filter.run(
 **Input Parameters:**
 
 - `__init__()`
-  - `llm_serving`: Large language model service
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
   - `system_prompt`: System prompt
 - `run()` 
   - `storage`: Storage interface object (default: predefined value above)
-  - `input_key`: Input question field name
-
-**Output Parameters:**
-
-- Returns True if question quality is acceptable, False otherwise
+  - `input_key`: Input question field name (default: "math_problem")
 
 **Key Features:**
 
@@ -464,8 +460,8 @@ result = length_filter.run(
 
 ```python
 question_filter = QuestionFilter(
-    system_prompt="You are a math problem validator.",
-    llm_serving=api_llm_serving
+    llm_serving=api_llm_serving,
+    system_prompt="You are a math problem validator."
     )
 result = question_filter.run(
           storage=self.storage.step(),
