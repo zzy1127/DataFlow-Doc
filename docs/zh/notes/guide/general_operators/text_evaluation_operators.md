@@ -7,7 +7,7 @@ permalink: /zh/guide/f50mqhmb/
 
 
 # 文本数据评估指标
-## 概览
+## 文本质量评估
 打分器分为以下四种类型，每种打分器会给出一个或多个分数。
 
 <table class="tg">
@@ -44,9 +44,9 @@ permalink: /zh/guide/f50mqhmb/
 
 关于数据类型：【文本】表示接受单一字段字符串输入，可适用于预训练或微调数据。【指令】表示仅适用于微调数据多字段格式输入。
 
-## 打分器列表
+### 打分器列表
 
-### APIcaller
+#### APIcaller
 <table class="tg">
   <thead>
     <tr>
@@ -86,7 +86,7 @@ permalink: /zh/guide/f50mqhmb/
   </tbody>
 </table>
 
-### Diversity
+#### Diversity
 <table class="tg">
   <thead>
     <tr>
@@ -118,7 +118,7 @@ permalink: /zh/guide/f50mqhmb/
   </tbody>
 </table>
 
-### Models
+#### Models
 <table class="tg">
   <thead>
     <tr>
@@ -230,7 +230,7 @@ permalink: /zh/guide/f50mqhmb/
   </tbody>
 </table>
 
-### Statistics
+#### Statistics
 <table class="tg">
   <thead>
     <tr>
@@ -270,14 +270,14 @@ permalink: /zh/guide/f50mqhmb/
   </tbody>
 </table>
 
-## 质量评估体系
+### 质量评估体系
 
 为提供更精准的数据质量评估，我们根据现有的分类器构架了一套质量评估体系。具体到每个打分器的输出分数指标，包括以下6个维度。
 
-### 1. 文本结构 (Text Structure)
+#### 1. 文本结构 (Text Structure)
 - **LangkitScorer**: LangkitSentenceCountScore, LangkitCharacterCountScore, LangkitLetterCountScore, LangkitSyllableCountScore, LangkitPolysyllableCountScore, LangkitMonosyllableCountScore, LangkitLexiconCountScore, LangkitDifficultWordsScore
 
-### 2. 多样性与复杂性 (Diversity & Complexity)
+#### 2. 多样性与复杂性 (Diversity & Complexity)
 - **LexicalDiversityScorer**: LexicalDiversityMTLDScore, LexicalDiversityHD-DScore
 - **NgramScorer**: NgramScore
 - **InstagScorer**: InstagScore
@@ -287,7 +287,7 @@ permalink: /zh/guide/f50mqhmb/
 - **DeitaComplexityScorer:** DeitaComplexityScore
 
 
-### 3. 流畅性与可理解性 (Fluency & Understandability)
+#### 3. 流畅性与可理解性 (Fluency & Understandability)
 - **UniEvalScorer**: UniEvalFluencyScore, UniEvalUnderstandabilityScore, UniEvalNaturalnessScore
 - **LangkitScorer**: LangkitFleschReadingEaseScore, LangkitAutomatedReadabilityIndexScore, LangkitAggregateReadingLevelScore
 - **PerplexityScorer**: PerplexityScore
@@ -295,22 +295,22 @@ permalink: /zh/guide/f50mqhmb/
 - **SuperfilteringScorer**: SuperfilteringScore
 - **RMScorer**: RMScore
 
-### 4. 安全性 (Safety)
+#### 4. 安全性 (Safety)
 - **PerspectiveScorer**: PerspectiveScore
 - **PresidioScorer**: PresidioScore
 
-### 5. 教育价值 (Educational Value)
+#### 5. 教育价值 (Educational Value)
 - **TextbookScorer**: TextbookScore
 - **FineWebEduScorer**: FineWebEduScore
 - **QuratingScorer**: QuratingEducationalValueScore
 
-### 6. 内容准确性与有效性 (Content Accuracy & Effectiveness)
+#### 6. 内容准确性与有效性 (Content Accuracy & Effectiveness)
 - **QuratingScorer**: QuratingRequiredExpertiseScore, QuratingFactsAndTriviaScore
 - **DebertaV3Scorer**: DebertaV3Score
 - **AlpagasusScorer**: AlpagasusScore
 - **DeitaQualityScorer**: DeitaQualityScore
 
-## 基准值
+### 基准值
 
 为更好的提供数据质量参考，我们根据数据类型从目前认为较高质量的[Fineweb](https://huggingface.co/datasets/HuggingFaceFW/fineweb)和[alpaca-cleaned](https://huggingface.co/datasets/yahma/alpaca-cleaned)数据集中分别随机选取了5k条数据，并测试了部分打分器的基准值。
 
@@ -650,4 +650,195 @@ permalink: /zh/guide/f50mqhmb/
     <td class="tg-0pky">-4.9680</td>
   </tr>
 </tbody>
+</table>
+
+## 生成文本质量评估
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">类别</th>
+      <th class="tg-0pky">打分器数量</th>
+      <th class="tg-0pky">描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tg-0pky">基于词重叠</td>
+      <td class="tg-0pky">5</td>
+      <td class="tg-0pky">评估生成文本与参考文本的 n-gram 重叠程度</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">基于词向量</td>
+      <td class="tg-0pky">2</td>
+      <td class="tg-0pky">使用词向量计算生成文本与参考文本的相似性</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">基于语言模型</td>
+      <td class="tg-0pky">4</td>
+      <td class="tg-0pky">利用预训练语言模型评估文本的语义和流畅性</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">其他</td>
+      <td class="tg-0pky">2</td>
+      <td class="tg-0pky">-</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+### 基于词重叠
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">打分器名称</th>
+      <th class="tg-0pky">评估维度</th>
+      <th class="tg-0pky">简介</th>
+      <th class="tg-0pky">取值范围</th>
+      <th class="tg-0pky">值解释</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tg-0pky">BLEU Scorer</td>
+      <td class="tg-0pky">词汇匹配</td>
+      <td class="tg-0pky">基于 n-gram 匹配的精确度计算，将生成文本中的 n-gram 与参考文本中的 n-gram 进行匹配并计算精确度</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示生成文本与参考文本的匹配程度越高</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">ROUGE Scorer</td>
+      <td class="tg-0pky">词汇匹配</td>
+      <td class="tg-0pky">基于 n-gram 和最长公共子序列匹配，计算生成摘要与参考摘要之间的重叠程度</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示生成文本与参考文本的内容重叠越多</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">METEOR Scorer</td>
+      <td class="tg-0pky">词汇匹配</td>
+      <td class="tg-0pky">基于词形变化、同义词匹配以及语义相关性，综合计算生成文本与参考文本的对齐分数</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示生成文本与参考文本在语义上越一致</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">CIDEr Scorer</td>
+      <td class="tg-0pky">内容相关性</td>
+      <td class="tg-0pky">利用 TF-IDF 加权的 n-gram 统计，将生成文本的描述与参考描述进行相似性比较</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示生成文本与参考文本在内容上越一致</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">CHRF Scorer</td>
+      <td class="tg-0pky">词汇匹配</td>
+      <td class="tg-0pky">基于参考文本和评估文本的字符级n-gram匹配精确度和召回率计算chrF分数</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示语义相似性越强</td>
+    </tr>
+  </tbody>
+</table>
+
+### 基于词向量
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">打分器名称</th>
+      <th class="tg-0pky">评估维度</th>
+      <th class="tg-0pky">简介</th>
+      <th class="tg-0pky">取值范围</th>
+      <th class="tg-0pky">值解释</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tg-0pky">EmbeddingAverageScorer</td>
+      <td class="tg-0pky">语义相似性</td>
+      <td class="tg-0pky">通过对生成文本和参考文本的词向量取平均，计算余弦相似度</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示语义相似性越强</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">GreedyMatchingScorer</td>
+      <td class="tg-0pky">语义相关性</td>
+      <td class="tg-0pky">匹配生成文本和参考文本中语义最相似的词，计算相似度</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示语义相关性越强</td>
+    </tr>
+  </tbody>
+</table>
+
+### 基于语言模型
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">打分器名称</th>
+      <th class="tg-0pky">评估维度</th>
+      <th class="tg-0pky">简介</th>
+      <th class="tg-0pky">取值范围</th>
+      <th class="tg-0pky">值解释</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tg-0pky">WSD Scorer</td>
+      <td class="tg-0pky">语义相似性</td>
+      <td class="tg-0pky">使用 word2vec 模型计算生成文本与参考文本的词向量之间的 Word Mover's Distance (WMD)</td>
+      <td class="tg-0pky">[0, +∞)</td>
+      <td class="tg-0pky">值越小，表示生成文本与参考文本的语义距离越近</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">BertScorer</td>
+      <td class="tg-0pky">语义相似性</td>
+      <td class="tg-0pky">使用 Bert 模型计算生成文本与参考文本的词向量相似性，输出精确度、召回率和 F1 分数</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越大，表示生成文本与参考文本在语义上越相似</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">BARTScorer</td>
+      <td class="tg-0pky">流畅性与信息性</td>
+      <td class="tg-0pky">利用 BART 模型计算生成文本的质量，输出生成文本的可能性分数</td>
+      <td class="tg-0pky">[-∞, +∞]</td>
+      <td class="tg-0pky">值越高，表示生成文本的质量越高</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">BELURT Scorer</td>
+      <td class="tg-0pky">语义相似性</td>
+      <td class="tg-0pky">使用预训练语言模型（如 BERT）进行微调，以语义相似性任务为目标，计算生成文本与参考文本的相似性得分</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越高，表示生成文本与参考文本在语义上越一致</td>
+    </tr>
+  </tbody>
+</table>
+
+### 其他
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">打分器名称</th>
+      <th class="tg-0pky">评估维度</th>
+      <th class="tg-0pky">简介</th>
+      <th class="tg-0pky">取值范围</th>
+      <th class="tg-0pky">值解释</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tg-0pky">TER Scorer</td>
+      <td class="tg-0pky">编辑距离</td>
+      <td class="tg-0pky">计算生成文本转化为参考文本所需的最小编辑操作次数，包括插入、删除和替换</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越小，表示生成文本与参考文本越接近</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">HLEPOR Scorer</td>
+      <td class="tg-0pky">多维度匹配</td>
+      <td class="tg-0pky">综合考虑多个权重参数（如位置、比例等），计算生成文本与参考文本在多个维度的匹配程度</td>
+      <td class="tg-0pky">[0, 1]</td>
+      <td class="tg-0pky">值越高，表示生成文本与参考文本的匹配程度越高</td>
+    </tr>
+  </tbody>
 </table>

@@ -108,6 +108,7 @@ Processing operators are primarily responsible for processing, verifying, filter
 
 
 
+<<<<<<< HEAD
 ## Operator Interface Usage Instructions
 
 Specifically, for operators that specify storage paths or call models, we provide encapsulated **model interfaces** and **storage object interfaces**. You can predefine model API parameters for operators in the following way:
@@ -138,6 +139,8 @@ from dataflow.utils.storage import FileStorage
 The `api_llm_serving` and `self.storage` used in the following text are the interface objects defined here. Complete usage examples can be found in `test/test_reasoning.py`.
 
 For parameter passing, the constructor of operator objects mainly passes information related to operator configuration, which can be configured once and called multiple times; while the `X.run()` function passes `key` information related to IO. Details can be seen in the operator description examples below.
+=======
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 
 ## Detailed Operator Descriptions
 
@@ -167,12 +170,19 @@ For parameter passing, the constructor of operator objects mainly passes informa
 **Usage Example:**
 
 ```python
+<<<<<<< HEAD
 answer_gen = AnswerGenerator(llm_serving=api_llm_serving)
 result = answer_gen.run(
           storage=self.storage.step(),
           input_key="math_problem",
           output_key="solution"
           )
+=======
+answer_gen = AnswerGenerator()
+result = answer_gen.run(storage,
+                       input_key="math_problem",
+                       output_key="solution")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 2. PseudoAnswerGenerator
@@ -198,12 +208,19 @@ result = answer_gen.run(
 **Usage Example:**
 
 ```python
+<<<<<<< HEAD
 pseudo_gen = PseudoAnswerGenerator(llm_serving=api_llm_serving)
 result = pseudo_gen.run(
           storage=self.storage.step(),
           input_key="problem_text",
           output_key="best_answer"
           )
+=======
+pseudo_gen = PseudoAnswerGenerator()
+result = pseudo_gen.run(storage,
+                       input_key="problem_text",
+                       output_key="best_answer")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 3. QuestionGenerator
@@ -230,6 +247,7 @@ result = pseudo_gen.run(
 **Usage Example:**
 
 ```python
+<<<<<<< HEAD
 question_gen = QuestionGenerator(
                 num_prompts=1,  # from 1 to k
                 llm_serving=api_llm_serving
@@ -239,6 +257,13 @@ result = question_gen.run(
           input_key="base_problem",
           output_key="new_problems"
           )
+=======
+question_gen = QuestionGenerator()
+result = question_gen.run(storage,
+                         input_key="base_problem",
+                         output_key="new_problems",
+                         num_questions=5)
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 ### Processing Operators
@@ -267,10 +292,14 @@ result = question_gen.run(
 
 ```python
 filter_op = AnswerFormatterFilter()
+<<<<<<< HEAD
 result = filter_op.run(
           storage=self.storage.step(),
           input_key="answer_text"
           ) 
+=======
+result = filter_op.run(storage, input_key="answer_text")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 2. AnswerGroundTruthFilter
@@ -297,12 +326,20 @@ result = filter_op.run(
 **Usage Example:**
 
 ```python
+<<<<<<< HEAD
 filter_op = AnswerGroundTruthFilter(compare_method="math_verify")
 result = filter_op.run(
           storage=self.storage.step(), 
           test_answer_key="pred_answer",
           gt_answer_key="true_answer"
           )
+=======
+filter_op = AnswerGroundTruthFilter()
+result = filter_op.run(storage, 
+                      test_answer_key="pred_answer",
+                      gt_answer_key="true_answer",
+                      compare_method="math_verify")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 3. AnswerJudger_MathVerify
@@ -329,11 +366,17 @@ result = filter_op.run(
 
 ```python
 judger_op = AnswerJudger_MathVerify()
+<<<<<<< HEAD
 result = judger_op.run(
           storage=self.storage.step(),
           answer_key="student_answer",
           gt_key="correct_answer"
           )
+=======
+result = judger_op.run(storage,
+                      answer_key="student_answer",
+                      gt_key="correct_answer")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 4. AnswerNgramFilter
@@ -362,6 +405,7 @@ result = judger_op.run(
 **Usage Example:**
 
 ```python
+<<<<<<< HEAD
 ngram_filter = AnswerNgramFilter(
                 min_score=0.2,
                 max_score=0.8,
@@ -372,6 +416,15 @@ result = ngram_filter.run(
           question_key="problem",
           answer_key="solution"
           )
+=======
+ngram_filter = AnswerNgramFilter()
+result = ngram_filter.run(storage,
+                         question_key="problem",
+                         answer_key="solution",
+                         min_score=0.2,
+                         max_score=0.8,
+                         ngrams=3)
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 5. AnswerPipelineRoot
@@ -398,11 +451,17 @@ result = ngram_filter.run(
 
 ```python
 root_op = AnswerPipelineRoot()
+<<<<<<< HEAD
 result = root_op.run(
           storage=self.storage.step(),
           input_answer_key="raw_answer",
           input_gt_key="ground_truth"
           )
+=======
+result = root_op.run(storage,
+                    input_answer_key="raw_answer",
+                    input_gt_key="ground_truth")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 6. AnswerTokenLengthFilter
@@ -429,6 +488,7 @@ result = root_op.run(
 **Usage Example:**
 
 ```python
+<<<<<<< HEAD
 length_filter = AnswerTokenLengthFilter(
                   max_answer_token_length=4096,
                   tokenizer_dir="custom/tokenizer"
@@ -437,6 +497,13 @@ result = length_filter.run(
           storage=self.storage.step(),
           input_key="answer_text"
           )
+=======
+length_filter = AnswerTokenLengthFilter()
+result = length_filter.run(storage,
+                          input_key="answer_text",
+                          max_answer_token_length=4096,
+                          tokenizer_dir="custom/tokenizer")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
 #### 7. QuestionFilter
@@ -473,11 +540,17 @@ result = length_filter.run(
 ```python
 question_filter = QuestionFilter(
     system_prompt="You are a math problem validator.",
+<<<<<<< HEAD
     llm_serving=api_llm_serving
     )
 result = question_filter.run(
           storage=self.storage.step(),
           input_key="math_problem"
           )
+=======
+    llm_serving=llm_service
+)
+result = question_filter.run(storage, input_key="math_problem")
+>>>>>>> 70136e1db35439fcb2bdb079cf638ca480d41865
 ```
 
