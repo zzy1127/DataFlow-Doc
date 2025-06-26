@@ -106,6 +106,35 @@ permalink: /zh/guide/Reasoning_operators/
 </table>
 
 
+## 算子接口调用说明
+
+特别地，对于指定存储路径等或是调用模型的算子，我们提供了封装后的**模型接口**以及**存储对象接口**，可以通过以下方式为算子进行模型API参数预定义：
+
+```python
+from dataflow.llmserving import APILLMServing_request
+
+api_llm_serving = APILLMServing_request(
+                api_url="your_api_url",
+                model_name="model_name",
+                max_workers=5
+        )
+```
+可以通过以下方式为算子进行存储参数预定义：
+
+```python
+from dataflow.utils.storage import FileStorage
+
+ self.storage = FileStorage(
+            first_entry_file_name="your_file_path",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl", # jsonl, json, ...
+        )
+```
+
+后文使用的`api_llm_serving`以及`self.storage`即为此处已定义的接口对象，完整调用示例可参考`test/test_reasoning.py`。
+
+对于传参，算子对象的构造函数主要传递与算子配置相关的信息，配置后可以一配置多调用；而`X.run()`函数传递与IO相关的`key`信息，详细可见后文算子说明示例。
 
 ## 详细算子说明
 
@@ -135,10 +164,12 @@ permalink: /zh/guide/Reasoning_operators/
 **使用示例：**
 
 ```python
-answer_gen = AnswerGenerator()
-result = answer_gen.run(storage,
-                       input_key="math_problem",
-                       output_key="solution")
+answer_gen = AnswerGenerator(llm_serving=api_llm_serving)
+result = answer_gen.run(
+          storage=self.storage.step(),
+          input_key="math_problem",
+          output_key="solution"
+          )
 ```
 
 #### 2. PseudoAnswerGenerator
@@ -164,10 +195,12 @@ result = answer_gen.run(storage,
 **使用示例：**
 
 ```python
-pseudo_gen = PseudoAnswerGenerator()
-result = pseudo_gen.run(storage,
-                       input_key="problem_text",
-                       output_key="best_answer")
+pseudo_gen = PseudoAnswerGenerator(llm_serving=api_llm_serving)
+result = pseudo_gen.run(
+          storage=self.storage.step(),
+          input_key="problem_text",
+          output_key="best_answer"
+          )
 ```
 
 #### 3. QuestionGenerator
@@ -194,11 +227,15 @@ result = pseudo_gen.run(storage,
 **使用示例：**
 
 ```python
-question_gen = QuestionGenerator()
-result = question_gen.run(storage,
-                         input_key="base_problem",
-                         output_key="new_problems",
-                         num_questions=5)
+question_gen = QuestionGenerator(
+                num_prompts=1,  # from 1 to k
+                llm_serving=api_llm_serving
+                )
+result = question_gen.run(
+          storage=self.storage.step(),
+          input_key="base_problem",
+          output_key="new_problems"
+          )
 ```
 
 ### 处理算子
@@ -227,7 +264,10 @@ result = question_gen.run(storage,
 
 ```python
 filter_op = AnswerFormatterFilter()
-result = filter_op.run(storage, input_key="answer_text")
+result = filter_op.run(
+          storage=self.storage.step(),
+          input_key="answer_text"
+          ) 
 ```
 
 #### 2. AnswerGroundTruthFilter
@@ -254,11 +294,12 @@ result = filter_op.run(storage, input_key="answer_text")
 **使用示例：**
 
 ```python
-filter_op = AnswerGroundTruthFilter()
-result = filter_op.run(storage, 
-                      test_answer_key="pred_answer",
-                      gt_answer_key="true_answer",
-                      compare_method="math_verify")
+filter_op = AnswerGroundTruthFilter(compare_method="math_verify")
+result = filter_op.run(
+          storage=self.storage.step(), 
+          test_answer_key="pred_answer",
+          gt_answer_key="true_answer"
+          )
 ```
 
 #### 3. AnswerJudger_MathVerify
@@ -285,9 +326,11 @@ result = filter_op.run(storage,
 
 ```python
 judger_op = AnswerJudger_MathVerify()
-result = judger_op.run(storage,
-                      answer_key="student_answer",
-                      gt_key="correct_answer")
+result = judger_op.run(
+          storage=self.storage.step(),
+          answer_key="student_answer",
+          gt_key="correct_answer"
+          )
 ```
 
 #### 4. AnswerNgramFilter
@@ -316,13 +359,16 @@ result = judger_op.run(storage,
 **使用示例：**
 
 ```python
-ngram_filter = AnswerNgramFilter()
-result = ngram_filter.run(storage,
-                         question_key="problem",
-                         answer_key="solution",
-                         min_score=0.2,
-                         max_score=0.8,
-                         ngrams=3)
+ngram_filter = AnswerNgramFilter(
+                min_score=0.2,
+                max_score=0.8,
+                ngrams=3
+                )
+result = ngram_filter.run(
+          storage=self.storage.step(),
+          question_key="problem",
+          answer_key="solution"
+          )
 ```
 
 #### 5. AnswerPipelineRoot
@@ -349,9 +395,11 @@ result = ngram_filter.run(storage,
 
 ```python
 root_op = AnswerPipelineRoot()
-result = root_op.run(storage,
-                    input_answer_key="raw_answer",
-                    input_gt_key="ground_truth")
+result = root_op.run(
+          storage=self.storage.step(),
+          input_answer_key="raw_answer",
+          input_gt_key="ground_truth"
+          )
 ```
 
 #### 6. AnswerTokenLengthFilter
@@ -378,11 +426,14 @@ result = root_op.run(storage,
 **使用示例：**
 
 ```python
-length_filter = AnswerTokenLengthFilter()
-result = length_filter.run(storage,
-                          input_key="answer_text",
-                          max_answer_token_length=4096,
-                          tokenizer_dir="custom/tokenizer")
+length_filter = AnswerTokenLengthFilter(
+                  max_answer_token_length=4096,
+                  tokenizer_dir="custom/tokenizer"
+                  )
+result = length_filter.run(
+          storage=self.storage.step(),
+          input_key="answer_text"
+          )
 ```
 
 #### 7. QuestionFilter
@@ -419,9 +470,12 @@ result = length_filter.run(storage,
 ```python
 question_filter = QuestionFilter(
     system_prompt="You are a math problem validator.",
-    llm_serving=llm_service
-)
-result = question_filter.run(storage, input_key="math_problem")
+    llm_serving=api_llm_serving
+    )
+result = question_filter.run(
+          storage=self.storage.step(),
+          input_key="math_problem"
+          )
 ```
 
 
