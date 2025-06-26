@@ -109,6 +109,9 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
         - db_id_3.sqlite
     ```
 
+- **数据库模式筛选器**：对数据库的模式进行筛选
+  - **说明**：请到下面的链接 [Schema Filter](https://github.com/RUCKBReasoning/text2sql-schema-filter) 下载模型，解压后，将路径配置为参数
+
 ### 3.2 输入数据
 
 - **支持格式**：`json`、`jsonl`  
@@ -174,7 +177,9 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/SQLFilter.py \
-    --yaml_path "Text2SqlPipeline/yaml/SQLFilter.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/SQLFilter.yaml" \
+    --step_name SQLFilter \
+    --step_type generator
   ```
 
 #### 2. **SQL难度分类器 (SQLDifficultyClassifier)**  
@@ -182,15 +187,20 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/SQLDifficultyClassifier.py \
-    --yaml_path "Text2SqlPipeline/yaml/SQLDifficultyClassifier.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/SQLDifficultyClassifier.yaml" \
+    --step_name SQLDifficultyClassifier \
+    --step_type generator
   ```
 
 #### 3. **模式链接器 (SchemaLinking)**  
-- **功能**：采用 [CodeS](https://arxiv.org/abs/2402.16347) 的方法，从全量数据库Schema中提取使用的关联表和列  
+- **功能**：采用 [CodeS](https://arxiv.org/abs/2402.16347) 的方法，从全量数据库Schema中提取使用的关联表和列
+- **操作**：在执行本算子前，需要下载模型 [Schema Filter](https://github.com/RUCKBReasoning/text2sql-schema-filter)，并将路径放在yaml中   
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/SchemaLinking.py \
-    --yaml_path "Text2SqlPipeline/yaml/SchemaLinking_eval.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/SchemaLinking_eval.yaml" \
+    --step_name SchemaLinking_eval \
+    --step_type generator
   ```
 
 #### 4. **Schema提取器 (DatabaseSchemaExtractor)**  
@@ -198,7 +208,9 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/DatabaseSchemaExtractor.py \
-    --yaml_path "Text2SqlPipeline/yaml/DataSchemaExtractor.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/DataSchemaExtractor.yaml" \
+    --step_name DataSchemaExtractor \
+    --step_type generator
   ```
 
 #### 5. **知识生成器 (ExtraKnowledgeGeneration)**  
@@ -208,7 +220,9 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/ExtraKnowledgeGenerator.py \
-    --yaml_path "Text2SqlPipeline/yaml/ExtraKnowledgeGenerator.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/ExtraKnowledgeGenerator.yaml" \
+    --step_name ExtraKnowledgeGenerator \
+    --step_type generator
   ```
 
 #### 6. **问题优化器 (QuestionRefiner)**  
@@ -218,7 +232,9 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/QuestionRefiner.py \
-    --yaml_path "Text2SqlPipeline/yaml/QuestionRefiner.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/QuestionRefiner.yaml" \
+    --step_name QuestionRefiner \
+    --step_type generator
   ```
 
 #### 7. **提示词生成器 (PromptGeneration)**  
@@ -229,7 +245,9 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/PromptGenerator.py \
-    --yaml_path "Text2SqlPipeline/yaml/PromptGenerator.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/PromptGenerator.yaml" \
+    --step_name PromptGenerator \
+    --step_type generator
   ```
 
 #### 8. **执行难度分类器 (Text2SQLDifficultyClassifier)**  
@@ -239,7 +257,9 @@ bash Text2SqlPipeline/text2sql_pipeline.sh
 - **命令**：
   ```bash
   python Text2SqlPipeline/code/Text2SQLDifficultyClassifier.py \
-    --yaml_path "Text2SqlPipeline/yaml/Text2SQLDifficultyClassifier.yaml"
+    --yaml_path "Text2SqlPipeline/yaml/Text2SQLDifficultyClassifier.yaml" \
+    --step_name Text2SQLDifficultyClassifier \
+    --step_type generator
   ```
 
 
