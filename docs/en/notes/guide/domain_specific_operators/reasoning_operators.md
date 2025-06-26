@@ -148,11 +148,6 @@ For parameter passing, the constructor of operator objects mainly passes informa
 **Function Description:** This operator is specifically designed to generate standard answers for mathematical problems through large language model calls for step-by-step reasoning and precise computation.
 
 **Input Parameters:**
-- `__init__()`
-  - `model_name`: Name of the large language model to use
-- `run()`
-  - `input_key`: Input question field name (default: "question")
-  - `output_key`: Output answer field name (default: "generated_answer")
 
 - `__init__()`
   - `llm_serving`: Large language model interface object to use (default: predefined value above)
