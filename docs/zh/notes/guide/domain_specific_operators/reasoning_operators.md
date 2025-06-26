@@ -146,13 +146,12 @@ from dataflow.utils.storage import FileStorage
 
 **输入参数：**
 
-- `input_key`：输入问题字段名（默认："question"）
-- `output_key`：输出答案字段名（默认："generated_answer"）
-- `model_name`：使用的大语言模型名称
-
-**输出参数：**
-
-- `generated_answer`：生成的标准答案
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入问题字段名（默认："question"）
+  - `output_key`：输出答案字段名（默认："generated_answer"）
 
 **主要特性：**
 
@@ -177,13 +176,12 @@ result = answer_gen.run(
 **功能描述：** 该算子通过生成多个候选答案并使用统计方法选择最优解，实现高质量的伪答案生成。
 
 **输入参数：**
-
-- `input_key`：输入问题字段名（默认："question"）
-- `output_key`：输出答案字段名（默认："pseudo_answer"）
-
-**输出参数：**
-
-- `pseudo_answer`：选择的最优答案
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入问题字段名（默认："question"）
+  - `output_key`：输出答案字段名（默认："pseudo_answer"）
 
 **主要特性：**
 
@@ -209,13 +207,13 @@ result = pseudo_gen.run(
 
 **输入参数：**
 
-- `input_key`：输入原始问题字段名（默认："source_question"）
-- `output_key`：输出新问题字段名（默认："generated_question"）
-- `num_questions`：每个问题生成新问题数量（默认：3）
-
-**输出参数：**
-
-- `generated_questions`：生成的新问题列表
+- `__init__()`
+  - `num_prompts`：每个问题生成新问题数量（默认：3）
+  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入原始问题字段名（默认："source_question"）
+  - `output_key`：输出新问题字段名（默认："generated_question"）
 
 **主要特性：**
 
@@ -246,12 +244,9 @@ result = question_gen.run(
 
 **输入参数：**
 
-- `input_key`：输入答案字段名（默认："generated_cot"）
-- `result_key`：结果字段名
-
-**输出参数：**
-
-- 格式检查通过返回1，否则返回0
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入答案字段名（默认："generated_cot"）
 
 **主要特性：**
 
@@ -276,13 +271,12 @@ result = filter_op.run(
 
 **输入参数：**
 
-- `test_answer_key`：预测答案字段名（默认："generated_cot"）
-- `gt_answer_key`：标准答案字段名（默认："golden_answer"）
-- `compare_method`：比较方法（"exact"/"math_verify"）
-
-**输出参数：**
-
-- 匹配成功返回1，否则返回0
+- `__init__()`
+  - `compare_method`：比较方法（"exact"/"math_verify"）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `test_answer_key`：预测答案字段名（默认："generated_cot"）
+  - `gt_answer_key`：标准答案字段名（默认："golden_answer"）
 
 **主要特性：**
 
@@ -308,12 +302,10 @@ result = filter_op.run(
 
 **输入参数：**
 
-- `answer_key`：待验证答案字段名
-- `gt_key`：标准答案字段名
-
-**输出参数：**
-
-- `result_key`：验证结果字段（True/False）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `answer_key`：待验证答案字段名
+  - `gt_key`：标准答案字段名
 
 **主要特性：**
 
@@ -339,15 +331,14 @@ result = judger_op.run(
 
 **输入参数：**
 
-- `question_key`：问题字段名（默认："instruction"）
-- `answer_key`：答案字段名（默认："generated_cot"）
-- `min_score`：最小可接受分数（默认：0.1）
-- `max_score`：最大可接受分数（默认：1.0）
-- `ngrams`：n-gram大小（默认：5）
-
-**输出参数：**
-
-- 重复率分数在范围内返回1，否则返回0
+- `__init__()`
+  - `min_score`：最小可接受分数（默认：0.1）
+  - `max_score`：最大可接受分数（默认：1.0）
+  - `ngrams`：n-gram大小（默认：5）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `question_key`：问题字段名（默认："instruction"）
+  - `answer_key`：答案字段名（默认："generated_cot"）
 
 **主要特性：**
 
@@ -376,13 +367,10 @@ result = ngram_filter.run(
 **功能描述：** 答案处理流程的根节点算子，负责智能分发数据到不同的处理分支。
 
 **输入参数：**
-
-- `input_answer_key`：输入答案字段名（默认："output"）
-- `input_gt_key`：输入标准答案字段名（默认："golden_answer"）
-
-**输出参数：**
-
-- 多个分支的输出文件路径
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_answer_key`：输入答案字段名（默认："output"）
+  - `input_gt_key`：输入标准答案字段名（默认："golden_answer"）
 
 **主要特性：**
 
@@ -408,13 +396,12 @@ result = root_op.run(
 
 **输入参数：**
 
-- `input_key`：输入字段名（默认："generated_cot"）
-- `max_answer_token_length`：最大token数（默认：8192）
-- `tokenizer_dir`：分词器路径（默认："Qwen/Qwen2.5-0.5B-Instruct"）
-
-**输出参数：**
-
-- 长度符合要求返回1，否则返回0
+- `__init__()`
+  - `max_answer_token_length`：最大token数（默认：8192）
+  - `tokenizer_dir`：分词器路径（默认："Qwen/Qwen2.5-0.5B-Instruct"）
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入字段名（默认："generated_cot"）
 
 **主要特性：**
 
@@ -442,9 +429,12 @@ result = length_filter.run(
 
 **输入参数：**
 
-- `input_key`：输入问题字段名
-- `system_prompt`：系统提示词
-- `llm_serving`：大语言模型服务
+- `__init__()`
+  - `llm_serving`：大语言模型服务
+  - `system_prompt`：系统提示词
+- `run()` 
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入问题字段名
 
 **输出参数：**
 
