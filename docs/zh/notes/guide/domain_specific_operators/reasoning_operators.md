@@ -10,6 +10,8 @@ permalink: /zh/guide/Reasoning_operators/
 
 强推理算子是专门用于数学推理和问题求解的算子集合，主要分为两大类：**数据生成算子（Generator）** 和 **处理算子（Processor）**。这些算子能够处理复杂的数学推理任务，包括答案生成、验证、过滤和格式化等功能，同时支持多种数学表示格式。
 
+开源的算子种类是十分受限的，为了获得更好的数据处理质量，填补开源缺失的数据合成与处理方法，我们精心设计并**自研**了新的算子集，这些算子将会以🌟符号标记。
+
 ## 数据生成算子
 
 数据生成器主要负责生成各类推理相关的数据，包括答案生成、问题生成等。
@@ -37,7 +39,7 @@ permalink: /zh/guide/Reasoning_operators/
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuestionGenerator</td>
+      <td class="tg-0pky">QuestionGenerator🌟</td>
       <td class="tg-0pky">问题生成</td>
       <td class="tg-0pky">该算子用于基于现有问题生成新问题，支持多种生成策略以保证多样性。</td>
       <td class="tg-0pky">-</td>
@@ -56,7 +58,7 @@ permalink: /zh/guide/Reasoning_operators/
       <th class="tg-0pky">名称</th>
       <th class="tg-0pky">适用类型</th>
       <th class="tg-0pky">简介</th>
-      <th class="tg-0pky">官方仓库或论文等</th>
+      <th class="tg-0pky">官方仓库或论文</th>
     </tr>
   </thead>
   <tbody>
@@ -97,7 +99,7 @@ permalink: /zh/guide/Reasoning_operators/
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuestionFilter</td>
+      <td class="tg-0pky">QuestionFilter🌟</td>
       <td class="tg-0pky">问题验证</td>
       <td class="tg-0pky">该算子用于对数学问题进行正确性检查，包括格式规范、语义合理性、条件一致性等。</td>
       <td class="tg-0pky"><a href="https://github.com/scuuy/MathQ-Verify">Code</a></td>
@@ -202,7 +204,7 @@ result = pseudo_gen.run(
           )
 ```
 
-#### 3. QuestionGenerator
+#### 3. QuestionGenerator🌟
 
 **功能描述：** 该算子能够基于现有问题生成新的相关问题，支持多种生成策略和难度控制。
 
@@ -424,7 +426,7 @@ result = length_filter.run(
           )
 ```
 
-#### 7. QuestionFilter
+#### 7. QuestionFilter🌟
 
 **功能描述：** 该算子对数学问题进行全面的质量检查，确保问题的正确性和可解性。
 
