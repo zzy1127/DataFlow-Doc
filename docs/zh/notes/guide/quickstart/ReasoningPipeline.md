@@ -1,281 +1,200 @@
 ---
+
 title: 强推理数据合成流水线
-icon: mdi:brain
-createTime: 2025/06/16 13:08:42  
-permalink: /zh/guide/reasoningpipeline/  
+icon: mdi\:brain
+createTime: 2025/06/16 13:08:42
+permalink: /zh/guide/reasoningpipeline/
+
 ---
 
 # 强推理数据合成流水线
 
 ## 1. 概述
 
-**强推理数据合成流水线**旨在：  
-- 清洗并扩充现有的数学问答数据  
-- 为每个样本生成包含长链推理过程（chain‐of‐thought）的高质量解答  
+**强推理数据合成流水线**的核心目标是通过数学问答数据的合成与处理，扩展现有数据集的规模和多样性，从而为模型调优提供更加丰富的训练数据。流水线包含多个处理步骤（如问题过滤、问题合成、答案生成与验证等），将原始数学问题数据转化为高质量的问答数据，进一步对生成的数据进行分类、难度评分和去重，最终形成适用于各种推理任务的高质量数据集。
 
-支持多种输入场景：  
-1. 只有问题  
-2. 问题 + 标准答案（golden answer）  
-3. 问题 + 解答（solution）  
-4. 上述场景的任意混合
+我们支持以下应用场景：
 
-该流水线分为**问题处理**、**分支调度**和**答案处理**三个阶段，通过配置化的 `yaml` 和统一的 `pipeline_step.py` 驱动，能一键完成所有步骤。
+* 强推理指令微调数据的高质量合成
+* 大规模数学预训练数据的生成
 
----
+流水线的主要流程包括：
 
-## 2. 一键运行
+1. **问题处理**：过滤非数学问题、合成新问题、验证问题正确性、进行难度评分和类别分类。
+2. **答案生成与处理**：根据问题的标准答案或模型生成的答案进行处理，包括格式过滤、长度过滤和正确性验证等。
+3. **数据去重**：对生成的问答数据进行去重，确保数据集的质量。
 
-如果所有样本都包含标准答案：  
-```bash
-bash ReasoningPipeline/pipeline_GT.sh
+## 2. 数据流与流水线逻辑
+
+### 1. **输入数据**
+
+流水线的输入数据主要包括以下字段：
+
+* **instruction**：问题文本，通常为数学问题或任务描述。
+* **golden\_answer**：标准答案（如果存在），适用于包含标准答案的数据集。
+* **solution**：已知的解答或推理过程（如果存在）。
+
+这些输入数据可以存储在指定的文件（如`json`、`jsonl`）中，并通过`FileStorage`对象进行管理和读取。示例中会载入默认的数据路径，实际使用场景下可以根据需求修改路径以载入自定义的数据和缓存路径：
+
+```python
+self.storage = FileStorage(
+    first_entry_file_name="../dataflow/example/ReasoningPipeline/pipeline_math_short.json",
+    cache_path="./cache_local",
+    file_name_prefix="dataflow_cache_step",
+    cache_type="jsonl",
+)
 ```
 
-如果所有样本都不包含标准答案：  
-```bash
-bash ReasoningPipeline/pipeline_withoutGT.sh
-```
+### 2. **问题处理（Question Handling）**
 
-混合情景：
-```bash
-bash ReasoningPipeline/pipeline_full.sh
-```
+#### 2.1 **问题过滤（QuestionFilter）**
 
-我们也同时支持一键合成大规模的预训练数据：
-```bash
-bash ReasoningPipeline/pipeline_Pretrain.sh
-```
+流水线的第一步是通过**问题过滤器**（`QuestionFilter`）剔除无效的数学问题。此步骤至关重要，它确保进入后续步骤的问题为有效的数学问题，避免无关或错误的问题影响后续数据合成。
 
-> 这四个脚本会调用对应的 YAML 配置，依次执行各算子，并在指定的目录下生成各阶段中间文件。
+**功能：**
 
----
+* 去除非数学类问题（如自然语言问题、非数学问题等）。
+* 保证模型只处理有效的数学问题。
 
-## 3. 数据格式
+**输入**：原始数学问题
+**输出**：经过清洗的有效数学问题
 
-### 3.1 输入数据
+#### 2.2 **问题合成（QuestionGenerator）**
 
-- **支持格式**：`json`、`jsonl`  
-- **必需字段**：  
-  - `instruction`：问题文本  
-  - `golden_answer`：标准答案  
-  - `solution`：已有解答或推理过程  
-- **可选字段**：其它字段会被忽略，但建议只保留必要字段，避免与后续处理冲突。  
-- **示例**（`json`）：
-  ```json
-  {
-    "instruction": "…设计的超曲线…(a) 求 d；(b) 写出双曲线方程。",
-    "golden_answer": "8",
-    "source": "Bigmath_synth"
-  }
-  ```
-- **演示数据集**：  
-  `demos/text_process/reasoners/pipeline_math.json`  
-  包含问题 + 标准答案，适用于快速测试和演示。
+在问题通过过滤后，**问题合成**（`QuestionGenerator`）步骤基于已有的问题生成新的数学问题，以增强数据集的多样性和规模。
 
-### 3.2 输出数据
+**功能：**
 
-- **格式**：`jsonl`（每个步骤都会生成一个文件）  
-- **字段说明**：
-  - `instruction`：问题  
-  - `generated_cot`：模型生成的长链推理过程  
-  - `output`：模型生成的解答  
-  - `golden_answer`：标准答案  
-  - `Synth_or_Input`：`input`（原始数据）或 `synth`（流水线合成）  
-  - `Difficulty`：难度分（0–10）  
-  - `primary_category`：主要类别  
-  - `secondary_category`：次要类别  
-- **示例**：
-  ```json
-  {
-    "instruction": "给定…求 δ？",
-    "generated_cot": "…推导过程…",
-    "output": "δ = 30°",
-    "golden_answer": "30",
-    "Synth_or_Input": "input",
-    "Difficulty": 4.0,
-    "primary_category": "Geometry and Topology",
-    "secondary_category": "Euclidean Geometry"
-  }
-  ```
+* 基于现有问题生成新的变种或类似问题。
+* 增强数据集，提升模型的泛化能力。
 
----
+**输入**：经过过滤的有效问题
+**输出**：合成的新问题
 
-## 4. 流程与算子
+#### 2.3 **问题过滤（QuestionFilter）**
 
-整个流水线由若干算子组成，每个算子对应一个 `yaml` 配置，通过 `pipeline_step.py` 驱动执行。
+生成的新问题会再次经过**问题过滤**步骤，确保其有效性。这一步确保生成的问题符合数学推理标准，过滤掉不符合条件的合成问题。
 
-### 4.1 问题处理算子
+**功能：**
 
-1. **数学问题过滤器 (MathProblemFilter)**  
-   - 功能：剔除所有非数学类问题  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/MathProblemFilter.yaml \
-       --step_name MathProblemFilter \
-       --step_type process
-     ```
+* 再次验证问题的有效性。
+* 过滤掉不合格的合成问题。
 
-2. **数学问题合成 (QuestionGenerator)**  
-   - 功能：根据现有问题提示大模型生成新问题  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/QuestionGenerator.yaml \
-       --step_name QuestionGenerator \
-       --step_type generator
-     ```
+**输入**：合成的新问题
+**输出**：有效的合成问题
 
-3. **问题正确性过滤 (QuestionVerify)**  
-   - 功能：基于 [MathQ-Verify](https://arxiv.org/abs/2505.13903) 提供的方法，过滤掉包含错误描述或条件缺失的问题  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/QuestionVerify.yaml \
-       --step_name QuestionVerify \
-       --step_type process
-     ```
+#### 2.4 **问题难度分类（QuestionDifficultyClassifier）**
 
-4. **难度打分 (QuestionDifficultyClassifier)**  
-   - 功能：参照 [Omni-Math](https://arxiv.org/abs/2410.07985) 提示词，对问题进行难度分类并打分  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/QuestionDifficultyClassifier.yaml \
-       --step_name QuestionDifficultyClassifier \
-       --step_type generator
-     ```
+**问题难度分类**（`QuestionDifficultyClassifier`）对合成后的问题进行难度评分。此步骤将问题按难度等级进行分类，有助于后续数据分析和模型调优。
 
-5. **类别分类 (QuestionCategoryClassifier)**  
-   - 功能：参考 [MSC-2020](https://msc2020.org/) 分类，将问题聚类为七大类与若干子类  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/QuestionCategoryClassifier.yaml \
-       --step_name QuestionCategoryClassifier \
-       --step_type generator
-     ```
+**功能：**
 
-### 4.2 流水线分支器 (AnswerPipelineRoot)
+* 为每个问题分配难度评分（0-10分）。
+* 提供问题的难度标签，以便后续分析。
 
-- 功能：根据是否包含标准答案，将数据分为两条支线  
-- 输出：  
-  - `*_withGT.jsonl`（含标准答案）  
-  - `*_withoutGT.jsonl`（不含标准答案）  
-- 命令：
+**输入**：有效的合成问题
+**输出**：每个问题的难度评分
+
+#### 2.5 **问题类别分类（QuestionCategoryClassifier）**
+
+**问题类别分类**（`QuestionCategoryClassifier`）将问题按数学类别（如代数、几何、概率等）进行分类。此步骤有助于后续分析问题的分布和多样性。
+
+**功能：**
+
+* 将问题分为不同的数学类别（例如几何、组合数学等）。
+* 便于后续的分析和分组处理。
+
+**输入**：有效的合成问题
+**输出**：问题的类别标签
+
+### 3. **答案处理（Answer Handling）**
+
+#### 3.1 **答案分支（AnswerPipelineRoot）**
+
+在问题处理后，流水线进入答案生成部分。如果数据中包含标准答案（`golden_answer`），数据流会进入一个处理分支；否则，将进入伪答案生成路径。
+
+**功能：**
+
+* 决定是否使用标准答案或生成伪答案。
+* 如果有标准答案，则生成与其相关的推理过程；如果没有，则通过模型生成伪答案。
+
+**输入**：问题的输出（以及标准答案，如果有）
+**输出**：标准答案分支或伪答案分支
+
+#### 3.2 **答案生成（AnswerGenerator）**
+
+对于包含标准答案的情况，**答案生成**（`AnswerGenerator`）步骤会生成带有推理过程的答案，提供长链推理的过程，以增加答案的可靠性和透明度。对于不包含标准答案的情况，此步骤为**伪答案生成**（PseudoAnswerGenerator），通过要求模型多次回答同一个问题，投票选出频率最高的答案，作为**伪答案**。
+
+**功能：**
+
+* 根据问题和标准答案生成详细的推理过程。
+* 确保答案透明且可解释。
+
+**输入**：问题文本（以及标准答案）
+**输出**：含标准答案：模型生成的推理过程（长链推理）；不含标准答案：伪答案和长链推理过程。
+
+#### 3.3 **答案格式过滤（AnswerFormatterFilter）**
+
+生成的答案会经过**答案格式过滤**（`AnswerFormatterFilter`）步骤，确保其符合预设格式要求。这一步骤保证了生成的答案结构化且有效，避免不符合格式的答案影响后续处理。
+
+**功能：**
+
+* 确保答案格式符合要求。
+
+**输入**：生成的答案（长链推理）
+**输出**：符合格式要求的答案
+
+#### 3.4 **答案长度过滤（AnswerTokenLengthFilter）**
+
+接下来，**答案长度过滤**（`AnswerTokenLengthFilter`）步骤会根据预设的最大答案长度进行过滤，剔除过长或过短的答案，确保生成的答案长度适当。
+
+**功能：**
+
+* 过滤掉过长或过短的答案，确保答案长度在合理范围内。
+
+**输入**：生成的答案
+**输出**：符合长度要求的答案
+
+#### 3.5 **答案验证与去重（AnswerGroundTruthFilter, AnswerNgramFilter）**
+
+最后，生成的答案会经过**答案验证**（`AnswerGroundTruthFilter`）和**答案去重**（`AnswerNgramFilter`）步骤：
+
+* **答案验证**：通过与标准答案进行对比，验证答案的准确性。
+* **答案去重**：使用N-gram算法去除重复的答案，确保每个问题的答案唯一且不重复。
+
+**功能：**
+
+* 验证答案的准确性。
+* 去重，确保答案的唯一性。
+
+**输入**：生成的答案
+**输出**：经过验证和去重的答案
+
+### 4. **输出数据**
+
+最终，流水线生成的输出数据将包含以下内容：
+
+* **instruction**：问题文本
+* **generated\_cot**：模型生成的长链推理过程
+* **output**：模型生成的最终答案
+* **golden\_answer**：标准答案（如果有）
+* **Synth\_or\_Input**：标记数据来源，`input`表示原始数据，`synth`表示流水线合成的数据
+* **Difficulty**：问题的难度评分（0–10）
+* **primary\_category**：问题的主要类别
+* **secondary\_category**：问题的次要类别
+
+## 3. 运行方式
+
+该流水线通过简单的Python命令执行不同的配置，满足不同的数据需求：
+
+* **强推理指令微调数据合成**：
+
   ```bash
-  python pipeline_step.py \
-    --yaml_path ReasoningPipeline/yaml/AnswerPipelineRoot.yaml \
-    --step_name AnswerPipelineRoot \
-    --step_type generator
+  python test/test_reasoning.py
   ```
 
-### 4.3 标准答案处理算子
+* **大规模预训练数据合成**：
 
-本算子仅在“含标准答案”支线上执行。
-
-1. **答案生成器 (AnswerGenerator)**  
-   - 功能：提示推理模型生成带长链推理的解答  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/AnswerGenerator.yaml \
-       --step_name AnswerGenerator \
-       --step_type generator
-     ```
-
-2. **答案格式过滤 (AnswerFormatFilter)**  
-   - 功能：过滤掉不符合预设格式的答案  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/AnswerFormatFilter.yaml \
-       --step_name AnswerFormatFilter \
-       --step_type process
-     ```
-
-3. **答案长度过滤 (AnswerLengthFilter)**  
-   - 功能：剔除过长或过短的答案  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/AnswerLengthFilter.yaml \
-       --step_name AnswerLengthFilter \
-       --step_type process
-     ```
-
-4. **答案正确性过滤 (AnswerGroundTruthFilter)**  
-   - 功能：利用 [Qwen2.5-Math](https://github.com/QwenLM/Qwen2.5-Math) 提取最终答案，并用 [Math-Verify](https://github.com/huggingface/Math-Verify) 比对标准答案  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/ReasonerAnsSelection.yaml \
-       --step_name AnswerGroundTruthFilter \
-       --step_type process
-     ```
-
-5. **问答去重 (AnswerNgramFilter)**  
-   - 功能：基于 n-gram 方法，过滤相似度过高的问答对  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/ReasonerNgramFilter.yaml \
-       --step_name AnswerNgramFilter \
-       --step_type process
-     ```
-### 4.4 无标准答案处理算子
-
-本算子仅在“无标准答案”支线上执行。
-
-1. **伪答案生成器 (PseudoAnswerGenerator)**  
-   - 功能：通过大模型为一个问题生成多个解答，投票选出出现次数最多的解答作为伪答案  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/PseudoAnswerGenerator.yaml \
-       --step_name PseudoAnswerGenerator \
-       --step_type generator
-     ```
-
-2. **答案格式过滤 (AnswerFormatFilter)**  
-   - 功能：过滤掉不符合预设格式的答案  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/ReasonerFormatFilter_withoutGT.yaml \
-       --step_name AnswerFormatFilter \
-       --step_type process
-     ```
-
-3. **答案长度过滤 (AnswerLengthFilter)**  
-   - 功能：剔除过长或过短的答案  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/ReasonerLengthFilter_withoutGT.yaml \
-       --step_name AnswerLengthFilter \
-       --step_type process
-     ```
-
-4. **问答去重 (AnswerNgramFilter)**  
-   - 功能：基于 n-gram 方法，过滤相似度过高的问答对  
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/ReasonerNgramFilter_withoutGT.yaml \
-       --step_name AnswerNgramFilter \
-       --step_type process
-     ```
-
-### 4.5 无标准答案处理算子
-
-这部分算子主要做最终的格式转换，以支持特定下游任务的接口格式。
-
-1. **问答格式（SFT）转预训练格式（PT） (Pretrain_FormatConvert_sft2pt)**  
-   - 功能：将问答对格式的数据转换为预训练格式，即仅包含`text`键
-   - 命令：
-     ```bash
-     python pipeline_step.py \
-       --yaml_path ReasoningPipeline/yaml/Pretrain_FormatConvert_sft2pt.yaml \
-       --step_name Pretrain_FormatConvert_sft2pt \
-       --step_type generator
-     ```
+  ```bash
+  python test/test_reasoning_pretrain.py
+  ```
