@@ -8,8 +8,8 @@ config:
     background: tint-plate
     hero:
       name: DataFlow
-      tagline: Pipeline for data processing in LLM era.
-      text: Better Data, Better results.
+      tagline: Data Centric AI System
+      text: Better Data, Better results
       actions:
         -
           theme: brand
