@@ -10,6 +10,8 @@ permalink: /en/guide/Reasoning_operators/
 
 Strong reasoning operators are a specialized collection of operators designed for mathematical reasoning and problem-solving tasks. They are primarily divided into two categories: **Data Generation Operators (Generators)** and **Processing Operators (Processors)**. These operators can handle complex mathematical reasoning tasks, including answer generation, verification, filtering, and formatting, while supporting various mathematical representation formats.
 
+The types of open-source operators are quite limited. To achieve better data processing quality and fill the gaps in data synthesis and processing methods not covered by open-source solutions, we have carefully designed and independently developed a new set of operators, which are marked with the 🌟 symbol.
+
 ## Data Generation Operators
 
 Data generators are primarily responsible for generating various types of reasoning-related data, including answer generation, question generation, and more.
@@ -37,7 +39,7 @@ Data generators are primarily responsible for generating various types of reason
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuestionGenerator</td>
+      <td class="tg-0pky">QuestionGenerator🌟</td>
       <td class="tg-0pky">Question Generation</td>
       <td class="tg-0pky">This operator generates new questions based on existing problems, supporting multiple generation strategies to ensure diversity.</td>
       <td class="tg-0pky">-</td>
@@ -98,7 +100,7 @@ Processing operators are primarily responsible for processing, verifying, filter
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuestionFilter</td>
+      <td class="tg-0pky">QuestionFilter🌟</td>
       <td class="tg-0pky">Question Validation</td>
       <td class="tg-0pky">This operator performs correctness checks on mathematical problems, including format compliance, semantic reasonableness, and condition consistency.</td>
       <td class="tg-0pky"><a href="https://github.com/scuuy/MathQ-Verify">Code</a></td>
@@ -205,7 +207,7 @@ result = pseudo_gen.run(
           )
 ```
 
-#### 3. QuestionGenerator
+#### 3. QuestionGenerator🌟
 
 **Function Description:** This operator can generate new related questions based on existing problems, supporting multiple generation strategies and difficulty control.
 
@@ -428,7 +430,7 @@ result = length_filter.run(
           )
 ```
 
-#### 7. QuestionFilter
+#### 7. QuestionFilter🌟
 
 **Function Description:** This operator performs comprehensive quality checks on mathematical problems, ensuring problem correctness and solvability.
 
