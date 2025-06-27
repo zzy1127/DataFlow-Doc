@@ -1,5 +1,5 @@
 ---
-title: 文本数据处理器
+title: 通用文本数据处理算子
 createTime: 2025/06/09 11:43:42
 permalink: /zh/guide/q07ou7d9/
 ---
@@ -26,6 +26,11 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
       <td class="tg-0pky">数据去重器</td>
       <td class="tg-0pky">6</td>
       <td class="tg-0pky">通过哈希等方法进行数据点去重</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">数据生成器</td>
+      <td class="tg-0pky">2</td>
+      <td class="tg-0pky">根据种子文档生成特定格式数据</td>
     </tr>
     <tr>
       <td class="tg-0pky">数据过滤器</td>

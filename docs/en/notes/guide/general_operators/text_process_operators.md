@@ -1,15 +1,15 @@
 ---
-title: Text Data Processors
+title: General Data Processing Operators
 
 createTime: 2025/06/09 11:43:25
-permalink: /en/guide/mq07gwz4/
+permalink: /en/guide/text_process_operators/
 ---
 
 # Text Data Processing
 
 ## Overview
 
-DataFlow currently supports text data processing at the data point level, categorized into three types: refiners, deduplicators, and filters.
+DataFlow currently supports text data processing at the data point level, categorized into three types: refiners, deduplicators and filters.
 
 <table class="tg">
   <thead>
@@ -29,6 +29,11 @@ DataFlow currently supports text data processing at the data point level, catego
       <td class="tg-0pky">Deduplicators</td>
       <td class="tg-0pky">6</td>
       <td class="tg-0pky">Removes duplicate data points using methods such as hashing.</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">Generators</td>
+      <td class="tg-0pky">2</td>
+      <td class="tg-0pky">Generate specific format data based on seed documents</td>
     </tr>
     <tr>
       <td class="tg-0pky">Filters</td>
@@ -190,6 +195,33 @@ DataFlow currently supports text data processing at the data point level, catego
       <td class="tg-0pky">SFT</td>
       <td class="tg-0pky">Combines MinHash and LSH to compare sets with minimal memory usage and computation cost, detecting similarity between sets.</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1811.04633">Paper</a></td>
+    </tr>
+  </tbody>
+</table>
+
+## Generators
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">Name</th>
+      <th class="tg-0pky">Applicable Type</th>
+      <th class="tg-0pky">Description</th>
+      <th class="tg-0pky">Repository or Paper</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="tg-0pky">PretrainGenerator</td>
+      <td class="tg-0pky">Pretrain</td>
+      <td class="tg-0pky">Synthesize phi-4 question and answer data pairs using pre trained document data, and retell the document in QA format</td>
+      <td class="tg-0pky"><a href="https://arxiv.org/pdf/2401.16380">Paper</a></td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">SupervisedFinetuneGenerator</td>
+      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">Synthesize SFT format QA data pairs based on seed documents and return original information</td>
+      <td class="tg-0pky">-</td>
     </tr>
   </tbody>
 </table>

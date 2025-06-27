@@ -96,7 +96,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
        --step_type process
      ```
 4. **HtmlUrlRemoverRefiner**  
-   - Function: Remove HTML tags  
+   - Function: Remove HTML tags, such as \<tag\>
    - Command:
     ```bash
      python pipeline_step.py \
@@ -114,7 +114,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
        --step_type process
      ```
 6. **BlocklistFilter**  
-   - Function: Filter text containing too many blocked words  
+   - Function: Filter text containing too many blocked words, blocklist refers to [List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words)    
    - Command:
      ```bash
      python pipeline_step.py \
@@ -123,7 +123,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
        --step_type process
      ```
 7. **WordNumberFilter**  
-   - Function: Filter by word count  
+   - Function: Filter by word count in [20, 100000] (adjustable)
    - Command:
      ```bash
      python pipeline_step.py \
@@ -141,7 +141,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
        --step_type process
      ```
 9. **SentenceNumberFilter**  
-   - Function: Filter by abnormal sentence count  
+   - Function: Filter by abnormal sentence count, keep documents which sentence count in [3, 7500] (adjustable)
    - Command:
      ```bash
      python pipeline_step.py \
@@ -150,7 +150,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
        --step_type process
      ```
 10. **LineEndWithEllipsisFilter**  
-    - Function: Proportionally filter text ending with ellipsis  
+    - Function: Filter text with ellipsis ending sentence ratio greater than 0.3 (adjustable)
     - Command:
       ```bash
       python pipeline_step.py \
@@ -168,7 +168,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 12. **MeanWordLengthFilter**  
-    - Function: Filter by average word length  
+    - Function: Filter by average word length in [3, 10] (adjustable)
     - Command:
       ```bash
       python pipeline_step.py \
@@ -177,7 +177,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 13. **SymbolWordRatioFilter**  
-    - Function: Filter text with high symbol-to-word ratio  
+    - Function: Filter text with symbol(such as #)-to-word ratio > 0.4
     - Command:
       ```bash
       python pipeline_step.py \
@@ -186,7 +186,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 14. **HtmlEntityFilter**  
-    - Function: Filter text with excessive HTML entities  
+    - Function: Filter text with excessive HTML entities, such as nbsp, lt, gt... 
     - Command:
       ```bash
       python pipeline_step.py \
@@ -195,7 +195,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 15. **IDCardFilter**  
-    - Function: Filter text containing ID card information  
+    - Function: Privacy protection. Filter text containing ID card information, such as ”身份证“，”ID NO.“.
     - Command:
       ```bash
       python pipeline_step.py \
@@ -213,7 +213,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 17. **SpecialCharacterFilter**  
-    - Function: Filter text with many special characters  
+    - Function: Filter text with any special characters (such as r"u200e")
     - Command:
       ```bash
       python pipeline_step.py \
@@ -222,7 +222,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_type process
       ```
 18. **WatermarkFilter**  
-    - Function: Filter text containing watermarks  
+    - Function: Filter text containing watermarks, such as“Watermark”, "Copyright"... 
     - Command:
       ```bash
       python pipeline_step.py \
@@ -230,17 +230,9 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name WatermarkFilter \
         --step_type process
       ```
-19. **StopWordFilter**  
-    - Function: Filter text with low stopword ratio  
-    - Command:
-      ```bash
-      python pipeline_step.py \
-        --yaml_path text_pipeline/yaml/StopWordFilter.yaml \
-        --step_name StopWordFilter \
-        --step_type process
-      ```
-20. **CurlyBracketFilter**  
-    - Function: Filter text with high curly bracket ratio  
+
+19. **CurlyBracketFilter**  
+    - Function: Filter text with curly bracket ratio greater than 0.025. (adjustable)
     - Command:
       ```bash
       python pipeline_step.py \
@@ -248,8 +240,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name CurlyBracketFilter \
         --step_type process
       ```
-21. **CapitalWordsFilter**  
-    - Function: Filter text with high uppercase letter ratio  
+20. **CapitalWordsFilter**  
+    - Function: Filter text with uppercase letter ratio greater than 0.2. (adjustable)
     - Command:
       ```bash
       python pipeline_step.py \
@@ -257,8 +249,9 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name CapitalWordsFilter \
         --step_type process
       ```
-22. **LoremIpsumFilter**  
-    - Function: Filter text containing "lorem ipsum"  
+21. **LoremIpsumFilter**  
+    - Function: Filter text containing "lorem ipsum". The text. Lorem Ipsum is a random pseudotext commonly used in typesetting design.
+
     - Command:
       ```bash
       python pipeline_step.py \
@@ -266,8 +259,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name LoremIpsumFilter \
         --step_type process
       ```
-23. **UniqueWordsFilter**  
-    - Function: Filter text with few unique words  
+22. **UniqueWordsFilter**  
+    - Function: Filter text with unique words ratio < 0.1 (adjustable)
     - Command:
       ```bash
       python pipeline_step.py \
@@ -275,8 +268,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name UniqueWordsFilter \
         --step_type process
       ```
-24. **CharNumberFilter**  
-    - Function: Filter text with few characters  
+23. **CharNumberFilter**  
+    - Function: Filter text with characters less than 100 (adjustable)
     - Command:
       ```bash
       python pipeline_step.py \
@@ -284,8 +277,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name CharNumberFilter \
         --step_type process
       ```
-25. **LineStartWithBulletpointFilter**  
-    - Function: Filter text starting with bullet points  
+24. **LineStartWithBulletpointFilter**  
+    - Function: Filter text starting with bullet points ratio greater than 0.9 (adjustable) 
     - Command:
       ```bash
       python pipeline_step.py \
@@ -293,8 +286,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name LineStartWithBulletpointFilter \
         --step_type process
       ```
-26. **LineWithJavascriptFilter**  
-    - Function: Filter text containing JavaScript  
+25. **LineWithJavascriptFilter**  
+    - Function: Filter text containing JavaScript numbers > 3 (adjustable)
     - Command:
       ```bash
       python pipeline_step.py \
@@ -302,8 +295,8 @@ bash text_pipeline/run_sft_synthetic_new.sh
         --step_name LineWithJavascriptFilter \
         --step_type process
       ```
-27. **PairQualFilter**  
-    - Function: Score text quality with a quality scorer  
+26. **PairQualFilter**  
+    - Function: Score text quality with a quality scorer, which is based on the bge model and supports both Chinese and English. It is trained using GPT to compare and score texts in pairs. 
     - Command:
       ```bash
       python pipeline_step.py \
@@ -317,7 +310,7 @@ bash text_pipeline/run_sft_synthetic_new.sh
 Based on **Pipeline 1**, add the following operators:
 
 1. **PretrainGenerator**  
-   - Function: Use Qwen2.5-7b to synthesize phi-4-style QA pair data from seed documents  
+   - Function: Use llm to synthesize phi-4-style QA pair data from seed documents  
    - Command:
     ```bash
     python pipeline_step.py \
@@ -326,7 +319,7 @@ Based on **Pipeline 1**, add the following operators:
       --step_type generator
     ```
 2. **QuratingFilter**  
-   - Function: Score and filter synthesized text across writing_style, required_expertise, facts_and_trivia, educational_value dimensions  
+   - Function: Score and filter synthesized text across writing_style, required_expertise, facts_and_trivia, educational_value dimensions. [Model](https://github.com/princeton-nlp/QuRating)
    - Command:
     ```bash
     python pipeline_step.py \
@@ -338,7 +331,7 @@ Based on **Pipeline 1**, add the following operators:
 ### 4.3 SFT Data Filtering Pipeline
 
 1. **WordNumberFilter**  
-   - Function: Filter by output length, keep between 20–1000 words  
+   - Function: Filter by output length, keep between 20–1000 words (adjustable)
    - Command:
      ```bash
      python pipeline_step.py \
@@ -347,7 +340,7 @@ Based on **Pipeline 1**, add the following operators:
        --step_type process
      ```
 2. **SuperfilteringFilter**  
-   - Function: Filter by instruction IFD score  
+   - Function: Filter by instruction IFD score. [Model](https://github.com/tianyi-lab/Superfiltering)
    - Command:
      ```bash
      python pipeline_step.py \
@@ -356,7 +349,7 @@ Based on **Pipeline 1**, add the following operators:
        --step_type process
      ```
 3. **DeitaQualityFilter**  
-   - Function: Filter by instruction quality score  
+   - Function: Filter by instruction quality score. [Model](https://huggingface.co/hkust-nlp/deita-quality-scorer)
    - Command:
      ```bash
      python pipeline_step.py \
@@ -365,7 +358,7 @@ Based on **Pipeline 1**, add the following operators:
        --step_type process
      ```
 4. **InstagFilter**  
-   - Function: Filter by number of instruction tags  
+   - Function: Filter by number of instruction tags  [Model](https://github.com/OFA-Sys/InsTag)
    - Command:
      ```bash
      python pipeline_step.py \
