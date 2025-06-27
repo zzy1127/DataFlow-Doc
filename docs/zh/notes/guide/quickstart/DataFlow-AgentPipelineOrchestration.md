@@ -11,7 +11,7 @@ permalink: /zh/guide/install/
 本节介绍如何安装DataFlow的依赖环境。
 
 ```shell
-conda create -n dataflow python=3.10
+conda create -n dataflow-agent python=3.10
 conda activate dataflow-agent
 
 git clone https://github.com/Open-DataFlow/DataFlow-AgentBot.git
