@@ -35,3 +35,44 @@ DataFlow Agent 是一个基于多智能体协同的自动化任务处理系统�
 
 系统支持短期与长期记忆机制，能够维持多轮交互状态，在保证标准化流程的同时，具备高度的动态适应能力，尤其适用于数据治理、自动化数据分析等需要多阶段协同的复杂场景。
 
+## 代码范式
+```python
+from dataflow.operators.process.Reasoning import QuestionFilter
+from dataflow.utils.storage import FileStorage
+from dataflow.llmserving import APILLMServing_request, LocalModelLLMServing
+
+class ReasoningPipeline():
+    def __init__(self):
+
+        self.storage = FileStorage(
+            first_entry_file_name="../dataflow/example/ReasoningPipeline/pipeline_math_short.json",
+            cache_path="./cache_local",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl",
+        )
+
+        # use API server as LLM serving; LocalModelLLMServing can serve as local-gpu model as well
+        llm_serving = APILLMServing_request(
+                api_url="https://api.openai.com/v1/chat/completions",
+                model_name="gpt-4o",
+                max_workers=100
+        )
+
+        self.question_filter_step1 = QuestionFilter(
+            system_prompt="You are an expert in evaluating mathematical problems. Follow the user's instructions strictly and output your final judgment in the required JSON format.",
+            llm_serving=llm_serving
+        )
+
+    def forward(self):
+
+        self.question_filter_step1.run(
+            storage = self.storage.step(),
+            input_key = "instruction",
+        )
+
+
+if __name__ == "__main__":
+    model = ReasoningPipeline()
+    model.forward()
+
+```
