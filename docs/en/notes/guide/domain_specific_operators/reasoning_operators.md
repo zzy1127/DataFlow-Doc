@@ -10,6 +10,12 @@ permalink: /en/guide/Reasoning_operators/
 
 Strong reasoning operators are a specialized collection of operators designed for mathematical reasoning and problem-solving tasks. They are primarily divided into two categories: **Data Generation Operators (Generators)** and **Processing Operators (Processors)**. These operators can handle complex mathematical reasoning tasks, including answer generation, verification, filtering, and formatting, while supporting various mathematical representation formats.
 
+The variety of open-source operators is quite limited. To achieve better data processing quality and fill the gaps in open-source data synthesis and processing methods, we have carefully designed and **self-developed** a new operator set. The marking meanings are as follows:
+
+- 🚀 **Independent Innovation**: Core algorithms developed from scratch, filling existing algorithmic gaps or further improving performance, breaking through current performance bottlenecks.
+- ✨ **Open Source First**: First integration of this operator into mainstream community frameworks, facilitating use by more developers and achieving open-source sharing.
+
+
 ## Data Generation Operators
 
 Data generators are primarily responsible for generating various types of reasoning-related data, including answer generation, question generation, and more.
@@ -25,22 +31,46 @@ Data generators are primarily responsible for generating various types of reason
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">AnswerGenerator</td>
+      <td class="tg-0pky">AnswerGenerator✨</td>
       <td class="tg-0pky">Answer Synthesis</td>
       <td class="tg-0pky">This operator generates standard answers for mathematical problems by calling large language models for step-by-step reasoning and computation.</td>
-      <td class="tg-0pky">-</td>
+      <td class="tg-0pky"><a href="https://arxiv.org/abs/2410.01560">Paper</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PseudoAnswerGenerator</td>
+      <td class="tg-0pky">PseudoAnswerGenerator✨</td>
       <td class="tg-0pky">Pseudo Answer Generation & Voting</td>
       <td class="tg-0pky">This operator generates multiple candidate answers and selects the optimal solution through statistical methods to achieve pseudo answer generation.</td>
-      <td class="tg-0pky">-</td>
+      <td class="tg-0pky"><a href="https://arxiv.org/abs/2410.01560">Paper</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuestionGenerator</td>
+      <td class="tg-0pky">QuestionGenerator✨🚀</td>
       <td class="tg-0pky">Question Generation</td>
       <td class="tg-0pky">This operator generates new questions based on existing problems, supporting multiple generation strategies to ensure diversity.</td>
       <td class="tg-0pky">-</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">PretrainFormatConverter✨</td>
+      <td class="tg-0pky">Format Conversion</td>
+      <td class="tg-0pky">Converts SFT format data to pretraining format, supporting custom input-output key configuration</td>
+      <td class="tg-0pky">-</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">QuestionCategoryClassifier✨🚀</td>
+      <td class="tg-0pky">Question Classification</td>
+      <td class="tg-0pky">Performs multi-level classification of user questions based on designed and improved MSC mathematical classification standards</td>
+      <td class="tg-0pky">-</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">QuestionDifficultyClassifier✨</td>
+      <td class="tg-0pky">Difficulty Assessment</td>
+      <td class="tg-0pky">Evaluates question difficulty levels, outputting fine-grained difficulty scores from 1-10 levels</td>
+      <td class="tg-0pky"><a href="https://arxiv.org/abs/2410.07985">Paper</a></td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">AnswerExtraction_QwenMathEval✨</td>
+      <td class="tg-0pky">Answer Extraction & Standardization</td>
+      <td class="tg-0pky">Extracts standardized answer expressions from mathematical problem responses, supporting unit processing and format conversion</td>
+      <td class="tg-0pky"><a href="https://github.com/QwenLM/Qwen2.5-Math">Code</a></td>
     </tr>
   </tbody>
 </table>
@@ -68,25 +98,25 @@ Processing operators are primarily responsible for processing, verifying, filter
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">AnswerGroundTruthFilter</td>
+      <td class="tg-0pky">AnswerGroundTruthFilter✨</td>
       <td class="tg-0pky">Ground Truth Matching</td>
       <td class="tg-0pky">This operator compares predicted answers with ground truth answers, supporting both exact matching and mathematical verification methods.</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">AnswerJudger_MathVerify</td>
+      <td class="tg-0pky">AnswerJudger_MathVerify✨</td>
       <td class="tg-0pky">Mathematical Answer Verification</td>
       <td class="tg-0pky">This operator verifies answer correctness through symbolic computation, performing mathematical expression parsing and equivalence verification.</td>
       <td class="tg-0pky"><a href="https://github.com/huggingface/Math-Verify">Code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">AnswerNgramFilter</td>
+      <td class="tg-0pky">AnswerNgramFilter✨</td>
       <td class="tg-0pky">Repetition Detection</td>
       <td class="tg-0pky">This operator filters answers based on n-gram repetition rates, detecting repetitive patterns and redundant content in responses.</td>
       <td class="tg-0pky"><a href="https://en.wikipedia.org/wiki/N-gram">Wiki</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">AnswerPipelineRoot</td>
+      <td class="tg-0pky">AnswerPipelineRoot✨</td>
       <td class="tg-0pky">Ground Truth Existence Classifier</td>
       <td class="tg-0pky">Root node of the answer processing pipeline, responsible for distributing input data to different processing branches based on the presence or absence of ground truth labels.</td>
       <td class="tg-0pky">-</td>
@@ -98,7 +128,7 @@ Processing operators are primarily responsible for processing, verifying, filter
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuestionFilter</td>
+      <td class="tg-0pky">QuestionFilter✨🚀</td>
       <td class="tg-0pky">Question Validation</td>
       <td class="tg-0pky">This operator performs correctness checks on mathematical problems, including format compliance, semantic reasonableness, and condition consistency.</td>
       <td class="tg-0pky"><a href="https://github.com/scuuy/MathQ-Verify">Code</a></td>
@@ -143,7 +173,7 @@ For parameter passing, the constructor of operator objects mainly passes informa
 
 ### Data Generation Operators
 
-#### 1. AnswerGenerator
+#### 1. AnswerGenerator✨
 
 **Function Description:** This operator is specifically designed to generate standard answers for mathematical problems through large language model calls for step-by-step reasoning and precise computation.
 
@@ -174,7 +204,7 @@ result = answer_gen.run(
           )
 ```
 
-#### 2. PseudoAnswerGenerator
+#### 2. PseudoAnswerGenerator✨
 
 **Function Description:** This operator generates multiple candidate answers and uses statistical methods to select the optimal solution, achieving high-quality pseudo answer generation.
 
@@ -205,7 +235,7 @@ result = pseudo_gen.run(
           )
 ```
 
-#### 3. QuestionGenerator
+#### 3. QuestionGenerator✨🚀
 
 **Function Description:** This operator can generate new related questions based on existing problems, supporting multiple generation strategies and difficulty control.
 
@@ -240,6 +270,102 @@ result = question_gen.run(
           )
 ```
 
+#### 4. PretrainFormatConverter✨
+
+**Function Description:** This operator is used to convert SFT (Supervised Fine-Tuning) format data to pretraining format, supporting custom input-output key configuration, suitable for pretraining data preparation for various generative models.
+
+**Input Parameters:**
+
+- `__init__()`
+  - `read_key_question`: Question field name (default: "question")
+  - `read_key_answer`: Answer field name (default: "answer")
+  - `output_key`: Output field name (default: "text")
+- `run()`
+  - `storage`: Storage interface object (default: predefined value above)
+
+**Key Features:**
+
+- Supports multiple format conversion rules
+- Custom input-output key mapping
+- Batch processing optimization
+- Compatible with mainstream pretraining data formats
+
+**Usage Example:**
+
+```python
+format_converter = PretrainFormatConverter(
+    read_key_question="question",
+    read_key_answer="answer",
+    output_key="text"
+)
+result = format_converter.run(storage=self.storage.step())
+```
+
+#### 5. QuestionCategoryClassifier✨🚀
+
+**Function Description:**  
+This operator is used to perform multi-level classification (main category and subcategory) of user questions. Through large language model semantic analysis of input questions, it outputs standardized classification codes for convenient use by downstream tasks.
+
+**Input Parameters:**
+
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+- `run()`
+  - `storage`: Data storage interface object (default: predefined value above)
+  - `input_key`: Input question field name (default: "instruction")
+  - `output_key`: Output classification result field name (default: "question_category")
+
+**Key Features:**
+
+- Automatic extraction and standardization of main and subcategories
+- Automatic cleaning of abnormal JSON and non-ASCII characters
+- Diversified prompt reorganization to enhance classification robustness
+- Detailed logging for tracking abnormal data
+
+**Usage Example:**
+
+```python
+classifier = QuestionCategoryClassifier(llm_serving=api_llm_serving)
+result_cols = classifier.run(
+    storage=self.storage.step(),
+    input_key="instruction",
+    output_key="question_category"
+)
+```
+
+#### 6. QuestionDifficultyClassifier✨
+
+**Function Description:**  
+This operator is used to evaluate the difficulty level of questions. Through large language model complexity analysis of questions, it outputs numerical difficulty scores from 1-10 levels.
+
+**Input Parameters:**
+
+- `__init__()`
+  - `llm_serving`: Large language model interface object to use (default: predefined value above)
+- `run()`
+  - `storage`: Data storage interface object (default: predefined value above)
+  - `input_key`: Input question field name (default: "instruction")
+  - `output_key`: Output difficulty score field name (default: "difficulty_score")
+
+**Key Features:**
+
+- Automatic generation of evaluation prompts
+- Parsing of `Rating: x` score values from LLM output
+- Logging of parsing exceptions and original strings
+- Adaptation to standard data storage and batch output
+
+**Usage Example:**
+
+```python
+difficulty = QuestionDifficultyClassifier(llm_serving=api_llm_serving)
+result_cols = difficulty.run(
+    storage=self.storage.step(),
+    input_key="instruction",
+    output_key="difficulty_score"
+)
+```
+
+
 ### Processing Operators
 
 #### 1. AnswerFormatterFilter
@@ -269,7 +395,7 @@ result = filter_op.run(
           ) 
 ```
 
-#### 2. AnswerGroundTruthFilter
+#### 2. AnswerGroundTruthFilter✨
 
 **Function Description:** This operator compares predicted answers with ground truth answers, supporting multiple comparison strategies.
 
@@ -300,7 +426,7 @@ result = filter_op.run(
           )
 ```
 
-#### 3. AnswerJudger_MathVerify
+#### 3. AnswerJudger_MathVerify✨
 
 **Function Description:** This operator verifies mathematical answer correctness through advanced symbolic computation, supporting equivalence judgment of complex mathematical expressions.
 
@@ -329,7 +455,7 @@ result = judger_op.run(
           )
 ```
 
-#### 4. AnswerNgramFilter
+#### 4. AnswerNgramFilter✨
 
 **Function Description:** This operator detects repetitive patterns in answers based on n-gram statistical analysis, filtering low-quality repetitive content.
 
@@ -366,7 +492,7 @@ result = ngram_filter.run(
           )
 ```
 
-#### 5. AnswerPipelineRoot
+#### 5. AnswerPipelineRoot✨
 
 **Function Description:** Root node operator of the answer processing pipeline, responsible for intelligently distributing data to different processing branches.
 
@@ -428,7 +554,7 @@ result = length_filter.run(
           )
 ```
 
-#### 7. QuestionFilter
+#### 7. QuestionFilter✨🚀
 
 **Function Description:** This operator performs comprehensive quality checks on mathematical problems, ensuring problem correctness and solvability.
 
