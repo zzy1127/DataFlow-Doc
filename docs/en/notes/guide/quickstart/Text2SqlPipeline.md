@@ -10,38 +10,32 @@ permalink: /en/guide/text2sqlpipeline/
 
 ## 1. Overview
 
-The **Text-to-SQL Data Synthesis Pipeline** aims to:  
-- Clean and augment existing Text-to-SQL data.  
-- Generate high-quality Q&A pairs, including training prompts and chain-of-thought reasoning for each sample.  
+The core objective of the **Text-to-SQL Data Synthesis Pipeline** is to generate high-quality Q&A data containing training prompts and chain-of-thought reasoning processes by cleaning and augmenting existing Text-to-SQL data. The pipeline can complete the entire process from raw data to final training data with one click.
 
-The input data must include at least the following three components:  
-1. Database ID  
-2. Natural language question  
-3. Standard SQL answer  
+We support the following data requirements:
+* Must contain three components: database ID, natural language question, and standard SQL answer
+* Supports both `json` and `jsonl` input formats
 
-This pipeline is driven by a configurable `yaml` file and a unified `pipeline_step.py`, enabling one-click execution of all steps.  
-
----
-
-## 2. One-Click Execution
-
-Run the following script directly:  
-```bash
-bash Text2SqlPipeline/text2sql_pipeline.sh
-```
+The main workflow of the pipeline includes:
+1. **Data Filtering**: Screening invalid SQL and data with inconsistent question descriptions
+2. **Difficulty Classification**: Classifying difficulty levels based on SQL syntax complexity and execution pass rate
+3. **Schema Processing**: Extracting and formatting database schema information
+4. **Knowledge Generation**: Constructing additional knowledge required for mapping natural language questions to SQL queries
+5. **Question Optimization**: Standardizing question expressions
+6. **Prompt Generation**: Building high-quality Q&A data for training
 
 ---
 
-## 3. Data Format
+## 2. Data Formats
 
-### 3.1 Database Configuration
+### 2.1 Database Configuration
 
-Database information must be configured for parsing and execution.  
+When parsing and executing databases, corresponding database information needs to be configured.
 
-- **Schema Definition File**: `tables.json` (JSON format)  
-  - **Description**: This file defines the database schema.  
-  - **Reference**: The `tables.json` file in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).  
-  - **Example**:  
+- **Schema Definition File**: `tables.json` (JSON format)
+  - **Description**: This file defines the database schema information.
+  - **Reference**: The `tables.json` file in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).
+  - **Example**:
     ```json
     [
       {
@@ -96,10 +90,10 @@ Database information must be configured for parsing and execution.
     ]
     ```
 
-- **Database Folder**: Contains executable database files.  
-  - **Description**: The folder stores actual database files. Each database (`db_id_i`) must include an SQLite file (`db_id_i.sqlite`).  
-  - **Reference**: The `database` folder in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).  
-  - **Structure Example**:  
+- **Database Folder**: Contains executable database files
+  - **Description**: The database folder stores actual database files. It contains multiple databases (`db_id_i`), each requiring a SQLite file (`db_id_i.sqlite`).
+  - **Reference**: The `database` folder in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).
+  - **Structure Example**:
     ```
     - database
       - db_id_1
@@ -110,18 +104,15 @@ Database information must be configured for parsing and execution.
         - db_id_3.sqlite
     ```
 
-- **Schema Filter**: Filters database schemas.  
-  - **Description**: Download the model from [Schema Filter](https://github.com/RUCKBReasoning/text2sql-schema-filter), extract it, and configure the path as a parameter.  
-
-### 3.2 Input Data
+### 2.2 Input Data
 
 - **Supported Formats**: `json`, `jsonl`  
 - **Required Fields**:  
-  - `db_id`: Database ID  
+  - `db_id`: Database ID
   - `question`: Natural language question  
-  - `SQL`: Standard SQL answer  
-- **Optional Fields**: Other fields will be ignored. It is recommended to retain only necessary fields to avoid conflicts with downstream processing.  
-- **Example** (`json`):  
+  - `SQL`: Standard SQL answer
+- **Optional Fields**: Other fields will be ignored, but it's recommended to keep only necessary fields to avoid conflicts with subsequent processing.  
+- **Example** (`json`):
   ```json
   {
     "db_id": "california_schools",
@@ -131,24 +122,24 @@ Database information must be configured for parsing and execution.
   ```
 - **Demo Dataset**:  
   `Text2SqlPipeline/bird_example/dev_20240627/dev.json`  
-  Includes database IDs, natural language questions, and standard SQL answers for quick testing and demonstration.  
+  Contains database IDs, natural language questions, and standard SQL answers, suitable for quick testing and demonstration.
 
-### 3.3 Output Data
+### 2.3 Output Data
 
-- **Format**: `jsonl` (Each step generates a file.)  
-- **Field Descriptions**:  
-  - `evidence`: Key evidence or intermediate results extracted during reasoning.  
-  - `selected_schema`: Filtered database schema information.  
-  - `raw_schema`: Original complete database schema.  
-  - `ddl`: Database table structure definition statements.  
-  - `whole_format_schema`: Fully formatted database schema description.  
-  - `selected_format_schema`: Filtered and formatted database schema description.  
-  - `refined_question`: Semantically optimized natural language question.  
-  - `rl_prompt`: Final generated prompt template.  
-  - `sft_output`: Raw output from the supervised fine-tuning (SFT) model.  
-  - `sql_component_difficulty`: SQL component complexity evaluation (`easy`/`medium`/`hard`/`extra`).  
-  - `sql_execution_difficulty`: SQL execution complexity evaluation (`easy`/`medium`/`hard`).  
-- **Example**:  
+- **Format**: `jsonl` (Each step generates a file)  
+- **Field Descriptions**:
+  - `evidence`: Key evidence or intermediate results extracted during reasoning
+  - `selected_schema`: Filtered database schema information
+  - `raw_schema`: Original complete database schema
+  - `ddl`: Database table structure definition statements
+  - `whole_format_schema`: Complete formatted database schema description
+  - `selected_format_schema`: Filtered formatted database schema description
+  - `refined_question`: Semantically optimized natural language question
+  - `rl_prompt`: Final generated prompt template
+  - `sft_output`: Raw output of supervised fine-tuning (SFT) model
+  - `sql_component_difficulty`: SQL component complexity assessment (easy/medium/hard/extra)
+  - `sql_execution_difficulty`: SQL execution complexity assessment (easy/medium/hard)
+- **Example**:
   ```json
   {
     "evidence": "Eligible free rate = `Free Meal Count` / `Enrollment`",
@@ -165,100 +156,113 @@ Database information must be configured for parsing and execution.
   }
   ```
 
----
+## 3. **Data Processing Workflow**
 
-## 4. Pipeline and Operators
+### 3.1 **SQL Filter (SQLFilter)**
+**Function**:
+* Eliminates gold SQL with execution exceptions
+* Filters SQL inconsistent with question descriptions
 
-The pipeline consists of multiple operators, each corresponding to a `yaml` configuration and executed via `pipeline_step.py`.  
+**Input**: Raw input data  
+**Output**: Valid Text-to-SQL data
 
-#### 1. **SQL Filter (SQLFilter)**  
-- **Function**: Filters invalid data.  
-  - Removes gold SQL with execution errors.  
-  - Filters SQL inconsistent with the question description.  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/SQLFilter.py \
-    --yaml_path "Text2SqlPipeline/yaml/SQLFilter.yaml" \
-    --step_name SQLFilter \
-    --step_type generator
-  ```
+### 3.2 **SQL Difficulty Classifier (SQLDifficultyClassifier)**
+**Function**:
+* Classifies difficulty levels based on SQL syntax complexity, referencing Spider standards
+* Difficulty levels: easy/medium/hard/extra
 
-#### 2. **SQL Difficulty Classifier (SQLDifficultyClassifier)**  
-- **Function**: Classifies difficulty levels (`easy`/`medium`/`hard`/`extra`) based on SQL syntax complexity, following the [Spider](https://arxiv.org/abs/1809.08887) standard.  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/SQLDifficultyClassifier.py \
-    --yaml_path "Text2SqlPipeline/yaml/SQLDifficultyClassifier.yaml" \
-    --step_name SQLDifficultyClassifier \
-    --step_type generator
-  ```
+**Input**: Filtered data  
+**Output**: Data with difficulty labels
 
-#### 3. **Schema Linker (SchemaLinking)**  
-- **Function**: Extracts relevant tables and columns from the full database schema using the [CodeS](https://arxiv.org/abs/2402.16347) method.  
-- **Prerequisite**: Download the [Schema Filter](https://github.com/RUCKBReasoning/text2sql-schema-filter) model and configure its path in the `yaml` file.  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/SchemaLinking.py \
-    --yaml_path "Text2SqlPipeline/yaml/SchemaLinking_eval.yaml" \
-    --step_name SchemaLinking_eval \
-    --step_type generator
-  ```
+### 3.3 **Schema Linker (SchemaLinking)**
+**Function**:
+* Extracts associated tables and columns used from the full database schema
+* Identifies mapping relationships between entities mentioned in questions and database schema
 
-#### 4. **Schema Extractor (DatabaseSchemaExtractor)**  
-- **Function**: Constructs schema information and formatted descriptions.  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/DatabaseSchemaExtractor.py \
-    --yaml_path "Text2SqlPipeline/yaml/DataSchemaExtractor.yaml" \
-    --step_name DataSchemaExtractor \
-    --step_type generator
-  ```
+**Input**: Data with difficulty labels  
+**Output**: Data containing schema linking information
 
-#### 5. **Knowledge Generator (ExtraKnowledgeGeneration)**  
-- **Function**: Generates additional knowledge required to derive SQL queries from natural language questions, explaining:  
-  - Quantifier-to-value mappings.  
-  - Noun-entity relationships.  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/ExtraKnowledgeGenerator.py \
-    --yaml_path "Text2SqlPipeline/yaml/ExtraKnowledgeGenerator.yaml" \
-    --step_name ExtraKnowledgeGenerator \
-    --step_type generator
-  ```
+### 3.4 **Schema Extractor (DatabaseSchemaExtractor)**
+**Function**:
+* Constructs complete database schema information
+* Generates formatted schema descriptions
+* Includes DDL statements and natural language descriptions
 
-#### 6. **Question Refiner (QuestionRefiner)**  
-- **Function**: Standardizes question phrasing.  
-  - Splits compound questions.  
-  - Unifies question formats (starting with "What"/"How").  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/QuestionRefiner.py \
-    --yaml_path "Text2SqlPipeline/yaml/QuestionRefiner.yaml" \
-    --step_name QuestionRefiner \
-    --step_type generator
-  ```
+**Input**: Schema-linked data  
+**Output**: Data with complete schema information
 
-#### 7. **Prompt Generator (PromptGeneration)**  
-- **Function**: Constructs training Q&A data, including:  
-  - Questions for SFT training.  
-  - High-quality chain-of-thought answers.  
-  - Questions for RL training.  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/PromptGenerator.py \
-    --yaml_path "Text2SqlPipeline/yaml/PromptGenerator.yaml" \
-    --step_name PromptGenerator \
-    --step_type generator
-  ```
+### 3.5 **Knowledge Generator (ExtraKnowledgeGeneration)**
+**Function**:
+* Constructs additional knowledge required for mapping natural language questions to SQL queries
+* Explains quantifier corresponding values
+* Clarifies noun entity mapping relationships
 
-#### 8. **Execution Difficulty Classifier (Text2SQLDifficultyClassifier)**  
-- **Function**: Classifies generation difficulty based on execution pass rates.  
-  - Configurable thresholds (`easy`/`medium`/`hard`/`extra`).  
-  - Supports multi-model testing.  
-- **Command**:  
-  ```bash
-  python Text2SqlPipeline/code/Text2SQLDifficultyClassifier.py \
-    --yaml_path "Text2SqlPipeline/yaml/Text2SQLDifficultyClassifier.yaml" \
-    --step_name Text2SQLDifficultyClassifier \
-    --step_type generator
-  ```  
+**Input**: Data with schema information  
+**Output**: Data containing additional knowledge
+
+### 3.6 **Question Optimizer (QuestionRefiner)**
+**Function**:
+* Standardizes question expressions
+* Splits compound questions
+* Unifies question formats (starting with What/How)
+
+**Input**: Data with additional knowledge  
+**Output**: Optimized question data
+
+### 3.7 **Prompt Generator (PromptGeneration)**
+**Function**:
+* Constructs questions for SFT training
+* Generates high-quality answers with chain-of-thought reasoning
+* Creates questions for RL training
+
+**Input**: Optimized question data  
+**Output**: Training Q&A data
+
+### 3.8 **Execution Difficulty Classifier (Text2SQLDifficultyClassifier)**
+**Function**:
+* Classifies generation difficulty based on execution pass rate
+* Supports multi-model testing
+* Difficulty levels: easy/medium/hard/extra
+
+**Input**: Generated Q&A data  
+**Output**: Final data with execution difficulty labels
+
+## 4. **Output Data**
+
+The final output data includes the following fields:
+* **evidence**: Key evidence extracted during reasoning
+* **selected_schema**: Filtered database schema information
+* **raw_schema**: Original complete database schema
+* **ddl**: Database table structure definition statements
+* **whole_format_schema**: Complete formatted schema description
+* **selected_format_schema**: Filtered formatted schema description
+* **refined_question**: Optimized natural language question
+* **rl_prompt**: Final generated prompt template
+* **sft_output**: Raw output of supervised fine-tuning model
+* **sql_component_difficulty**: SQL component complexity assessment
+* **sql_execution_difficulty**: SQL execution complexity assessment
+
+Example output:
+```json
+{
+  "evidence": "Eligible free rate = `Free Meal Count` / `Enrollment`",
+  "selected_schema": "[{'table_name': ...]}]",
+  "raw_schema": "{'tables': {'frpm': [...], 'schools': [...]}}",
+  "ddl": "CREATE TABLE frpm (...);\nCREATE TABLE schools (...);",
+  "whole_format_schema": "## Table: frpm ...",
+  "selected_format_schema": "Table frpm ...",
+  "refined_question": "What is the highest free benefit rate for K-12 in Alameda?",
+  "rl_prompt": "Task: Generate SQL from schema...\nSchema: {...}\nQuestion: {...}",
+  "sft_output": "Let's think step by step...",
+  "sql_component_difficulty": "medium",
+  "sql_execution_difficulty": "medium"
+}
+```
+
+## 5. Execution Method
+
+The pipeline is executed via a simple Python command:
+
+```bash
+python test/test_text2sql.py
+```

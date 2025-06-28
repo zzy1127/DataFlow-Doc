@@ -38,8 +38,8 @@ Text2SQL算子是专门用于Text2SQL问题数据处理和质量提升的算子�
     <tr>
       <td class="tg-0pky">SchemaLinking</td>
       <td class="tg-0pky">Schema提取</td>
-      <td class="tg-0pky">从数据库Schema中提取相关表和列</td>
-      <td class="tg-0pky"><a href="https://arxiv.org/abs/2402.16347">CodeS</a></td>
+      <td class="tg-0pky">基于SQL和数据库Schema提取相关表和列</td>
+      <td class="tg-0pky">-</td>
     </tr>
     <tr>
       <td class="tg-0pky">DatabaseSchemaExtractor</td>
@@ -183,54 +183,36 @@ sql_difficulty_classifier.run(
 
 ### 3. SchemaLinking
 
-**功能描述：** 采用 [CodeS](https://arxiv.org/abs/2402.16347) 的方法，从全量数据库Schema中提取使用的关联表和列
+**功能描述：** 基于SQL语句，从全量数据库Schema中提取使用的关联表和列
 
 **输入参数：**
 
 - `__init__()`
   - `table_info_file`: 数据库表信息文件路径
-  - `model_path`: 预训练模型路径
-  - `selection_mode`: 选择模式，默认"eval"
-  - `num_top_k_tables`: 选择的top-k表数量，默认5
-  - `num_top_k_columns`: 选择的top-k列数量，默认5
 
 - `run()`
   - `input_sql_key`: SQL语句字段名
   - `input_dbid_key`: 数据库ID字段名
-  - `input_question_key`: 问题字段名
-  - `input_table_names_original_key`: 原始表名字段名
-  - `input_table_names_statement_key`: 格式化表名字段名
-  - `input_column_names_original_key`: 原始列名字段名
-  - `input_column_names_statement_key`: 格式化列名字段名
-  - `output_schema_key`: 输出选择的Schema字段名
+  - `output_used_schema_key`: 输出使用的Schema字段名
 
 **主要特性：**
 
-- 智能Schema关联识别
-- 基于相似度的表列选择
-- 支持多种选择策略
-- 减少Schema噪声，提高模型效果
+- 自动识别SQL语句中使用的表和列
+- 从完整数据库Schema中提取相关部分
+- 生成精简有效的Schema信息
 
 **使用示例：**
 
 ```python
 schema_linking = SchemaLinking(
-    table_info_file=table_info_file,
-    model_path="/mnt/public/data/cqf/models/sic_merged",
-    selection_mode="eval",                       
-    num_top_k_tables=5,                           
-    num_top_k_columns=5     
+    table_info_file="path/to/tables.json" 
 )
+
 schema_linking.run(
-    storage=self.storage.step(),
-    input_sql_key="SQL",
-    input_dbid_key="db_id",
-    input_question_key="question",
-    input_table_names_original_key="table_names_original",
-    input_table_names_statement_key="table_names",
-    input_column_names_original_key="column_names_original",    
-    input_column_names_statement_key="column_names",
-    output_schema_key="selected_schema"        
+    storage=self.storage.step(),                
+    input_sql_key="SQL",                
+    input_dbid_key="db_id",             
+    output_used_schema_key="selected_schema"  
 )
 ```
 
