@@ -36,65 +36,66 @@ self.storage = FileStorage(
 )
 ```
 
-### 2. **Content Choosing**
+### 2. **内容选择**
 
-#### 2.1 **Choose Contents**
+#### 2.1 **选择内容**
 
-The first step of the pipeline involves selecting a subset of text content from a large dataset using the **Content Chooser** operator (`ContentChooser`). This step is crucial, as it determines which text contents will be used for subsequent generation processes.
+流程的第一步是使用 **内容选择器** 操作符（`ContentChooser`）从大型数据集中选择一部分文本内容。这一步至关重要，因为它决定了哪些文本内容将用于后续的生成流程。
 
-**Function:**
+**功能：**
 
-* identifies and selects representative text content from a set of text contexts.
+* 从一组文本上下文中识别并选择具有代表性的文本内容。
 
-**Input**: Original text contents
+**输入**：原始文本内容
 
-**Output**: Selected text contents
-
-
-### 3. **Questions and Answers Generation**
-
-#### 3.1 **Auto Prompt Generation**
-
-The second step of the pipeline is to automatically generate specialized prompts for question-answer creation using the **AutoPromptGenerator** operator (`AutoPromptGenerator`). This step ensures that each selected text content is paired with a suitable prompt for downstream QA generation.
-
-**Function:**
-
-* automatically generates a suitable prompt for each selected text content to guide the question-answer generation process.
-
-**Input**: Selected text contents  
-**Output**: Generated prompts for each text content
+**输出**：已选择的文本内容
 
 ---
 
-#### 3.2 **Question-Answer Generation**
+### 3. **问答生成**
 
-The third step of the pipeline is to generate question-answer pairs for each text content and its corresponding prompt using the **QAGenerator** operator (`QAGenerator`). This step produces the core data for further evaluation and use.
+#### 3.1 **自动提示生成**
 
-**Function:**
+流程的第二步是使用 **自动提示生成器** 操作符（`AutoPromptGenerator`）为问答生成自动生成专用提示语。这一步确保每个被选中的文本内容都配有合适的提示语，以便后续的问答生成。
 
-* generates a question and its corresponding answer based on the text content and the generated prompt.
+**功能：**
 
-**Input**: Selected text contents and their generated prompts  
-**Output**: Generated question-answer pairs
+* 为每个被选中的文本内容自动生成合适的提示语，引导问答生成过程。
+
+**输入**：已选择的文本内容  
+**输出**：为每个文本内容生成的提示语
 
 ---
 
-#### 3.3 **Question-Answer Scoring**
+#### 3.2 **问答对生成**
 
-The fourth step of the pipeline is to evaluate the quality of the generated question-answer pairs using the **QAScorer** operator (`QAScorer`). This step provides multiple scores and feedback for each QA pair, supporting further filtering and improvement.
+流程的第三步是使用 **问答生成器** 操作符（`QAGenerator`）为每个文本内容及其对应的提示语生成问答对。这一步生成了后续评估和使用的核心数据。
 
-**Function:**
+**功能：**
 
-* evaluates the generated question-answer pairs on multiple dimensions, such as question quality, answer alignment, answer verifiability, and downstream value, and provides both scores and detailed feedback.
+* 根据文本内容和生成的提示语，生成问题及其对应的答案。
 
-**Input**: Generated question-answer pairs  
-**Output**: Evaluation scores and feedback for each QA pair
+**输入**：已选择的文本内容及其生成的提示语  
+**输出**：生成的问答对
 
+---
 
+#### 3.3 **问答对评分**
 
-## 3. Running the Pipeline
+流程的第四步是使用 **问答评分器** 操作符（`QAScorer`）对生成的问答对进行质量评估。这一步为每个问答对提供多维度的评分和反馈，支持进一步筛选和改进。
 
-Run the full pipeline with:
+**功能：**
+
+* 从多个维度（如问题质量、答案契合度、答案可验证性和下游价值）对生成的问答对进行评估，并提供评分和详细反馈。
+
+**输入**：生成的问答对  
+**输出**：每个问答对的评估分数和反馈
+
+---
+
+## 3. 运行流程
+
+运行完整流程：
 
 ```bash
 cd test
