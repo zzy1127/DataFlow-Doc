@@ -1,7 +1,7 @@
 ---
-title: 知识库清洗与QA合成算子
+title: 知识库清洗和QA合成算子
 createTime: 2025/06/24 11:43:42
-permalink: /zh/guide/Knowledgebase_QA_operators/
+permalink: /zh/guide/agenticrag_operators/
 ---
 
 # 知识库清洗与QA合成算子
@@ -10,15 +10,21 @@ permalink: /zh/guide/Knowledgebase_QA_operators/
 
 知识库清洗算子适用于面向RAG，RARE，RAFT等下游任务的知识库提取，整理，精调，主要包括：**知识提取算子(KnowledgeExtractor**)，**语料分块算子(CorpusTextSpliiter)**和**知识清洗算子(KnowledgeCleaner)**。这些算子能够用于多种原始格式的文件整理，以及爬取特定URL对应的网页内容，并将这些文本知识整理成可读、易用、安全的RAG知识库。
 
+本文中算子标记继承自[强推理算子](https://opendcai.github.io/DataFlow-Doc/zh/guide/Reasoning_operators/)
+
+- 🚀 **自主创新**：核心算法原创研发，填补现有算法空白或是进一步提升性能，突破当下性能瓶颈。
+- ✨ **开源首发**：首次将该算子集成到社区主流框架中，方便更多开发者使用，实现开源共享。
+
 ## 知识库清洗算子
 
 知识库清洗算子能完成多种异构文本知识源的提取、整理和清洗工作。
 
-| 名称               | 适用类型 | 简介                                                         | 官方仓库或论文 |
-| ------------------ | :------- | ------------------------------------------------------------ | -------------- |
-| KnowledgeExtractor | 知识提取 | 该算子用于将各种异构文本知识提取成markdown格式，方便后续处理。 | -              |
-| CorpusTextSplitter | 语料分段 | 该算子提供多种方式，用于将文本全文切分成合适大小的片段，方便后续索引等操作。 | -              |
-| KnowledgeCleaner   | 知识清洗 | 该算子利用LLM对整理好的原始文本进行清洗，包括但不限于规范化，去隐私等操作。 | -              |
+| 名称                  | 适用类型 | 简介                                                         | 官方仓库或论文                                         |
+| --------------------- | :------- | ------------------------------------------------------------ | ------------------------------------------------------ |
+| KnowledgeExtractor🚀✨  | 知识提取 | 该算子用于将各种异构文本知识提取成markdown格式，方便后续处理。 | -                                                      |
+| CorpusTextSplitter✨   | 语料分段 | 该算子提供多种方式，用于将文本全文切分成合适大小的片段，方便后续索引等操作。 | -                                                      |
+| KnowledgeCleaner🚀✨    | 知识清洗 | 该算子利用LLM对整理好的原始文本进行清洗，包括但不限于规范化，去隐私等操作。 | -                                                      |
+| MultiHopQAGenerator🚀✨ | 知识转述 | 该算子利用长度为三个句子的滑动窗口，将清洗好的知识库转写成一系列需要多步推理的QA，更有利于RAG准确推理。 | [MIRAID](https://github.com/eth-medical-ai-lab/MIRIAD) |
 
 ## 算子接口调用说明
 
@@ -101,8 +107,8 @@ self.storage = FileStorage(
        - 保持超链接和基础排版
 
      - **纯文本**：
-        - TXT/MD文件直接透传
-        - 不做额外处理
+       - TXT/MD文件直接透传
+       - 不做额外处理
 
    **高级功能**
 
@@ -113,15 +119,14 @@ self.storage = FileStorage(
 **使用示例：**
 
 ```python
-text_splitter = CorpusTextSplitter(
-    split_method="token",
-    chunk_size=512,
-    tokenizer_name="/data0/hzy/RARE/model_base/Qwen2.5-3B-Instruct",
+knowledge_extractor = KnowledgeExtractor(
+    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"
 )
-text_splitter.run(
-    storage=self.storage.step(),
-    input_file=extracted,
-    output_key="raw_content",
+extracted=knowledge_extractor.run(
+    storage=self.storage,
+    raw_file=raw_file,
+    url=url,
+    lang="ch"
 )
 ```
 
@@ -180,14 +185,15 @@ text_splitter.run(
 **使用示例：**
 
 ```python
-knowledge_cleaner = KnowledgeExtractor(
-	intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"
+text_splitter = CorpusTextSplitter(
+    split_method="token",
+    chunk_size=512,
+    tokenizer_name="/data0/hzy/RARE/model_base/Qwen2.5-3B-Instruct",
 )
-extracted_path = knowledge_cleaner.run(
-    storage=self.storage,
-    raw_file=raw_file,
-    url=url,
-    lang="ch"
+text_splitter.run(
+    storage=self.storage.step(),
+    input_file=extracted,
+    output_key="raw_content",
 )
 ```
 
@@ -202,7 +208,7 @@ extracted_path = knowledge_cleaner.run(
    `__init__()`
 
    - `llm_serving`: 大语言模型服务接口（必须）
-   - `lang`: 处理语言（默认"zh"中文）
+   - `lang`: 处理语言（默认"ch"中文）
 
    `run()`
 
@@ -214,9 +220,9 @@ extracted_path = knowledge_cleaner.run(
 
    - **内容清洗**
 
-        - **HTML/XML处理**：移除冗余标签，保留语义化标签（table/code/formula等），提取有意义的属性值
-        - **文本规范化**：标准化引号（" "代替" "），统一破折号（-代替–/—），中英文省略号转换，保留技术符号（<< >>等操作符）
-        - **链接处理**：移除超链接包装，保留显示文本，保持脚注URL完整
+     - **HTML/XML处理**：移除冗余标签，保留语义化标签（table/code/formula等），提取有意义的属性值
+     - **文本规范化**：标准化引号（" "代替" "），统一破折号（-代替–/—），中英文省略号转换，保留技术符号（<< >>等操作符）
+     - **链接处理**：移除超链接包装，保留显示文本，保持脚注URL完整
 
    - **结构优化**
 
@@ -240,17 +246,76 @@ extracted_path = knowledge_cleaner.run(
 
    **使用示例：**
 
-   ```python
-   self.knowledge_cleaning_step3 = KnowledgeCleaner(
-       llm_serving=local_llm_serving,
-       lang="zh"
-   )
-   self.knowledge_cleaning_step3.run(
-       storage=self.storage.step(),
-       input_key= "raw_content",
-       output_key="cleaned",
-   )
-   ```
+```python
+knowledge_cleaner = KnowledgeExtractor(  
+    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"  
+)  
+extracted_path = knowledge_cleaner.run(  
+    storage=self.storage,  
+    raw_file=raw_file,  
+    url=url,  
+    lang="ch"  
+)  
+```
 
-   
+###    4. MultiHopQAGenerator
 
+**功能描述**：MultiHopQAGenerator 是一个专业的多跳问答对生成算子，专门用于从文本数据中自动生成需要多步推理的问题-答案对。该算子通过大语言模型接口，实现对文本的智能分析和复杂问题构建，适用于构建高质量的多跳问答数据集。
+
+**输入参数**：
+
+   `__init__()`
+
+- `llm_serving`: 大语言模型服务接口（必须）
+
+- `seed`: 随机种子（默认0）
+- `lang`: 处理语言（默认"en"英文）
+
+   `run()`
+
+- `storage`: 数据流存储接口对象
+
+- `input_key`: 输入字段名（默认""）
+- `output_key`: 输出字段名（默认""）
+
+**核心功能**：
+
+- **文本预处理**
+
+  - 自动清理无效字符和空白
+  - 执行长度检查
+  - 质量验证（句子完整性、特殊字符比例）
+
+- **信息抽取**
+
+  - 智能分割文本为语义单元
+  - 构建前提-中间-结论三元组
+  - 提取相关上下文信息
+
+- **问答生成**
+
+  - 基于大语言模型的多跳问题构建
+  - 自动生成推理步骤和支持事实
+  - 输出结构化QA对（JSON格式）
+
+- **质量控制**
+
+  - 复杂度评分系统（0.0-1.0）
+  - 自动去重机制
+  - 错误恢复与日志记录
+
+- **使用示例**
+
+  ```python
+  multi_hop_qa_generator = MultiHopQAGenerator(
+      llm_serving=local_llm_serving,
+      lang="en"
+  )
+  multi_hop_qa_generator.run(
+      storage=self.storage.step(),
+      input_key="cleaned",
+      output_key="MultiHop_QA"
+  )
+  ```
+
+  
