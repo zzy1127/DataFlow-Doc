@@ -58,7 +58,7 @@ These input data can be stored in specified files (such as ` json `, ` json `) a
 
 ```python
 self.storage = FileStorage(
-    first_entry_file_name="./dataflow/example/GeneralTextPipeline/pt_input.jsonl",
+    first_entry_file_name="../example_data/GeneralTextPipeline/pt_input.jsonl",
     cache_path="./cache",
     file_name_prefix="dataflow_cache_step",
     cache_type="jsonl",
@@ -227,7 +227,7 @@ Based on **Pipeline 1**, add the following operators:
    - Prompt can be found in 'dataflow/prompts/generat_text.py', which can be modified
 ```python
 self.llm_serving = LocalModelLLMServing(
-            model_name_or_path='./dataflow_cache/Qwen/Qwen2.5-7B-Instruct',
+            model_name_or_path='Qwen/Qwen2.5-7B-Instruct',
             tensor_parallel_size=1,
             max_tokens=8192,
             model_source="local"
@@ -292,7 +292,7 @@ Based on **Pipeline 1** and **Pipeline 3**, add the following operator:
    - Prompt can be found in 'dataflow/prompts/generat_text.py', which can be modified
 ```python
 self.llm_serving = LocalModelLLMServing(
-            model_name_or_path='./dataflow_cache/Qwen/Qwen2.5-7B-Instruct',
+            model_name_or_path='Qwen/Qwen2.5-7B-Instruct',
             tensor_parallel_size=1,
             max_tokens=8192,
             model_source="local"
@@ -311,7 +311,7 @@ The following provides an example pipeline demonstrating how to use multiple ope
 class TextPipeline():
     def __init__(self):
         self.storage = FileStorage(
-            first_entry_file_name="./dataflow/example/GeneralTextPipeline/pt_input.jsonl",
+            first_entry_file_name="../example_data/GeneralTextPipeline/pt_input.jsonl",
             cache_path="./cache",
             file_name_prefix="dataflow_cache_step",
             cache_type="jsonl",
