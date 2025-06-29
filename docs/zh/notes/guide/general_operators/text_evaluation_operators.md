@@ -163,7 +163,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2308.07074">paper</a><br><a href="https://huggingface.co/OFA-Sys/InsTagger">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PerplexityScorer✨</td>
+      <td class="tg-0pky">PerplexityScorer</td>
       <td class="tg-0pky">流畅性与可理解性</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">基于 Kenlm 模型计算文本的困惑度，困惑度越低，文本的流畅性和可理解性越高。</td>

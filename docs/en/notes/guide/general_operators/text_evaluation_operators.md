@@ -167,7 +167,7 @@ At present, there are still a few operators that are not included in the reposit
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2308.07074">paper</a><br><a href="https://huggingface.co/OFA-Sys/InsTagger">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PerplexityScorer✨</td>
+      <td class="tg-0pky">PerplexityScorer</td>
       <td class="tg-0pky">Fluency & Understandability</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Calculates text perplexity using the KenLM model; lower scores indicate higher fluency and understandability.</td>
