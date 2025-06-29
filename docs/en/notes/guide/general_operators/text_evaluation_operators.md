@@ -31,7 +31,7 @@ Scorers are divided into the following four types, each scorer provides one or m
     </tr>
     <tr>
       <td class="tg-0pky">Models</td>
-      <td class="tg-0pky">12</td>
+      <td class="tg-0pky">13</td>
       <td class="tg-0pky">Model or classifier-based scoring</td>
     </tr>
     <tr>
@@ -43,6 +43,14 @@ Scorers are divided into the following four types, each scorer provides one or m
 </table>
 
 Regarding data types: **[Text]** indicates accepting single-field string input, suitable for pre-training or fine-tuning data. **[Instruction]** indicates only suitable for fine-tuning data with multi-field format input.
+
+The types of open-source operators are quite limited. In order to achieve better data processing quality and fill the gap in data evaluation methods missing in open-source, we have meticulously designed and self-developed a new set of operators. The meanings of the labels are as follows:
+
+🚀 Independent Innovation: Core algorithms are original developments, filling gaps in existing algorithms or further improving performance, breaking through current performance bottlenecks.
+
+✨ Open Source Premiere: This operator is integrated into the mainstream community framework for the first time, making it easier for more developers to use and achieve open-source sharing.
+
+At present, there are still a few operators that are not included in the repository and are being accelerated for integration.
 
 ### List of Scorers
 
@@ -61,7 +69,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">AlpagasusScorer</td>
+      <td class="tg-0pky">AlpagasusScorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Evaluates the quality of instructions by calling GPT, returning a quality score. A higher score indicates higher instruction quality.</td>
@@ -69,7 +77,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2307.08701">paper</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PerspectiveScorer</td>
+      <td class="tg-0pky">PerspectiveScorer✨</td>
       <td class="tg-0pky">Safety</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Uses PerspectiveAPI to evaluate the toxicity of the text, returning a toxicity probability. A higher score indicates higher text toxicity.</td>
@@ -77,7 +85,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://perspectiveapi.com/">API</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">TreeinstructScorer</td>
+      <td class="tg-0pky">TreeinstructScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Measures instruction complexity by generating the number of nodes in the syntax tree; more nodes indicate more complex instructions.</td>
@@ -102,7 +110,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">Task2VecScorer</td>
+      <td class="tg-0pky">Task2VecScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Evaluates the diversity of the dataset using the Task2Vec method. Higher scores indicate higher dataset diversity.</td>
@@ -135,7 +143,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">DebertaV3Scorer</td>
+      <td class="tg-0pky">DebertaV3Scorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">A quality classifier based on NVIDIA's DeBERTa V3 model for evaluating text quality.</td>
@@ -143,7 +151,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://huggingface.co/nvidia/quality-classifier-deberta">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">FineWebEduScorer</td>
+      <td class="tg-0pky">FineWebEduScorer✨</td>
       <td class="tg-0pky">Educational Value</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">A classifier for evaluating the educational value of text; higher scores indicate higher educational value.</td>
@@ -151,7 +159,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2406.17557">paper</a><br><a href="https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">InstagScorer</td>
+      <td class="tg-0pky">InstagScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Evaluates instruction content diversity by returning the number of tags; more tags indicate higher content diversity.</td>
@@ -159,7 +167,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2308.07074">paper</a><br><a href="https://huggingface.co/OFA-Sys/InsTagger">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PerplexityScorer</td>
+      <td class="tg-0pky">PerplexityScorer✨</td>
       <td class="tg-0pky">Fluency & Understandability</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Calculates text perplexity using the KenLM model; lower scores indicate higher fluency and understandability.</td>
@@ -167,7 +175,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://aclanthology.org/W11-2123.pdf">paper</a><br><a href="https://huggingface.co/edugp/kenlm/tree/main">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuratingScorer</td>
+      <td class="tg-0pky">QuratingScorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness、 Educational Value</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Evaluates text quality using the Qurating model; higher scores indicate higher quality.</td>
@@ -175,7 +183,15 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2402.09739">paper</a><br><a href="https://github.com/princeton-nlp/QuRating">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PresidioScorer</td>
+      <td class="tg-0pky">PairQualScorer🚀</td>
+      <td class="tg-0pky">Educational Value</td>
+      <td class="tg-0pky">Text</td>
+      <td class="tg-0pky">Evaluates the quality of text using the PairQual model, based on the BGE model. It supports both Chinese and English. It is trained by scoring pairwise comparisons of texts using GPT. A higher score indicates better quality.</td>
+      <td class="tg-0pky">-</td>
+      <td class="tg-0pky"><br><a href="https://huggingface.co/zks2856/PairQual-Scorer-en">code</a></td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">PresidioScorer✨</td>
       <td class="tg-0pky">Safety</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Using the Microsoft Presidio model, identify private entities (PII) in text such as credit card numbers, names, locations, etc. The scorer returns the number of PII information.</td>
@@ -183,7 +199,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://github.com/microsoft/presidio">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">SuperfilteringScorer</td>
+      <td class="tg-0pky">SuperfilteringScorer✨</td>
       <td class="tg-0pky">Fluency & Understandability</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Evaluates the following difficulty of instructions using the Superfiltering method; higher scores indicate more difficult instructions to follow.</td>
@@ -191,7 +207,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2402.00530">paper</a><br><a href="https://github.com/tianyi-lab/Superfiltering">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">TextbookScorer</td>
+      <td class="tg-0pky">TextbookScorer✨</td>
       <td class="tg-0pky">Educational Value</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">A textbook quality classifier based on FastText, used to evaluate the educational value of text.</td>
@@ -199,7 +215,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2306.11644">paper</a><br><a href="https://huggingface.co/kenhktsui/llm-data-textbook-quality-fasttext-classifier-v2">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">UnievalScorer</td>
+      <td class="tg-0pky">UnievalScorer✨</td>
       <td class="tg-0pky">Fluency & Understandability</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">UniEval is a multi-dimensional text quality evaluation model; higher scores indicate better quality.</td>
@@ -207,7 +223,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2210.07197">paper</a><br><a href="https://github.com/maszhongming/UniEval">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">DeitaQualityScorer</td>
+      <td class="tg-0pky">DeitaQualityScorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">An instruction quality scorer based on the Llama model; higher scores indicate higher instruction quality.</td>
@@ -215,7 +231,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2312.15685">paper</a><br><a href="https://huggingface.co/hkust-nlp/deita-quality-scorer">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">DeitaComplexityScorer</td>
+      <td class="tg-0pky">DeitaComplexityScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">An instruction complexity scorer based on the Llama model; higher scores indicate higher instruction complexity.</td>
@@ -223,7 +239,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2312.15685">paper</a><br><a href="https://huggingface.co/hkust-nlp/deita-complexity-scorer">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">RMScorer</td>
+      <td class="tg-0pky">RMScorer✨</td>
       <td class="tg-0pky">Fluency & Understandability</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">A reward-model-deberta-v3-large-v2 scorer based on human value judgment. High scores represent higher quality.</td>
@@ -256,7 +272,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://github.com/whylabs/langkit">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">LexicalDiversityScorer</td>
+      <td class="tg-0pky">LexicalDiversityScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Calculates lexical diversity scores using MTLD and HD-D methods; higher scores represent richer vocabulary use, reflecting the diversity and complexity of the text.</td>
@@ -311,6 +327,7 @@ To provide more precise data quality evaluation, we have constructed a quality e
 - **TextbookScorer**: TextbookScore
 - **FineWebEduScorer**: FineWebEduScore
 - **QuratingScorer**: QuratingEducationalValueScore
+- **PairQualScorer**: PairQualScore
 
 #### 6. Content Accuracy & Effectiveness
 
