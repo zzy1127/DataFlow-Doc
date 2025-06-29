@@ -60,6 +60,12 @@ export const zhNavbar = defineNavbarConfig([
                         link: "/zh/notes/guide/quickstart/Text2SqlPipeline.md",
                         icon: "material-symbols-light:checkbook-outline-rounded",
                         activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "Agentic RAG数据合成流水线",
+                        link: "/zh/notes/guide/quickstart/AgenticRAGPipeline.md",
+                        icon: "material-symbols-light:agent-rounded",
+                        activeMatch: '^/guide/'
                     }
                 ]
             },

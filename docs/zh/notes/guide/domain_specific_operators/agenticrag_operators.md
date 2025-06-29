@@ -10,6 +10,9 @@ permalink: /zh/guide/agenticrag_operators/
 
 AgenticRAG 算子是一套专为 agentic RAG（检索增强生成）任务设计的工具，特别聚焦于从给定文本中生成问答（QA）样本，以支持基于强化学习的 agentic RAG 训练。这些算子主要分为两类：**数据生成算子（Generators）** 和 **处理算子（Processors）**
 
+- 🚀 **自主创新**：核心算法原创研发，填补现有算法空白或是进一步提升性能，突破当下性能瓶颈。
+- ✨ **开源首发**：首次将该算子集成到社区主流框架中，方便更多开发者使用，实现开源共享。
+
 ## 数据生成算子
 
 数据生成算子负责生成与 RAG 相关的强化学习训练数据，包括自动提示词生成、问答生成和问答评分
@@ -25,19 +28,19 @@ AgenticRAG 算子是一套专为 agentic RAG（检索增强生成）任务设计
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">AutoPromptGenerator</td>
+      <td class="tg-0pky">AutoPromptGenerator🚀</td>
       <td class="tg-0pky">提示词合成</td>
       <td class="tg-0pky">利用大语言模型为特定内容生成用于问答创建的提示词。</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QAGenerator</td>
+      <td class="tg-0pky">QAGenerator✨</td>
       <td class="tg-0pky">问答生成</td>
       <td class="tg-0pky">使用大语言模型和生成的提示词，为给定文本内容生成问题和答案。</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QAScorer</td>
+      <td class="tg-0pky">QAScorer✨</td>
       <td class="tg-0pky">问答评分</td>
       <td class="tg-0pky">对问答对及其相关内容进行问题质量、答案一致性、答案可验证性和下游价值的评估。</td>
       <td class="tg-0pky">-</td>
@@ -62,7 +65,7 @@ AgenticRAG 算子是一套专为 agentic RAG（检索增强生成）任务设计
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">ContentChooser</td>
+      <td class="tg-0pky">ContentChooser🚀</td>
       <td class="tg-0pky">内容选择器</td>
       <td class="tg-0pky">从更大的内容集合中选择一部分内容以供后续流程处理。</td>
       <td class="tg-0pky">-</td>
