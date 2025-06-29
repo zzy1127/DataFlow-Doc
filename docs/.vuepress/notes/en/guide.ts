@@ -24,7 +24,8 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'install',
                 `TextPipeline`,
                 'ReasoningPipeline',
-                'Text2SqlPipeline'
+                'Text2SqlPipeline',
+                'AgenticRAGPipeline'
                 // 'usage',
                 // 'project-structure',
                 // 'write',

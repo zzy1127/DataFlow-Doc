@@ -61,6 +61,12 @@ export const enNavbar = defineNavbarConfig([
                         icon: "material-symbols-light:checkbook-outline-rounded",
                         activeMatch: '^/guide/'
                     },
+                    {
+                        text: "Agentic RAG Pipeline",
+                        link: "/en/notes/guide/quickstart/AgenticRAGPipeline.md",
+                        icon: "material-symbols-light:agent-rounded",
+                        activeMatch: '^/guide/'
+                    }
                 ]
             },
         ]
