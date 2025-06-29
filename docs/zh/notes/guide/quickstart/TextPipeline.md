@@ -61,9 +61,9 @@ python test/test_sft_synthetic.py
 
 ```python
 self.storage = FileStorage(
-    first_entry_file_name="./dataflow/example/GeneralTextPipeline/pt_input.jsonl",
+    first_entry_file_name="../example_data/GeneralTextPipeline/pt_input.jsonl",
     cache_path="./cache",
-    file_name_prefix="dataflow_cache_step",
+    file_name_prefix="dataflow_cache",
     cache_type="jsonl",
 )
 ```
@@ -250,7 +250,7 @@ self.storage = FileStorage(
 - prompt见`dataflow/prompts/general_text.py`，可更改
 ```python
 self.llm_serving = LocalModelLLMServing(
-            model_name_or_path='./dataflow_cache/Qwen/Qwen2.5-7B-Instruct',
+            model_name_or_path='Qwen/Qwen2.5-7B-Instruct',
             tensor_parallel_size=1,
             max_tokens=8192,
             model_source="local"
@@ -318,7 +318,7 @@ self.instag_filter_step4 = InstagFilter(
 - prompt见`dataflow/prompts/general_text.py`，可更改
 ```python
 self.llm_serving = LocalModelLLMServing(
-            model_name_or_path='./dataflow_cache/Qwen/Qwen2.5-7B-Instruct',
+            model_name_or_path='Qwen/Qwen2.5-7B-Instruct',
             tensor_parallel_size=1,
             max_tokens=8192,
             model_source="local"
@@ -336,7 +336,7 @@ self.sft_generator = SupervisedFinetuneGenerator(
 class TextPipeline():
     def __init__(self):
         self.storage = FileStorage(
-            first_entry_file_name="./dataflow/example/GeneralTextPipeline/pt_input.jsonl",
+            first_entry_file_name="../example_data/GeneralTextPipeline/pt_input.jsonl",
             cache_path="./cache",
             file_name_prefix="dataflow_cache_step",
             cache_type="jsonl",
