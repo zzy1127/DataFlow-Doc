@@ -1,6 +1,6 @@
 {
   "name": "data-flow-doc",
-  "type": "commonjs",
+  "type": "module",
   "version": "1.0.0",
   "description": "Documentation for modern data processing pipeline.",
   "author": "Sunnyhaze <mxch1122@126.com>",
@@ -23,10 +23,7 @@
     "typescript": "^5.8.3",
     "vue": "^3.5.16",
     "vuepress": "^2.0.0-rc.23",
-    "vuepress-theme-plume": "1.0.0-rc.152",
-    "vuepress-plugin-md-enhance": "2.0.0-rc.106"
-  },
-  "dependencies": {
-    "sass-embedded-linux-x64": "^1.89.2"
+    "vuepress-plugin-md-enhance": "2.0.0-rc.88",
+    "vuepress-theme-plume": "1.0.0-rc.152"
   }
 }
