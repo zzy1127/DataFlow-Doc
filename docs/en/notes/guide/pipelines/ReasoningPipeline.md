@@ -1,7 +1,7 @@
 ---
 
 title: Reasoning Data Synthesis Pipeline
-icon: mdi\:brain
+icon: mdi:brain
 createTime: 2025/06/16 13:08:42
 permalink: /en/guide/reasoningpipeline/
 

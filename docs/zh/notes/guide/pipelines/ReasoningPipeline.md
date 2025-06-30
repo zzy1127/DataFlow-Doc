@@ -1,7 +1,7 @@
 ---
 
 title: 强推理数据合成流水线
-icon: mdi\:brain
+icon: mdi:brain
 createTime: 2025/06/16 13:08:42
 permalink: /zh/guide/reasoningpipeline/
 

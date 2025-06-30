@@ -64,7 +64,7 @@ export const zhNavbar = defineNavbarConfig([
                     {
                         text: "Agentic RAG数据合成流水线",
                         link: "/zh/notes/guide/quickstart/AgenticRAGPipeline.md",
-                        icon: "material-symbols-light:agent-rounded",
+                        icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
                     }
                 ]

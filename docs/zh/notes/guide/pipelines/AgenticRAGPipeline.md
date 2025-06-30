@@ -1,6 +1,6 @@
 ---
-title: 推理数据合成流程  
-icon: mdi:brain  
+title: Agentic RAG数据合成流程  
+icon: solar:palette-round-linear
 createTime: 2025/06/16 13:08:42  
 permalink: /zh/guide/agenticrag_pipeline/  
 ---

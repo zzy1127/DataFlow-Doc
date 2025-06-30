@@ -22,11 +22,19 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
-                `TextPipeline`,
-                'ReasoningPipeline',
-                'Text2SqlPipeline',
-                'AgenticRAGPipeline'
             ],
+        },
+        {
+            text:"流水线",
+            collapsed: false,
+            icon: 'carbon:flow',
+            prefix: 'pipelines',
+            items: [
+                "TextPipeline",
+                "ReasoningPipeline",
+                "Text2SqlPipeline",
+                "AgenticRAGPipeline"
+            ]
         },
         {
             text: "通用算子",

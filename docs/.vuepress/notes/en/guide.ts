@@ -22,19 +22,19 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
-                `TextPipeline`,
-                'ReasoningPipeline',
-                'Text2SqlPipeline',
-                'AgenticRAGPipeline'
-                // 'usage',
-                // 'project-structure',
-                // 'write',
-                // 'blog',
-                // 'document',
-                // 'international',
-                // 'deployment',
-                // 'optimize-build',
             ],
+        },
+        {
+            text: "Pipelines",
+            collapsed: false,
+            icon: 'carbon:flow',
+            prefix: 'pipelines',
+            items: [
+                "TextPipeline",
+                "ReasoningPipeline",
+                "Text2SqlPipeline",
+                "AgenticRAGPipeline"
+            ]
         },
         {
             text: "General Operators",

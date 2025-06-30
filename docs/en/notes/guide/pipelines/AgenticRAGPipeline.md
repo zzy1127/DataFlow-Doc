@@ -1,6 +1,6 @@
 ---
 title: Agentic RAG Data Synthesis Pipeline  
-icon: mdi:brain  
+icon: solar:palette-round-linear
 createTime: 2025/06/16 13:08:42  
 permalink: /en/guide/agenticrag_pipeline/  
 ---
