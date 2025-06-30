@@ -45,7 +45,7 @@ question_difficulty_classifier.run(
 
 算子的`run`函数必须包含一个`storage`形参，用于读写数据。此外，关于表字段的约定如下：
 - 如果算子只需读取/写出一个字段，则一般通过`input_key`和`output_key`来指定。
-- 如果算子不需要写出字段，则完全没有该形参。
+- 如果算子不需要写出字段，则完全没有`output_*`这样的形参。
 - 如果需要读取/写出多个字段，则一般通过其功能指定形参名，比如`input_question_key`,`input_answer_key`，`output_question_quality_key`。
 
 算子的`run`中的字段名可由用户灵活指定，以适应LLM数据集多变的字段命名方式（比如：`question`, `instruction`, `human`都会用来指代多轮对话中人类的问题）。此时设置为`input_key="question"`, `input_key="instruction"` 或 `input_key="human"`即可实现对于该类数据集的自由读取。
