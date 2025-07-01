@@ -16,7 +16,7 @@ export const Guide: ThemeNote = defineNoteConfig({
             ],
         },
         {
-            text: 'Quick Start',
+            text: 'Start with Dataflow',
             collapsed: false,
             icon: 'carbon:idea',
             prefix: 'quickstart',
