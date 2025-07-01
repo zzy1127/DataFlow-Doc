@@ -50,6 +50,16 @@ The first step of the process is to use the **Content Chooser** operator (`Conte
 
 **Output:** Selected text content
 
+```python
+content_chooser = ContentChooser(embedding_model_path="your_embedding_model_path")
+result = content_chooser.run(
+            storage = self.storage.step(),
+            input_key = "text",
+            num_samples = 5,
+            method = "random"
+          ) 
+```
+
 ### 3. **Question and Answer Generation**
 
 #### 3.1 **Automatic Prompt Generation**
@@ -62,6 +72,15 @@ The second step of the process is to use the **Automatic Prompt Generator** oper
 
 **Input:** Selected text content  
 **Output:** Generated prompts for each text content
+
+```python
+prompt_generator = AutoPromptGenerator(api_llm_serving)
+result = prompt_generator.run(
+            storage = self.storage.step(),
+            input_key = "text",
+            output_key = "generated_prompt"
+        )
+```
 
 ---
 
@@ -76,6 +95,17 @@ The third step of the process is to use the **Q&A Generator** operator (`QAGener
 **Input:** Selected text content and its generated prompts  
 **Output:** Generated Q&A pairs
 
+```python
+qa_gen = QAGenerator(llm_serving=api_llm_serving)
+result = qa_gen.run(
+            storage = self.storage.step(),
+            input_key="text",
+            prompt_key="generated_prompt",
+            output_quesion_key="generated_question",
+            output_answer_key="generated_answer"
+          )
+```
+
 ---
 
 #### 3.3 **Q&A Pair Scoring**
@@ -89,12 +119,97 @@ The fourth step of the process is to use the **Q&A Scorer** operator (`QAScorer`
 **Input:** Generated Q&A pairs  
 **Output:** Evaluation scores and feedback for each Q&A pair
 
+```python
+qa_scorer = QAScorer(llm_serving=api_llm_serving)
+result = qa_scorer.run(
+            storage = self.storage.step(),
+            input_question_key="generated_question",
+            input_answer_key="generated_answer",
+            output_question_quality_key="question_quality_grades",
+            output_question_quality_feedback_key="question_quality_feedbacks",
+            output_answer_alignment_key="answer_alignment_grades",
+            output_answer_alignment_feedback_key="answer_alignment_feedbacks",
+            output_answer_verifiability_key="answer_verifiability_grades",
+          )
+```
+
 ## 3. Running the Process
 
 Run the complete process:
 
+```python
+from dataflow.operators.generate.AgenticRAG import (
+    AutoPromptGenerator,
+    QAGenerator,
+    QAScorer
+)
 
-```bash
-cd test
-python test_agentic_rag.py
+from dataflow.operators.process.AgenticRAG import (
+    ContentChooser,
+)
+from dataflow.utils.storage import FileStorage
+from dataflow.llmserving import APILLMServing_request
+
+class AgenticRAGPipeline():
+    def __init__(self, llm_serving=None):
+
+        self.storage = FileStorage(
+            first_entry_file_name="../dataflow/example/AgenticRAGPipeline/pipeline_small_chunk.json",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl",
+        )
+        if llm_serving is None:
+            api_llm_serving = APILLMServing_request(
+                    api_url="your_api_url",
+                    model_name="gpt-4o",
+                    max_workers=100
+            )
+        else:
+            api_llm_serving = llm_serving
+
+        self.content_chooser_step1 = ContentChooser(embedding_model_path="your_embedding_model_path")
+
+        self.prompt_generator_step2 = AutoPromptGenerator(api_llm_serving)
+
+        self.qa_generator_step3 = QAGenerator(api_llm_serving)
+
+        self.qa_scorer_step4 = QAScorer(api_llm_serving)
+        
+    def forward(self):
+
+        self.content_chooser_step1.run(
+            storage = self.storage.step(),
+            input_key= "text",
+            num_samples=5,
+            method= "random"
+        )
+
+        self.prompt_generator_step2.run(
+            storage = self.storage.step(),
+            input_key = "text"
+        )
+
+        self.qa_generator_step3.run(
+            storage = self.storage.step(),
+            input_key="text",
+            prompt_key="generated_prompt",
+            output_quesion_key="generated_question",
+            output_answer_key="generated_answer"
+        )
+
+        self.qa_scorer_step4.run(
+            storage = self.storage.step(),
+            input_question_key="generated_question",
+            input_answer_key="generated_answer",
+            output_question_quality_key="question_quality_grades",
+            output_question_quality_feedback_key="question_quality_feedbacks",
+            output_answer_alignment_key="answer_alignment_grades",
+            output_answer_alignment_feedback_key="answer_alignment_feedbacks",
+            output_answer_verifiability_key="answer_verifiability_grades",
+        )
+        
+if __name__ == "__main__":
+    model = AgenticRAGPipeline()
+    model.forward()
 ```
