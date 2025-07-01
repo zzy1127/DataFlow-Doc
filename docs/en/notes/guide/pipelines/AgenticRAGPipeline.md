@@ -36,94 +36,62 @@ self.storage = FileStorage(
 )
 ```
 
-### 2. **内容选择**
+### 2. **Content Selection**
 
+#### 2.1 **Selecting Content**
 
-#### 2.1 **选择内容**
+The first step of the process is to use the **Content Chooser** operator (`ContentChooser`) to select a portion of text content from a large dataset. This step is crucial because it determines which text content will be used in the subsequent generation process.
 
+**Functionality:**
 
-流程的第一步是使用 **内容选择器** 操作符（`ContentChooser`）从大型数据集中选择一部分文本内容。此步骤至关重要，因为它决定了哪些文本内容将用于后续的生成流程。
+* Identifies and selects representative text content from a set of textual contexts.
 
+**Input:** Original text content
 
-**功能：**
+**Output:** Selected text content
 
+### 3. **Question and Answer Generation**
 
-* 从一组文本上下文中识别并选择具有代表性的文本内容。
+#### 3.1 **Automatic Prompt Generation**
 
+The second step of the process is to use the **Automatic Prompt Generator** operator (`AutoPromptGenerator`) to automatically generate dedicated prompts for question and answer generation. This step ensures that each selected text content is paired with an appropriate prompt for the subsequent Q&A generation.
 
-**输入**：原始文本内容
+**Functionality:**
 
+* Automatically generates suitable prompts for each selected text content to guide the Q&A generation process.
 
-**输出**：已选择的文本内容
-
-
-
-
-### 3. **问答生成**
-
-
-#### 3.1 **自动提示生成**
-
-
-流程的第二步是使用 **自动提示生成器** 操作符（`AutoPromptGenerator`）为问答生成自动生成专用提示语。此步骤确保每个被选中的文本内容都配有合适的提示语，以便后续的问答生成。
-
-
-**功能：**
-
-
-* 为每个被选中的文本内容自动生成合适的提示语，引导问答生成过程。
-
-
-**输入**：已选择的文本内容  
-**输出**：为每个文本内容生成的提示语
-
+**Input:** Selected text content  
+**Output:** Generated prompts for each text content
 
 ---
 
+#### 3.2 **Q&A Pair Generation**
 
-#### 3.2 **问答对生成**
+The third step of the process is to use the **Q&A Generator** operator (`QAGenerator`) to generate Q&A pairs for each text content and its corresponding prompt. This step produces the core data for subsequent evaluation and use.
 
+**Functionality:**
 
-流程的第三步是使用 **问答生成器** 操作符（`QAGenerator`）为每个文本内容及其对应的提示语生成问答对。此步骤产出后续评估和使用的核心数据。
+* Generates questions and their corresponding answers based on the text content and the generated prompts.
 
-
-**功能：**
-
-
-* 根据文本内容和生成的提示语，生成问题及其对应的答案。
-
-
-**输入**：已选择的文本内容及其生成的提示语  
-**输出**：生成的问答对
-
+**Input:** Selected text content and its generated prompts  
+**Output:** Generated Q&A pairs
 
 ---
 
+#### 3.3 **Q&A Pair Scoring**
 
-#### 3.3 **问答对评分**
+The fourth step of the process is to use the **Q&A Scorer** operator (`QAScorer`) to evaluate the quality of the generated Q&A pairs. This step provides multi-dimensional scores and feedback for each Q&A pair, supporting further filtering and improvement.
 
+**Functionality:**
 
-流程的第四步是使用 **问答评分器** 操作符（`QAScorer`）对生成的问答对进行质量评估。此步骤为每个问答对提供多维度的评分和反馈，支持进一步筛选和改进。
+* Evaluates the generated Q&A pairs from multiple dimensions (such as question quality, answer consistency, answer verifiability, and downstream value), and provides scores and detailed feedback.
 
+**Input:** Generated Q&A pairs  
+**Output:** Evaluation scores and feedback for each Q&A pair
 
-**功能：**
+## 3. Running the Process
 
-
-* 从多个维度（如问题质量、答案一致性、答案可验证性和下游价值）评估生成的问答对，并提供评分和详细反馈。
-
-
-**输入**：生成的问答对  
-**输出**：每个问答对的评估分数和反馈
-
-
-
-
-
-
-## 3. 运行流程
-
-
-运行完整流程：
+Run the complete process:
 
 
 ```bash
