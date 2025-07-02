@@ -35,7 +35,7 @@ export const enNavbar = defineNavbarConfig([
                 ]
             },
             {
-                text: 'Quick Start',
+                text: 'Start with Dataflow',
                 items: [
                     {
                         text: 'Installation',
@@ -44,31 +44,42 @@ export const enNavbar = defineNavbarConfig([
                         activeMatch: '^/guide/'
                     },
                     {
+                        text: 'Quick Start',
+                        link: '/en/notes/guide/quickstart/quickstart.md',
+                        icon: 'solar:flag-2-broken',
+                        activeMatch: '^/guide/'
+                    },
+                    
+                ]
+            },
+            {
+                text: "Pipelines",
+                items: [{
                         text: "Text Pipeline",
-                        link: '/en/notes/guide/quickstart/TextPipeline.md',
+                        link: '/en/notes/guide/pipelines/TextPipeline.md',
                         icon: 'mdi:file-text',
                         activeMatch: '^/guide/'
                     },
                     {
                         text: "Reasoning Pipeline",
-                        link: "/en/notes/guide/quickstart/ReasoningPipeline.md",
+                        link: "/en/notes/guide/pipelines/ReasoningPipeline.md",
                         icon: "mdi:brain",
                         activeMatch: '^/guide/'
                     },
                     {
                         text: "Text-to-SQL Pipeline",
-                        link: "/en/notes/guide/quickstart/Text2SqlPipeline.md",
+                        link: "/en/notes/guide/pipelines/Text2SqlPipeline.md",
                         icon: "material-symbols-light:checkbook-outline-rounded",
                         activeMatch: '^/guide/'
                     },
                     {
                         text: "Agentic RAG Pipeline",
-                        link: "/en/notes/guide/quickstart/AgenticRAGPipeline.md",
+                        link: "/en/notes/guide/pipelines/AgenticRAGPipeline.md",
                         icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
                     }
                 ]
-            },
+            }
         ]
     },
     {
