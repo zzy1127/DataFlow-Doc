@@ -1,7 +1,7 @@
 ---
 
 title: 强推理数据合成流水线
-icon: mdi\:brain
+icon: mdi:brain
 createTime: 2025/06/16 13:08:42
 permalink: /zh/guide/reasoningpipeline/
 
@@ -59,6 +59,13 @@ self.storage = FileStorage(
 **输入**：原始数学问题
 **输出**：经过清洗的有效数学问题
 
+```python
+question_filter = QuestionFilter(
+    llm_serving=api_llm_serving,
+    system_prompt="You are a math problem validator."
+    )
+```
+
 #### 2.2 **问题合成（QuestionGenerator）**
 
 在问题通过过滤后，**问题合成**（`QuestionGenerator`）步骤基于已有的问题生成新的数学问题，以增强数据集的多样性和规模。
@@ -70,6 +77,13 @@ self.storage = FileStorage(
 
 **输入**：经过过滤的有效问题
 **输出**：合成的新问题
+
+```python
+question_gen = QuestionGenerator(
+                num_prompts=3,  # from 1 to k
+                llm_serving=api_llm_serving
+                )
+```
 
 #### 2.3 **问题过滤（QuestionFilter）**
 
@@ -83,6 +97,13 @@ self.storage = FileStorage(
 **输入**：合成的新问题
 **输出**：有效的合成问题
 
+```python
+question_filter = QuestionFilter(
+    llm_serving=api_llm_serving,
+    system_prompt="You are a math problem validator."
+    )
+```
+
 #### 2.4 **问题难度分类（QuestionDifficultyClassifier）**
 
 **问题难度分类**（`QuestionDifficultyClassifier`）对合成后的问题进行难度评分。此步骤将问题按难度等级进行分类，有助于后续数据分析和模型调优。
@@ -95,6 +116,10 @@ self.storage = FileStorage(
 **输入**：有效的合成问题
 **输出**：每个问题的难度评分
 
+```python
+difficulty = QuestionDifficultyClassifier(llm_serving=api_llm_serving)
+```
+
 #### 2.5 **问题类别分类（QuestionCategoryClassifier）**
 
 **问题类别分类**（`QuestionCategoryClassifier`）将问题按数学类别（如代数、几何、概率等）进行分类。此步骤有助于后续分析问题的分布和多样性。
@@ -106,6 +131,10 @@ self.storage = FileStorage(
 
 **输入**：有效的合成问题
 **输出**：问题的类别标签
+
+```python
+classifier = QuestionCategoryClassifier(llm_serving=api_llm_serving)
+```
 
 ### 3. **答案处理（Answer Handling）**
 
@@ -121,6 +150,10 @@ self.storage = FileStorage(
 **输入**：问题的输出（以及标准答案，如果有）
 **输出**：标准答案分支或伪答案分支
 
+```python
+branch = AnswerPipelineRoot()
+```
+
 #### 3.2 **答案生成（AnswerGenerator）**
 
 对于包含标准答案的情况，**答案生成**（`AnswerGenerator`）步骤会生成带有推理过程的答案，提供长链推理的过程，以增加答案的可靠性和透明度。对于不包含标准答案的情况，此步骤为**伪答案生成**（PseudoAnswerGenerator），通过要求模型多次回答同一个问题，投票选出频率最高的答案，作为**伪答案**。
@@ -133,6 +166,10 @@ self.storage = FileStorage(
 **输入**：问题文本（以及标准答案）
 **输出**：含标准答案：模型生成的推理过程（长链推理）；不含标准答案：伪答案和长链推理过程。
 
+```python
+answer_gen = AnswerGenerator(llm_serving=api_llm_serving)
+```
+
 #### 3.3 **答案格式过滤（AnswerFormatterFilter）**
 
 生成的答案会经过**答案格式过滤**（`AnswerFormatterFilter`）步骤，确保其符合预设格式要求。这一步骤保证了生成的答案结构化且有效，避免不符合格式的答案影响后续处理。
@@ -144,6 +181,10 @@ self.storage = FileStorage(
 **输入**：生成的答案（长链推理）
 **输出**：符合格式要求的答案
 
+```python
+filter_op = AnswerFormatterFilter()
+```
+
 #### 3.4 **答案长度过滤（AnswerTokenLengthFilter）**
 
 接下来，**答案长度过滤**（`AnswerTokenLengthFilter`）步骤会根据预设的最大答案长度进行过滤，剔除过长或过短的答案，确保生成的答案长度适当。
@@ -154,6 +195,13 @@ self.storage = FileStorage(
 
 **输入**：生成的答案
 **输出**：符合长度要求的答案
+
+```python
+length_filter = AnswerTokenLengthFilter(
+                  max_answer_token_length=8192,
+                  tokenizer_dir="Qwen/Qwen2.5-0.5B-Instruct"
+                  )
+```
 
 #### 3.5 **答案验证与去重（AnswerGroundTruthFilter, AnswerNgramFilter）**
 
@@ -169,6 +217,15 @@ self.storage = FileStorage(
 
 **输入**：生成的答案
 **输出**：经过验证和去重的答案
+
+```python
+filter_op = AnswerGroundTruthFilter(compare_method="math_verify")
+ngram_filter = AnswerNgramFilter(
+                min_score=0.1,
+                max_score=1.0,
+                ngrams=5
+                )
+```
 
 ### 4. **输出数据**
 
@@ -198,3 +255,122 @@ self.storage = FileStorage(
   ```bash
   python test/test_reasoning_pretrain.py
   ```
+
+## 4. 流水线示例
+以下给出示例流水线，演示如何使用多个算子进行推理数据处理。该示例展示了如何初始化一个推理数据处理流水线，并且顺序执行各个过滤和清理步骤。
+
+```python
+class ReasoningPipeline():
+    def __init__(self):
+        self.storage = FileStorage(
+            first_entry_file_name="../example_data/ReasoningPipeline/pipeline_math_short.json",
+            cache_path="./cache_local",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl",
+        )
+        if llm_serving is None:
+            llm_serving = LocalModelLLMServing(
+                model_name_or_path="Qwen/Qwen2.5-7B-Instruct",
+                tensor_parallel_size=1,
+                max_tokens=8192,
+                model_source="local"
+            )
+        self.question_filter_step1 = QuestionFilter(
+            system_prompt="You are an expert in evaluating mathematical problems. Follow the user's instructions strictly and output your final judgment in the required JSON format.",
+            llm_serving=llm_serving
+        )
+        self.question_gen_step2 =  QuestionGenerator(
+            num_prompts=3,
+            llm_serving=llm_serving
+        )
+        self.question_filter_step3 = QuestionFilter(
+            system_prompt="You are an expert in evaluating mathematical problems. Follow the user's instructions strictly and output your final judgment in the required JSON format.",
+            llm_serving=llm_serving
+        )
+        self.question_difficulty_classifier_step4 = QuestionDifficultyClassifier(
+            llm_serving=llm_serving
+        )
+        self.question_category_classifier_step5 = QuestionCategoryClassifier(
+            llm_serving=llm_serving
+        )
+        ########################## branch ############################
+        self.answer_pipeline_root_step6 = AnswerPipelineRoot()
+        ########################## answer ############################
+        self.answer_generator_step7 = AnswerGenerator(
+            llm_serving=llm_serving
+        )
+        self.answer_format_filter_step8 = AnswerFormatterFilter()
+        self.answer_token_length_filter_step9 = AnswerTokenLengthFilter(
+            max_answer_token_length = 8192,
+            tokenizer_dir = "Qwen/Qwen2.5-0.5B-Instruct"
+        )
+        self.answer_groundtruth_filter_step10 = AnswerGroundTruthFilter()
+        self.answer_ngram_filter_step11 = AnswerNgramFilter(
+            min_score = 0.1,
+            max_score = 1.0,
+            ngrams = 5
+        )
+
+    def forward(self):
+        self.question_filter_step1.run(
+            storage = self.storage.step(),
+            input_key = "instruction",
+        )
+
+        self.question_gen_step2.run(
+            storage = self.storage.step(),
+            input_key = "instruction",
+        )
+
+        self.question_filter_step3.run(
+            storage = self.storage.step(),
+            input_key = "instruction",
+        )
+
+        self.question_difficulty_classifier_step4.run(
+            storage = self.storage.step(),
+            input_key = "instruction",
+            output_key = "question_difficulty"
+        )
+
+        self.question_category_classifier_step5.run(
+            storage = self.storage.step(),
+            input_key = "instruction",
+            output_key = "question_category"
+        )
+        ############# branch #############
+        self.answer_pipeline_root_step6.run(
+            storage = self.storage.step(),
+            input_answer_key = "output",
+            input_gt_key = "golden_answer"
+        )
+        ############## answer #############
+        self.answer_generator_step7.run(
+            storage = self.storage.step(),
+            input_key = "instruction", 
+            output_key = "generated_cot"
+        )
+        self.answer_format_filter_step8.run(
+            storage = self.storage.step(),
+            input_key = "generated_cot",
+        )
+        self.answer_token_length_filter_step9.run(
+            storage = self.storage.step(),
+            input_key =  "generated_cot"
+        )
+        self.answer_groundtruth_filter_step10.run(
+            storage = self.storage.step(),
+            test_answer_key = "generated_cot",
+            gt_answer_key =  "golden_answer"
+        )
+        self.answer_ngram_filter_step11.run(
+            storage = self.storage.step(),
+            question_key = "instruction",
+            answer_key = "generated_cot"
+        )
+        
+if __name__ == "__main__":
+    model = ReasoningPipeline()
+    model.forward()
+```
+

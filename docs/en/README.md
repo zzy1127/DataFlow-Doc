@@ -22,4 +22,4 @@ config:
         -
           theme: alt
           text: Github →
-          link: https://github.com/Open-DataFlow/DataFlow
+          link: https://github.com/OpenDCAI/DataFlow

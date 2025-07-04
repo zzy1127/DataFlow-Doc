@@ -8,19 +8,23 @@ permalink: /en/guide/Knowledgebase_QA_operators/
 
 ## Overview
 
-The Knowledge Base Cleaning Operator is designed for knowledge extraction, organization, and refinement for downstream tasks such as RAG, RARE, and RAFT. It mainly includes: **Knowledge Extractor Operator**, **Corpus Text Splitter Operator**, and **Knowledge Cleaner Operator**. These operators can be used to process various raw file formats and crawl web content from specific URLs, organizing this textual knowledge into readable, easy-to-use, and secure RAG knowledge bases.
+The Knowledge Base Cleaning Operator is designed for knowledge extraction, organization, and refinement for downstream tasks such as RAG, RARE, and RAFT. It mainly includes: **Knowledge Extractor Operator**, **Corpus Text Splitter Operator**, **Knowledge Cleaner Operator** and **Multi-Hop QA Generation Operator**. These operators can be used to process various raw file formats and crawl web content from specific URLs, organizing this textual knowledge into readable, easy-to-use, and secure RAG knowledge bases.
 
+The operator notation in this document inherits from [Reasoning Operators](https://opendcai.github.io/DataFlow-Doc/zh/guide/Reasoning_operators/).
+🚀 Independent Innovation: Core algorithms are originally developed, either filling gaps in existing algorithms or further improving performance to break through current bottlenecks.
 
+✨ Open-Source Premiere: The operator is integrated into mainstream community frameworks for the first time, making it more accessible to developers and promoting open-source sharing.
 
 ## Knowledge Base Cleaning Operator
 
 The Knowledge Base Cleaning Operator can perform extraction, organization, and cleaning tasks for multiple heterogeneous text knowledge sources.
 
-| Name               | Applicable Type      | Description                                                  | Official Repository/Paper |
-| ------------------ | :------------------- | ------------------------------------------------------------ | ------------------------- |
-| KnowledgeExtractor | Knowledge Extraction | This operator extracts various heterogeneous text knowledge into markdown format for subsequent processing. | -                         |
-| CorpusTextSplitter | Corpus Segmentation  | This operator provides multiple methods to split full text into appropriately sized segments for subsequent indexing and other operations. | -                         |
-| KnowledgeCleaner   | Knowledge Cleaning   | This operator uses LLMs to clean organized raw text, including but not limited to normalization and privacy removal. | -                         |
+| Name                  | Applicable Type | Description                                                  | Official Repository/Paper                              |
+| --------------------- | :-------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
+| KnowledgeExtractor🚀✨ | Knowledge Extraction | This operator extracts various heterogeneous text knowledge into markdown format for subsequent processing. | -                                                      |
+| CorpusTextSplitter✨   | Corpus Segmentation | This operator provides multiple methods to split full texts into appropriately sized segments for subsequent operations like indexing. | -                                                      |
+| KnowledgeCleaner🚀✨    | Knowledge Cleaning | This operator uses LLM to clean organized raw text, including but not limited to normalization and privacy removal. | -                                                      |
+| MultiHopQAGenerator🚀✨ | Knowledge Paraphrasing | This operator uses a three-sentence sliding window to paraphrase cleaned knowledge bases into a series of multi-step reasoning QAs, which better facilitates accurate RAG reasoning. | [MIRAID](https://github.com/eth-medical-ai-lab/MIRIAD) |
 
 
 
@@ -115,18 +119,16 @@ The Knowledge Extractor operator is a versatile document processing tool that su
 **Usage Example**:
 
 ```python
-text_splitter = CorpusTextSplitter(
-    split_method="token",
-    chunk_size=512,
-    tokenizer_name="/data0/hzy/RARE/model_base/Qwen2.5-3B-Instruct",
+knowledge_extractor = KnowledgeExtractor(
+    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"
 )
-text_splitter.run(
-    storage=self.storage.step(),
-    input_file=extracted,
-    output_key="raw_content",
+extracted=knowledge_extractor.run(
+    storage=self.storage,
+    raw_file=raw_file,
+    url=url,
+    lang="ch"
 )
 ```
-
 
 
 ### 2. CorpusTextSplitter
@@ -168,17 +170,17 @@ text_splitter.run(
 **Usage Example**:
 
 ```python
-knowledge_cleaner = KnowledgeExtractor(  
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"  
-)  
-extracted_path = knowledge_cleaner.run(  
-    storage=self.storage,  
-    raw_file=raw_file,  
-    url=url,  
-    lang="ch"  
-)  
+text_splitter = CorpusTextSplitter(
+    split_method="token",
+    chunk_size=512,
+    tokenizer_name="/data0/hzy/RARE/model_base/Qwen2.5-3B-Instruct",
+)
+text_splitter.run(
+    storage=self.storage.step(),
+    input_file=extracted,
+    output_key="raw_content",
+)
 ```
-
 
 
 ### 3. KnowledgeCleaner
@@ -190,7 +192,7 @@ KnowledgeCleaner is a professional knowledge cleaning operator specifically desi
 
 - `__init__()`
   - `llm_serving`: Large language model service interface (required)
-  - `lang`: Processing language (default: "zh" for Chinese)
+  - `lang`: Processing language (default: "ch" for Chinese)
 - `run()`
   - `storage`: Data flow storage interface object
   - `input_key`: Input field name (default: "raw_content")
@@ -216,13 +218,64 @@ KnowledgeCleaner is a professional knowledge cleaning operator specifically desi
 **Usage Example**:
 
 ```python
-self.knowledge_cleaning_step3 = KnowledgeCleaner(  
-    llm_serving=local_llm_serving,  
-    lang="zh"  
+knowledge_cleaner = KnowledgeExtractor(  
+    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"  
 )  
-self.knowledge_cleaning_step3.run(  
-    storage=self.storage.step(),  
-    input_key="raw_content",  
-    output_key="cleaned",  
+extracted_path = knowledge_cleaner.run(  
+    storage=self.storage,  
+    raw_file=raw_file,  
+    url=url,  
+    lang="ch"  
 )  
 ```
+
+###    4. MultiHopQAGenerator
+
+**Function Description**: MultiHopQAGenerator is a professional multi-hop QA pair generation operator, specifically designed to automatically generate question-answer pairs requiring multi-step reasoning from text data. Through its large language model interface, this operator performs intelligent text analysis and complex question construction, making it suitable for building high-quality multi-hop QA datasets.
+
+**Input Parameters**:
+
+   `__init__()`
+
+- `llm_serving`: Large language model service interface (required)
+- `seed`: Random seed (default 0)
+- `lang`: Processing language (default "en" for English)
+
+   `run()`
+
+- `storage`: Data flow storage interface object
+- `input_key`: Input field name (default "")
+- `output_key`: Output field name (default "")
+
+**Core Features**:
+
+- **Text Preprocessing**
+  - Automatic cleaning of invalid characters and whitespace
+  - Length validation (100-200,000 characters)
+  - Quality verification (sentence completeness, special character ratio)
+- **Information Extraction**
+  - Intelligent segmentation of text into semantic units
+  - Construction of premise-intermediate-conclusion triples
+  - Extraction of relevant contextual information
+- **QA Generation**
+  - Large language model-based multi-hop question construction
+  - Automatic generation of reasoning steps and supporting facts
+  - Output of structured QA pairs (JSON format)
+- **Quality Control**
+  - Complexity scoring system (0.0-1.0)
+  - Automatic deduplication mechanism
+  - Error recovery and logging
+
+  **Usage Example**:
+
+    ```python
+  multi_hop_qa_generator = MultiHopQAGenerator(
+      llm_serving=local_llm_serving,
+      lang="en"
+  )
+  multi_hop_qa_generator.run(
+      storage=self.storage.step(),
+      input_key="cleaned",
+      output_key="MultiHop_QA"
+  )
+  ```

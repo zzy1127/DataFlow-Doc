@@ -10,6 +10,9 @@ permalink: /en/guide/agenticrag_operators/
 
 AgenticRAG Operators are a specialized suite of tools designed for agentic RAG (Retrieval-Augmented Generation) tasks, with a particular focus on generating question-and-answer (QA) samples from provided text to support RL-based agentic RAG training. These operators are primarily categorized into two groups: **Data Generation Operators (Generators)** and **Processing Operators (Processors)**.
 
+- 🚀 **Independent Innovation**: Core algorithms developed from scratch, filling existing algorithmic gaps or further improving performance, breaking through current performance bottlenecks.
+- ✨ **Open Source First**: First integration of this operator into mainstream community frameworks, facilitating use by more developers and achieving open-source sharing.
+
 ## Data Generation Operators
 
 Data Generation Operators are responsible for producing RAG-related RL training data, including automated prompt creation, question and answer generation, and QA scoring.
@@ -25,19 +28,19 @@ Data Generation Operators are responsible for producing RAG-related RL training 
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">AutoPromptGenerator</td>
+      <td class="tg-0pky">AutoPromptGenerator🚀</td>
       <td class="tg-0pky">Prompt Synthesis</td>
       <td class="tg-0pky">Generates prompts for question and answer creation tailored to specific content by leveraging large language models.</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QAGenerator</td>
+      <td class="tg-0pky">QAGenerator✨</td>
       <td class="tg-0pky">Question and Answer Generation</td>
       <td class="tg-0pky">Produces questions and answers for given text content using large language models and generated prompts.</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QAScorer</td>
+      <td class="tg-0pky">QAScorer✨</td>
       <td class="tg-0pky">Question and Answer Scoring</td>
       <td class="tg-0pky">Evaluates question quality, answer alignment, answer verifiability, and downstream value for QA pairs.</td>
       <td class="tg-0pky">-</td>
@@ -62,7 +65,7 @@ Processing Operators are mainly tasked with choosing suitable data.
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">ContentChooser</td>
+      <td class="tg-0pky">ContentChooser🚀</td>
       <td class="tg-0pky">Content chooser</td>
       <td class="tg-0pky">Selects a subset of content from a larger collection for further processing within the pipeline.</td>
       <td class="tg-0pky">-</td>

@@ -16,24 +16,26 @@ export const Guide: ThemeNote = defineNoteConfig({
             ],
         },
         {
-            text: 'Quick Start',
+            text: 'Start with Dataflow',
             collapsed: false,
             icon: 'carbon:idea',
             prefix: 'quickstart',
             items: [
                 'install',
-                `TextPipeline`,
-                'ReasoningPipeline',
-                'Text2SqlPipeline'
-                // 'usage',
-                // 'project-structure',
-                // 'write',
-                // 'blog',
-                // 'document',
-                // 'international',
-                // 'deployment',
-                // 'optimize-build',
+                'quickstart'
             ],
+        },
+        {
+            text: "Pipelines",
+            collapsed: false,
+            icon: 'carbon:flow',
+            prefix: 'pipelines',
+            items: [
+                "TextPipeline",
+                "ReasoningPipeline",
+                "Text2SqlPipeline",
+                "AgenticRAGPipeline"
+            ]
         },
         {
             text: "General Operators",
