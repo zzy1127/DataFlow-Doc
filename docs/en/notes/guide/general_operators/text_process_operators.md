@@ -31,11 +31,6 @@ DataFlow currently supports text data processing at the data point level, catego
       <td class="tg-0pky">Removes duplicate data points using methods such as hashing.</td>
     </tr>
     <tr>
-      <td class="tg-0pky">Generators</td>
-      <td class="tg-0pky">2</td>
-      <td class="tg-0pky">Generate specific format data based on seed documents</td>
-    </tr>
-    <tr>
       <td class="tg-0pky">Filters</td>
       <td class="tg-0pky">42</td>
       <td class="tg-0pky">Filters data points based on thresholds and other criteria.</td>

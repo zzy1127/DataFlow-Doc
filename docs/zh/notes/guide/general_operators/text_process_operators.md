@@ -28,11 +28,6 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
       <td class="tg-0pky">通过哈希等方法进行数据点去重</td>
     </tr>
     <tr>
-      <td class="tg-0pky">数据生成器</td>
-      <td class="tg-0pky">2</td>
-      <td class="tg-0pky">根据种子文档生成特定格式数据</td>
-    </tr>
-    <tr>
       <td class="tg-0pky">数据过滤器</td>
       <td class="tg-0pky">42</td>
       <td class="tg-0pky">通过设置阈值等方式过滤数据点</td>
