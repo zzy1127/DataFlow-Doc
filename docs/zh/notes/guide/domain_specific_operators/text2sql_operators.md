@@ -13,6 +13,8 @@ Text2SQL算子是专门用于Text2SQL问题数据处理和质量提升的算子�
 - 为每个样本生成包含训练提示词（prompt）和长链推理过程（chain-of-thought）的高质量问答对
 - 提供多维度的数据质量评估和难度分级
 
+为了获得更优的数据处理质量，我们自主研发了全新的算子，并使用✨符号进行标记。
+
 <table class="tg">
   <thead>
     <tr>
@@ -24,7 +26,7 @@ Text2SQL算子是专门用于Text2SQL问题数据处理和质量提升的算子�
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">SQLFilter</td>
+      <td class="tg-0pky">SQLFilter✨</td>
       <td class="tg-0pky">数据清洗</td>
       <td class="tg-0pky">筛选SQL执行异常和语义不一致的数据</td>
       <td class="tg-0pky">-</td>
@@ -54,19 +56,19 @@ Text2SQL算子是专门用于Text2SQL问题数据处理和质量提升的算子�
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuestionRefiner</td>
+      <td class="tg-0pky">QuestionRefiner✨</td>
       <td class="tg-0pky">问题优化</td>
       <td class="tg-0pky">标准化和优化自然语言问题表述</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">PromptGeneration</td>
+      <td class="tg-0pky">PromptGeneration✨</td>
       <td class="tg-0pky">训练数据生成</td>
       <td class="tg-0pky">构建SFT和RL训练所需的高质量问答数据</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
-      <td class="tg-0pky">Text2SQLDifficultyClassifier</td>
+      <td class="tg-0pky">Text2SQLDifficultyClassifier✨</td>
       <td class="tg-0pky">执行难度评估</td>
       <td class="tg-0pky">基于模型执行成功率进行难度分级</td>
       <td class="tg-0pky">-</td>
@@ -106,7 +108,7 @@ self.storage = FileStorage(
 
 ## 详细算子说明
 
-### 1. SQLFilter
+### 1. SQLFilter✨
 
 **功能描述：** 筛选无效数据
 - 剔除执行异常的gold SQL  
@@ -304,7 +306,7 @@ result = extra_knowledge_generator.run(
 )
 ```
 
-### 6. QuestionRefiner
+### 6. QuestionRefiner✨
 
 **功能描述：** 标准化问题表述
 - 拆分复合问句  
@@ -344,7 +346,7 @@ result = question_refiner.run(
 )
 ```
 
-### 7. PromptGeneration
+### 7. PromptGeneration✨
 
 **功能描述：** 构建训练问答数据
 - 用于SFT训练的问题 
@@ -396,7 +398,7 @@ result = prompt_generator.run(
 )
 ```
 
-### 8. Text2SQLDifficultyClassifier
+### 8. Text2SQLDifficultyClassifier✨
 
 **功能描述：** 基于执行通过率划分生成难度
 - 通过多次模型生成测试执行成功率
