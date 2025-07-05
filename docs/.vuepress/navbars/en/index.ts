@@ -88,9 +88,14 @@ export const enNavbar = defineNavbarConfig([
             }
         ]
     },
+    // {
+    //     text: 'API Reference',
+    //     link: '/en/notes/api/1.home.md',
+    //     icon: 'material-symbols:article-outline'
+    // },
     {
-        text: 'API Reference',
-        link: '/en/notes/api/1.home.md',
+        text: 'Multi-Modal Guide (Under Construction)',
+        link: '/en/notes/mm_guide/basicinfo/intro.md',
         icon: 'material-symbols:article-outline'
     },
     {

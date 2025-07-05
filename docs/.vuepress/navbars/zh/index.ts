@@ -90,9 +90,14 @@ export const zhNavbar = defineNavbarConfig([
 
         ]
     },
+    // {
+    //     text: 'API 文档',
+    //     link: '/zh/notes/api/1.home.md',
+    //     icon: 'material-symbols:article-outline'
+    // },
     {
-        text: 'API 文档',
-        link: '/zh/notes/api/1.home.md',
+        text: '多模态指南（飞速施工中）',
+        link: '/zh/notes/mm_guide/basicinfo/intro.md',
         icon: 'material-symbols:article-outline'
     },
     {
