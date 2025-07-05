@@ -78,6 +78,12 @@ export const zhNavbar = defineNavbarConfig([
                         link: "/zh/notes/guide/pipelines/AgenticRAGPipeline.md",
                         icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "知识库清洗流水线",
+                        link: "/zh/notes/guide/pipelines/KnowledgeBaseCleaning.md",
+                        icon: "solar:palette-round-linear",
+                        activeMatch: '^/guide/'
                     }
                 ]
             }
