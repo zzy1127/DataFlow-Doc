@@ -77,6 +77,12 @@ export const enNavbar = defineNavbarConfig([
                         link: "/en/notes/guide/pipelines/AgenticRAGPipeline.md",
                         icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "Knowledge Base Cleaning Pipeline",
+                        link: "/en/notes/guide/pipelines/KnowledgeBaseCleaingPipeline.md",
+                        icon: "solar:palette-round-linear",
+                        activeMatch: '^/guide/'
                     }
                 ]
             }

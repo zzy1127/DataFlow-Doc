@@ -35,7 +35,8 @@ export const Guide: ThemeNote = defineNoteConfig({
                 "ReasoningPipeline",
                 "Text2SqlPipeline",
                 "AgenticRAGPipeline",
-                "RAREPipeline"
+                "RAREPipeline",
+                "KnowledgeBaseCleaningPipeline",
             ]
         },
         {
