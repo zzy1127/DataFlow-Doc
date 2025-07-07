@@ -51,12 +51,12 @@ self.storage = FileStorage(
 **输出**：已选择的文本内容
 
 ```python
-content_chooser = ContentChooser(embedding_model_path="your_embedding_model_path")
+embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+
+content_chooser = ContentChooser(num_samples = 5, method = "random", embedding_serving=embedding_serving)
 result = content_chooser.run(
             storage = self.storage.step(),
             input_key = "text",
-            num_samples = 5,
-            method = "random"
           ) 
 ```
 
@@ -172,7 +172,9 @@ class AgenticRAGPipeline():
         else:
             api_llm_serving = llm_serving
 
-        self.content_chooser_step1 = ContentChooser(embedding_model_path="your_embedding_model_path")
+        embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+
+        self.content_chooser_step1 = ContentChooser(num_samples=5, method="kcenter", embedding_serving=embedding_serving)
 
         self.prompt_generator_step2 = AutoPromptGenerator(api_llm_serving)
 
@@ -184,9 +186,7 @@ class AgenticRAGPipeline():
 
         self.content_chooser_step1.run(
             storage = self.storage.step(),
-            input_key= "text",
-            num_samples=5,
-            method= "random"
+            input_key= "text"
         )
 
         self.prompt_generator_step2.run(
