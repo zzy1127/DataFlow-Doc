@@ -50,8 +50,6 @@ The types of open-source operators are quite limited. In order to achieve better
 
 ✨ Open Source Premiere: This operator is integrated into the mainstream community framework for the first time, making it easier for more developers to use and achieve open-source sharing.
 
-At present, there are still a few operators that are not included in the repository and are being accelerated for integration.
-
 ### List of Scorers
 
 #### APIcaller
