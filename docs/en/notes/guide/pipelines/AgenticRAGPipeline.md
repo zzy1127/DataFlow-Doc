@@ -51,7 +51,9 @@ The first step of the process is to use the **Content Chooser** operator (`Conte
 **Output:** Selected text content
 
 ```python
-content_chooser = ContentChooser(num_samples = 5, method = "random", embedding_model_path = "your_embedding_model_path")
+embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+
+content_chooser = ContentChooser(num_samples = 5, method = "random", embedding_serving=embedding_serving)
 result = content_chooser.run(
             storage = self.storage.step(),
             input_key = "text",
@@ -166,8 +168,9 @@ class AgenticRAGPipeline():
         else:
             api_llm_serving = llm_serving
 
-        self.content_chooser_step1 = ContentChooser(num_samples=5,
-            method= "random", embedding_model_path="your_embedding_model_path")
+        embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+
+        self.content_chooser_step1 = ContentChooser(num_samples=5, method="kcenter", embedding_serving=embedding_serving)
 
         self.prompt_generator_step2 = AutoPromptGenerator(api_llm_serving)
 
