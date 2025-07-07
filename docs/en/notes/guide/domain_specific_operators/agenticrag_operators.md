@@ -219,11 +219,13 @@ result = qa_scorer.run(
 
 **Input Parameters:**
 
+- `init()` 
+  - `num_samples`: Numuber of choosen samples 
+  - `method`: The method used to select from the original text contents (default: 'random')
+  - `embedding_model_path`: The path of embedding model
 - `run()` 
   - `storage`: Storage interface object (default: predefined value above)
   - `input_key`:  Input text content field name (default: "text")
-  - `num_samples`: Numuber of choosen samples 
-  - `method`: The method used to select from the original text contents (default: 'random')
 
 **Key Features:**
 
@@ -233,11 +235,9 @@ result = qa_scorer.run(
 **Usage Example:**
 
 ```python
-content_chooser = ContentChooser(embedding_model_path="your_embedding_model_path")
+content_chooser = ContentChooser(num_samples = 5, method = "random" embedding_model_path="your_embedding_model_path")
 result = content_chooser.run(
             storage = self.storage.step(),
             input_key = "text",
-            num_samples = 5,
-            method = "random"
           ) 
 ```

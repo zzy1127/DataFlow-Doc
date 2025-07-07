@@ -51,12 +51,10 @@ The first step of the process is to use the **Content Chooser** operator (`Conte
 **Output:** Selected text content
 
 ```python
-content_chooser = ContentChooser(embedding_model_path="your_embedding_model_path")
+content_chooser = ContentChooser(num_samples = 5, method = "random", embedding_model_path = "your_embedding_model_path")
 result = content_chooser.run(
             storage = self.storage.step(),
             input_key = "text",
-            num_samples = 5,
-            method = "random"
           ) 
 ```
 
@@ -168,7 +166,8 @@ class AgenticRAGPipeline():
         else:
             api_llm_serving = llm_serving
 
-        self.content_chooser_step1 = ContentChooser(embedding_model_path="your_embedding_model_path")
+        self.content_chooser_step1 = ContentChooser(num_samples=5,
+            method= "random", embedding_model_path="your_embedding_model_path")
 
         self.prompt_generator_step2 = AutoPromptGenerator(api_llm_serving)
 
@@ -180,9 +179,7 @@ class AgenticRAGPipeline():
 
         self.content_chooser_step1.run(
             storage = self.storage.step(),
-            input_key= "text",
-            num_samples=5,
-            method= "random"
+            input_key= "text"
         )
 
         self.prompt_generator_step2.run(

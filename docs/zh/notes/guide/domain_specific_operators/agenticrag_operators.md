@@ -222,11 +222,13 @@ result = qa_scorer.run(
 
 **输入参数：**
 
+- `init()` 
+  - `num_samples`：选择的样本数量
+  - `method`：用于从原始文本内容中选择的方法（默认值：'random'）
+  - `embedding_model_path`：提取文本特征向量的模型路径
 - `run()` 
   - `storage`：存储接口对象（默认值：如上所述的预定义值）
   - `input_key`：输入文本内容字段名（默认值："text"）
-  - `num_samples`：选择的样本数量
-  - `method`：用于从原始文本内容中选择的方法（默认值：'random'）
 
 **主要特性：**
 
@@ -236,11 +238,9 @@ result = qa_scorer.run(
 **使用示例：**
 
 ```python
-content_chooser = ContentChooser(embedding_model_path="your_embedding_model_path")
+content_chooser = ContentChooser(num_samples = 5, method = "random", embedding_model_path = "your_embedding_model_path")
 result = content_chooser.run(
             storage = self.storage.step(),
             input_key = "text",
-            num_samples = 5,
-            method = "random"
           ) 
 ```
