@@ -46,7 +46,7 @@ pip install fairy-doc[gpu]
 
 具体信息可参考https://github.com/magicpdf/Magic-Doc#install.
 
-**输入**：原始文档文件 **输出**：提取后的markdown文本
+**输入**：原始文档文件或URL **输出**：提取后的markdown文本
 
 **示例**：
 
@@ -58,7 +58,6 @@ extracted=knowledge_extractor.run(
     storage=self.storage,
     raw_file=raw_file,
     url=url,
-    lang="ch"
 )
 ```
 
@@ -130,20 +129,20 @@ multi_hop_qa_generator.run(
 - PDF文件知识库清洗构建
 
   ```shell
-  python gpu_pipelines/test_pdfkbcleaning.py
+  python gpu_pipelines/kbcleaning_pipeline_pdf.py
   ```
 
 - DOC文件知识库清洗构建
 
   ```shell
-  python gpu_pipelines/test_dockbcleaning.py
+  python gpu_pipelines/kbcleaning_pipeline_doc.py
   ```
 
 - URL爬取后知识库清洗构建
 
-```shell
-python gpu_pipelines/test_urlkbcleaning.py
-```
+    ```shell
+    python gpu_pipelines/kbcleaning_pipeline_url.py
+    ```
 
 ## 4. 流水线示例
 
@@ -157,7 +156,7 @@ from dataflow.operators.generate.KnowledgeCleaning import (
     MultiHopQAGenerator,
 )
 from dataflow.utils.storage import FileStorage
-from dataflow.llmserving import LocalModelLLMServing
+from dataflow.serving import LocalModelLLMServing_vllm
 
 class KBCleaningPipeline():
     def __init__(self):
@@ -169,17 +168,17 @@ class KBCleaningPipeline():
             cache_type="json",
         )
 
-        local_llm_serving = LocalModelLLMServing(
-            model_name_or_path="Qwen/Qwen2.5-7B-Instruct",
-            max_tokens=1024,
-            tensor_parallel_size=4,
-            model_source="local",
-            gpu_memory_utilization=0.6,
-            repetition_penalty=1.2
+        local_llm_serving = LocalModelLLMServing_vllm(
+            hf_model_name_or_path="Qwen/Qwen2.5-7B-Instruct",
+            vllm_max_tokens=1024,
+            vllm_tensor_parallel_size=4,
+            vllm_gpu_memory_utilization=0.6,
+            vllm_repetition_penalty=1.2
         )
 
         self.knowledge_cleaning_step1 = KnowledgeExtractor(
-            intermediate_dir="../example_data/KBCleaningPipeline/raw/"
+            intermediate_dir="../example_data/KBCleaningPipeline/raw/",
+            lang="en"
         )
 
         self.knowledge_cleaning_step2 = CorpusTextSplitter(
@@ -203,7 +202,6 @@ class KBCleaningPipeline():
             storage=self.storage,
             raw_file=raw_file,
             url=url,
-            lang="en"
         )
         
         self.knowledge_cleaning_step2.run(

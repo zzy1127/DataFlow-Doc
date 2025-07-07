@@ -85,11 +85,11 @@ The Knowledge Extractor operator is a versatile document processing tool that su
 
 - `__init__()`
   - `intermediate_dir`: Intermediate file output directory (default: "intermediate")
+  - `lang`: Document language (default: "ch" for Chinese)
 - `run()`
   - `storage`: Data flow storage interface object (required)
   - `raw_file`: Local file path (mutually exclusive with url)
   - `url`: Web URL address (mutually exclusive with raw_file)
-  - `lang`: Document language (default: "ch" for Chinese)
 
 **Key Features**:
 
@@ -120,13 +120,13 @@ The Knowledge Extractor operator is a versatile document processing tool that su
 
 ```python
 knowledge_extractor = KnowledgeExtractor(
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"
+    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/",
+    lang="ch",
 )
 extracted=knowledge_extractor.run(
     storage=self.storage,
     raw_file=raw_file,
     url=url,
-    lang="ch"
 )
 ```
 
