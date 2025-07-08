@@ -81,12 +81,12 @@ self.storage = FileStorage(
 
    - `__init__()`
      - `intermediate_dir`：中间文件输出目录（默认："intermediate"）
+     - `lang`：文档语言（默认："ch"中文）
 
    - `run()`
      - `storage`：数据流存储接口对象（必须）
      - `raw_file`：本地文件路径（与url二选一）
      - `url`：网页URL地址（与raw_file二选一）
-     - `lang`：文档语言（默认："ch"中文）
 
    **主要特性**：
 
@@ -120,13 +120,13 @@ self.storage = FileStorage(
 
 ```python
 knowledge_extractor = KnowledgeExtractor(
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"
+    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/",
+    lang="ch"
 )
 extracted=knowledge_extractor.run(
     storage=self.storage,
     raw_file=raw_file,
     url=url,
-    lang="ch"
 )
 ```
 
