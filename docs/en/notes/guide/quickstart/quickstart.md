@@ -41,28 +41,46 @@ self.storage = FileStorage(
 
 Additionally, you may need to modify the `LLMServing` class according to your device or the `api_url` you possess, in order to use a locally downloaded model or an online large model API.
 
-If you are using the API method, you need to export the `API_KEY` field to the environment variable. This design is to avoid upload your key to Github repository and cause leakage. On Linux, this can be done using:
-
-> We may consider renaming this field to `DF_API_KEY` soon to avoid conflicts. Additionally, a feature will be added to allow each `APILLMServing` to manually specify the name of the environment variable associated with the key.
+If you are using the API method, you need to export the `DF_API_KEY` field to the environment variable. This design is to avoid upload your key to Github repository and cause leakage. On Linux, this can be done using:
 
 
 ```bash
-export API_KEY=sh-xxxxx
+export DF_API_KEY=sh-xxxxx
 ```
 
 On Windows, you can set the environment variable using the following command:
 
 ```cmd
-set API_KEY=sh-xxxxx
+set DF_API_KEY=sh-xxxxx
 ```
 
 Or in PowerShell:
 
 ```powershell
-$env:API_KEY = "sh-xxxxx"
+$env:DF_API_KEY = "sh-xxxxx"
 ```
 
 After setting this, the program can read the API key from the environment for invocation. Be sure not to expose the key in public code.
+
+Specifically, if you want to use multiple `APIServing`, you can differentiate the environment variable names used as API keys for each serving object by modifying the `key_name_of_api_key` parameter.
+```python
+# OpenAI API serving
+llm_serving_openai = APILLMServing_request(
+    api_url="https://api.openai.com/v1/chat/completions",
+    key_name_of_api_key="OPENAI_API_KEY",
+    model_name="gpt-4o",
+    max_workers=100
+)
+
+# DeepSeek API serving
+llm_serving_deepseek = APILLMServing_request(
+    api_url="https://api.deepseek.com/v1/chat/completions",
+    key_name_of_api_key="DEEPSEEK_API_KEY",
+    model_name="deepseek-chat",
+    max_workers=100
+)
+```
+
 
 Once you have modified the Python script, you can run it to experience DataFlow's comfortable data governance capabilities:
 ```shell

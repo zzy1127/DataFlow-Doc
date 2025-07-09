@@ -42,26 +42,45 @@ self.storage = FileStorage(
 此外，你可能还需要根据你的设备或你拥有的api_url修改`LLMServing`类来使用你本地下载好的模型或者在线大模型API。
 
 
-特别的，如果你使用 API 方式调用，则需要向环境变量输出 `API_KEY` 字段，该设计是为了避免将key写入Github仓库导致泄露的途径。在 Linux 下是：
+特别的，如果你使用 API 方式调用，则需要向环境变量输出 `DF_API_KEY` 字段，该设计是为了避免将key写入Github仓库导致泄露的途径。在 Linux 下是：
 
-> 近期可能会考虑将该字段改为`DF_API_KEY`以避免冲突，此外还将加入Feature让每个`APILLMServing`可以手动指定key对应的环境变量名是什么。
+
 ```bash
-export API_KEY=sh-xxxxx
+export DF_API_KEY=sh-xxxxx
 ```
 
 在 Windows 下，可以使用以下命令设置环境变量：
 
 ```cmd
-set API_KEY=sh-xxxxx
+set DF_API_KEY=sh-xxxxx
 ```
 
 或者在 PowerShell 中使用：
 
 ```powershell
-$env:API_KEY = "sh-xxxxx"
+$env:DF_API_KEY = "sh-xxxxx"
 ```
 
 设置完成后，程序就可以从环境中读取该 API 密钥进行调用。确保不要将密钥暴露在公开代码中。
+
+特别的，如果你想使用多个API serving，可以通过修改这个`key_name_of_api_key`形参来区分不同serving对象接受的作为api key的环境变量名称。
+```python
+# OpenAI API serving
+llm_serving_openai = APILLMServing_request(
+    api_url="https://api.openai.com/v1/chat/completions",
+    key_name_of_api_key="OPENAI_API_KEY",
+    model_name="gpt-4o",
+    max_workers=100
+)
+
+# DeepSeek API serving
+llm_serving_deepseek = APILLMServing_request(
+    api_url="https://api.deepseek.com/v1/chat/completions",
+    key_name_of_api_key="DEEPSEEK_API_KEY",
+    model_name="deepseek-chat",
+    max_workers=100
+)
+```
 
 当修改好Python脚本后，即可运行脚本，体验DataFlow舒适的数据治理功能：
 ```shell
