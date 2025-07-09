@@ -43,6 +43,9 @@ Additionally, you may need to modify the `LLMServing` class according to your de
 
 If you are using the API method, you need to export the `API_KEY` field to the environment variable. This design is to avoid upload your key to Github repository and cause leakage. On Linux, this can be done using:
 
+> We may consider renaming this field to `DF_API_KEY` soon to avoid conflicts. Additionally, a feature will be added to allow each `APILLMServing` to manually specify the name of the environment variable associated with the key.
+
+
 ```bash
 export API_KEY=sh-xxxxx
 ```

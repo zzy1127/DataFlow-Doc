@@ -44,6 +44,7 @@ self.storage = FileStorage(
 
 特别的，如果你使用 API 方式调用，则需要向环境变量输出 `API_KEY` 字段，该设计是为了避免将key写入Github仓库导致泄露的途径。在 Linux 下是：
 
+> 近期可能会考虑将该字段改为`DF_API_KEY`以避免冲突，此外还将加入Feature让每个`APILLMServing`可以手动指定key对应的环境变量名是什么。
 ```bash
 export API_KEY=sh-xxxxx
 ```
