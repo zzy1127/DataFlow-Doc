@@ -42,22 +42,22 @@ self.storage = FileStorage(
 此外，你可能还需要根据你的设备或你拥有的api_url修改`LLMServing`类来使用你本地下载好的模型或者在线大模型API。
 
 
-特别的，如果你使用 API 方式调用，则需要向环境变量输出 `api_key` 字段，在 Linux 下是：
+特别的，如果你使用 API 方式调用，则需要向环境变量输出 `API_KEY` 字段，该设计是为了避免将key写入Github仓库导致泄露的途径。在 Linux 下是：
 
 ```bash
-export api_key=sh-xxxxx
+export API_KEY=sh-xxxxx
 ```
 
 在 Windows 下，可以使用以下命令设置环境变量：
 
 ```cmd
-set api_key=sh-xxxxx
+set API_KEY=sh-xxxxx
 ```
 
 或者在 PowerShell 中使用：
 
 ```powershell
-$env:api_key = "sh-xxxxx"
+$env:API_KEY = "sh-xxxxx"
 ```
 
 设置完成后，程序就可以从环境中读取该 API 密钥进行调用。确保不要将密钥暴露在公开代码中。

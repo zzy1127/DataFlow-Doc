@@ -41,22 +41,22 @@ self.storage = FileStorage(
 
 Additionally, you may need to modify the `LLMServing` class according to your device or the `api_url` you possess, in order to use a locally downloaded model or an online large model API.
 
-If you are using the API method, you need to export the `api_key` field to the environment variable. On Linux, this can be done using:
+If you are using the API method, you need to export the `API_KEY` field to the environment variable. This design is to avoid upload your key to Github repository and cause leakage. On Linux, this can be done using:
 
 ```bash
-export api_key=sh-xxxxx
+export API_KEY=sh-xxxxx
 ```
 
 On Windows, you can set the environment variable using the following command:
 
 ```cmd
-set api_key=sh-xxxxx
+set API_KEY=sh-xxxxx
 ```
 
 Or in PowerShell:
 
 ```powershell
-$env:api_key = "sh-xxxxx"
+$env:API_KEY = "sh-xxxxx"
 ```
 
 After setting this, the program can read the API key from the environment for invocation. Be sure not to expose the key in public code.
