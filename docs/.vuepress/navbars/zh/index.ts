@@ -37,39 +37,67 @@ export const zhNavbar = defineNavbarConfig([
             {
                 text: '快速开始',
                 items: [
-                            {
+                    {
                         text: '安装',
                         link: '/zh/notes/guide/quickstart/install.md',
                         icon: 'material-symbols-light:download-rounded',
                         activeMatch: '^/guide/'
                     },
                     {
+                        text: '快速开始',
+                        link: '/zh/notes/guide/quickstart/quickstart.md',
+                        icon: 'solar:flag-2-broken',
+                        activeMatch: '^/guide/'
+                    },
+                ]
+            },
+
+            {
+                text: "流水线",
+                items: [
+                    {
                         text: "纯文本流水线",
-                        link: '/zh/notes/guide/quickstart/TextPipeline.md',
+                        link: '/zh/notes/guide/pipelines/TextPipeline.md',
                         icon: 'mdi:file-text',
                         activeMatch: '^/guide/'
                     },
                     {
                         text:"强推理数据合成流水线",
-                        link:"/zh/notes/guide/quickstart/ReasoningPipeline.md",
+                        link:"/zh/notes/guide/pipelines/ReasoningPipeline.md",
                         icon: "mdi:brain",
                         activeMatch: '^/guide/'
                     },
                     {
                         text: "Text-to-SQL数据合成流水线",
-                        link: "/zh/notes/guide/quickstart/Text2SqlPipeline.md",
+                        link: "/zh/notes/guide/pipelines/Text2SqlPipeline.md",
                         icon: "material-symbols-light:checkbook-outline-rounded",
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "Agentic RAG数据合成流水线",
+                        link: "/zh/notes/guide/pipelines/AgenticRAGPipeline.md",
+                        icon: "solar:palette-round-linear",
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "知识库清洗流水线",
+                        link: "/zh/notes/guide/pipelines/KnowledgeBaseCleaning.md",
+                        icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
                     }
                 ]
-            },
-
+            }
 
         ]
     },
+    // {
+    //     text: 'API 文档',
+    //     link: '/zh/notes/api/1.home.md',
+    //     icon: 'material-symbols:article-outline'
+    // },
     {
-        text: 'API 文档',
-        link: '/zh/notes/api/1.home.md',
+        text: '多模态指南（飞速施工中）',
+        link: '/zh/notes/mm_guide/basicinfo/intro.md',
         icon: 'material-symbols:article-outline'
     },
     {

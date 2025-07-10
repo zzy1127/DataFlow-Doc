@@ -8,7 +8,7 @@ config:
     background: tint-plate
     hero:
       name: DataFlow
-      tagline: 数据清洗, 扩增, 评估框架
+      tagline: 以数据为中心的AI系统
       text: 好数据，好模型
       actions:
         -
@@ -22,5 +22,5 @@ config:
         -
           theme: alt
           text: Github →
-          link: https://github.com/Open-DataFlow/DataFlow
+          link: https://github.com/OpenDCAI/DataFlow
 ---

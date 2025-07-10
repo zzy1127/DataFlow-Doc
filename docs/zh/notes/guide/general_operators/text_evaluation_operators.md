@@ -44,6 +44,12 @@ permalink: /zh/guide/f50mqhmb/
 
 关于数据类型：【文本】表示接受单一字段字符串输入，可适用于预训练或微调数据。【指令】表示仅适用于微调数据多字段格式输入。
 
+开源的算子种类是十分受限的，为了获得更好的数据质量，填补开源缺失的数据评估方法，我们精心设计并**自研**了新的算子集，其标记含义如下：
+
+- 🚀 **自主创新**：核心算法原创研发，填补现有算法空白或是进一步提升性能，突破当下性能瓶颈。
+- ✨ **开源首发**：首次将该算子集成到社区主流框架中，方便更多开发者使用，实现开源共享。
+
+
 ### 打分器列表
 
 #### APIcaller
@@ -60,7 +66,7 @@ permalink: /zh/guide/f50mqhmb/
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">AlpagasusScorer</td>
+      <td class="tg-0pky">AlpagasusScorer✨</td>
       <td class="tg-0pky">内容准确性与有效性</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">通过调用 GPT 评估指令的质量，返回一个质量得分，得分越高表明指令的质量越高。</td>
@@ -68,7 +74,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2307.08701">paper</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PerspectiveScorer</td>
+      <td class="tg-0pky">PerspectiveScorer✨</td>
       <td class="tg-0pky">安全性</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">使用 PerspectiveAPI 评估文本的毒性，返回毒性概率，得分越高表明文本毒性越高。</td>
@@ -76,7 +82,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://perspectiveapi.com/">API</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">TreeinstructScorer</td>
+      <td class="tg-0pky">TreeinstructScore✨</td>
       <td class="tg-0pky">多样性与复杂性</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">通过生成语法树的节点数来衡量指令复杂性，节点越多表示指令越复杂。</td>
@@ -100,7 +106,7 @@ permalink: /zh/guide/f50mqhmb/
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">Task2VecScorer</td>
+      <td class="tg-0pky">Task2VecScorer✨</td>
       <td class="tg-0pky">多样性与复杂性</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">评估数据集的多样性，使用 Task2Vec 方法，高分表示数据集具有较高的多样性。</td>
@@ -132,7 +138,7 @@ permalink: /zh/guide/f50mqhmb/
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">DebertaV3Scorer</td>
+      <td class="tg-0pky">DebertaV3Scorer✨</td>
       <td class="tg-0pky">内容准确性与有效性</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">基于 Nvidia Deberta V3 模型的质量分类器，用于评估文本质量。</td>
@@ -140,7 +146,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://huggingface.co/nvidia/quality-classifier-deberta">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">FineWebEduScorer</td>
+      <td class="tg-0pky">FineWebEduScorer✨</td>
       <td class="tg-0pky">教育价值</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">用于评估文本教育价值的分类器，高分表示文本具有较高的教育价值。</td>
@@ -148,7 +154,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2406.17557">paper</a><br><a href="https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">InstagScorer</td>
+      <td class="tg-0pky">InstagScorer✨</td>
       <td class="tg-0pky">多样性与复杂性</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">通过返回标签的数量来评估指令的内容多样性，标签越多表示内容多样性越大。</td>
@@ -164,7 +170,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://aclanthology.org/W11-2123.pdf">paper</a><br><a href="https://huggingface.co/edugp/kenlm/tree/main">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuratingScorer</td>
+      <td class="tg-0pky">QuratingScorer✨</td>
       <td class="tg-0pky">内容准确性与有效性、教育价值</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">通过 Qurating 模型评估文本的质量，得分越高表示质量越高。</td>
@@ -172,7 +178,15 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2402.09739">paper</a><br><a href="https://github.com/princeton-nlp/QuRating">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PresidioScorer</td>
+      <td class="tg-0pky">PairQualScorer🚀</td>
+      <td class="tg-0pky">教育价值</td>
+      <td class="tg-0pky">文本</td>
+      <td class="tg-0pky">通过 PairQual 模型评估文本的质量，基于bge模型，支持中英双语，使用gpt对文本成对比较打分后训练而成。得分越高表示质量越高。</td>
+      <td class="tg-0pky">-</td>
+      <td class="tg-0pky"><br><a href="https://huggingface.co/zks2856/PairQual-Scorer-zh">code</a></td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">PresidioScorer✨</td>
       <td class="tg-0pky">安全性</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">使用Microsoft Presidio模型，识别文本中的私人实体（PII）如信用卡号、姓名、位置等。打分器返回PII信息个数。</td>
@@ -180,7 +194,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://github.com/microsoft/presidio">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">SuperfilteringScorer</td>
+      <td class="tg-0pky">SuperfilteringScorer✨</td>
       <td class="tg-0pky">流畅性与可理解性</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">使用 Superfiltering 方法评估指令的跟随难度，得分越高表示指令越难跟随。</td>
@@ -188,7 +202,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2402.00530">paper</a><br><a href="https://github.com/tianyi-lab/Superfiltering">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">TextbookScorer</td>
+      <td class="tg-0pky">TextbookScorer✨</td>
       <td class="tg-0pky">教育价值</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">基于 FastText 分类器的课本质量分类器，用于评估文本的教育价值。</td>
@@ -196,15 +210,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2306.11644">paper</a><br><a href="https://huggingface.co/kenhktsui/llm-data-textbook-quality-fasttext-classifier-v2">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">UnievalScorer</td>
-      <td class="tg-0pky">流畅性与可理解性</td>
-      <td class="tg-0pky">文本</td>
-      <td class="tg-0pky">UniEval 是一个多维度文本质量评估模型，得分越高表示质量越好。</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky"><a href="https://arxiv.org/abs/2210.07197">paper</a><br><a href="https://github.com/maszhongming/UniEval">code</a></td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">DeitaQualityScorer</td>
+      <td class="tg-0pky">DeitaQualityScorer✨</td>
       <td class="tg-0pky">内容准确性与有效性</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">基于 Llama 模型的 Deita 指令质量评估器，高分表示指令质量较高。</td>
@@ -212,7 +218,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2312.15685">paper</a><br><a href="https://huggingface.co/hkust-nlp/deita-quality-scorer">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">DeitaComplexityScorer</td>
+      <td class="tg-0pky">DeitaComplexityScorer✨</td>
       <td class="tg-0pky">多样性与复杂性</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">基于 Llama 模型的 Deita 指令复杂性评估器，高分表示指令复杂性较高。</td>
@@ -220,7 +226,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2312.15685">paper</a><br><a href="https://huggingface.co/hkust-nlp/deita-complexity-scorer">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">RMScorer</td>
+      <td class="tg-0pky">RMScorer✨</td>
       <td class="tg-0pky">流畅性与可理解性</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">基于人类价值判断的奖励模型reward-model-deberta-v3-large-v2质量评分器。高分代表质量较高。</td>
@@ -252,7 +258,7 @@ permalink: /zh/guide/f50mqhmb/
       <td class="tg-0pky"><a href="https://github.com/whylabs/langkit">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">LexicalDiversityScorer</td>
+      <td class="tg-0pky">LexicalDiversityScorer✨</td>
       <td class="tg-0pky">多样性与复杂性</td>
       <td class="tg-0pky">文本</td>
       <td class="tg-0pky">使用MTLD和HDD方法计算词汇多样性评分，高分代表更丰富的词汇使用，反映文本的多样性和复杂性。</td>
@@ -288,7 +294,6 @@ permalink: /zh/guide/f50mqhmb/
 
 
 #### 3. 流畅性与可理解性 (Fluency & Understandability)
-- **UniEvalScorer**: UniEvalFluencyScore, UniEvalUnderstandabilityScore, UniEvalNaturalnessScore
 - **LangkitScorer**: LangkitFleschReadingEaseScore, LangkitAutomatedReadabilityIndexScore, LangkitAggregateReadingLevelScore
 - **PerplexityScorer**: PerplexityScore
 - **QuratingScorer**: QuratingWritingStyleScore
@@ -303,6 +308,7 @@ permalink: /zh/guide/f50mqhmb/
 - **TextbookScorer**: TextbookScore
 - **FineWebEduScorer**: FineWebEduScore
 - **QuratingScorer**: QuratingEducationalValueScore
+- **PairQualScorer**: PairQualScore
 
 #### 6. 内容准确性与有效性 (Content Accuracy & Effectiveness)
 - **QuratingScorer**: QuratingRequiredExpertiseScore, QuratingFactsAndTriviaScore
@@ -448,31 +454,6 @@ permalink: /zh/guide/f50mqhmb/
     <td class="tg-0pky">14401.2789</td>
     <td class="tg-0pky">2366</td>
     <td class="tg-0pky">4</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky" rowspan="3">UnievalScorer</td>
-    <td class="tg-0pky">UniEvalFluencyScore</td>
-    <td class="tg-0pky">评估文本的流畅性。<b>得分越高文本越流畅。</b></td>
-    <td class="tg-0pky">0.8268</td>
-    <td class="tg-0pky">0.0199</td>
-    <td class="tg-0pky">0.9674</td>
-    <td class="tg-0pky">0.0036</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">UniEvalNaturalnessScore</td>
-    <td class="tg-0pky">测量文本的自然性。<b>得分越高文本越像自然语言。</b></td>
-    <td class="tg-0pky">0.4224</td>
-    <td class="tg-0pky">0.0474</td>
-    <td class="tg-0pky">0.9782</td>
-    <td class="tg-0pky">0.0010</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky">UniEvalUnderstandabilityScore</td>
-    <td class="tg-0pky">衡量文本的可理解性。<b>得分越高文本越可理解。</b></td>
-    <td class="tg-0pky">0.4698</td>
-    <td class="tg-0pky">0.0493</td>
-    <td class="tg-0pky">0.9927</td>
-    <td class="tg-0pky">0.0006</td>
   </tr>
   <tr>
     <td class="tg-0pky" rowspan="1">TextbookScorer</td>
@@ -654,47 +635,12 @@ permalink: /zh/guide/f50mqhmb/
 
 ## 生成文本质量评估
 
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">类别</th>
-      <th class="tg-0pky">打分器数量</th>
-      <th class="tg-0pky">描述</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">基于词重叠</td>
-      <td class="tg-0pky">5</td>
-      <td class="tg-0pky">评估生成文本与参考文本的 n-gram 重叠程度</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">基于词向量</td>
-      <td class="tg-0pky">2</td>
-      <td class="tg-0pky">使用词向量计算生成文本与参考文本的相似性</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">基于语言模型</td>
-      <td class="tg-0pky">4</td>
-      <td class="tg-0pky">利用预训练语言模型评估文本的语义和流畅性</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">其他</td>
-      <td class="tg-0pky">2</td>
-      <td class="tg-0pky">-</td>
-    </tr>
-  </tbody>
-</table>
-
----
-
-### 基于词重叠
+Dataflow集成了三种生成文本质量评估方法，用于评估生成文本和参考文本之间的相似性。
 
 <table class="tg">
   <thead>
     <tr>
       <th class="tg-0pky">打分器名称</th>
-      <th class="tg-0pky">评估维度</th>
       <th class="tg-0pky">简介</th>
       <th class="tg-0pky">取值范围</th>
       <th class="tg-0pky">值解释</th>
@@ -703,142 +649,21 @@ permalink: /zh/guide/f50mqhmb/
   <tbody>
     <tr>
       <td class="tg-0pky">BLEU Scorer</td>
-      <td class="tg-0pky">词汇匹配</td>
       <td class="tg-0pky">基于 n-gram 匹配的精确度计算，将生成文本中的 n-gram 与参考文本中的 n-gram 进行匹配并计算精确度</td>
       <td class="tg-0pky">[0, 1]</td>
       <td class="tg-0pky">值越大，表示生成文本与参考文本的匹配程度越高</td>
     </tr>
     <tr>
-      <td class="tg-0pky">ROUGE Scorer</td>
-      <td class="tg-0pky">词汇匹配</td>
-      <td class="tg-0pky">基于 n-gram 和最长公共子序列匹配，计算生成摘要与参考摘要之间的重叠程度</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越大，表示生成文本与参考文本的内容重叠越多</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">METEOR Scorer</td>
-      <td class="tg-0pky">词汇匹配</td>
-      <td class="tg-0pky">基于词形变化、同义词匹配以及语义相关性，综合计算生成文本与参考文本的对齐分数</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越大，表示生成文本与参考文本在语义上越一致</td>
-    </tr>
-    <tr>
       <td class="tg-0pky">CIDEr Scorer</td>
-      <td class="tg-0pky">内容相关性</td>
       <td class="tg-0pky">利用 TF-IDF 加权的 n-gram 统计，将生成文本的描述与参考描述进行相似性比较</td>
       <td class="tg-0pky">[0, 1]</td>
       <td class="tg-0pky">值越大，表示生成文本与参考文本在内容上越一致</td>
     </tr>
     <tr>
-      <td class="tg-0pky">CHRF Scorer</td>
-      <td class="tg-0pky">词汇匹配</td>
-      <td class="tg-0pky">基于参考文本和评估文本的字符级n-gram匹配精确度和召回率计算chrF分数</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越大，表示语义相似性越强</td>
-    </tr>
-  </tbody>
-</table>
-
-### 基于词向量
-
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">打分器名称</th>
-      <th class="tg-0pky">评估维度</th>
-      <th class="tg-0pky">简介</th>
-      <th class="tg-0pky">取值范围</th>
-      <th class="tg-0pky">值解释</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">EmbeddingAverageScorer</td>
-      <td class="tg-0pky">语义相似性</td>
-      <td class="tg-0pky">通过对生成文本和参考文本的词向量取平均，计算余弦相似度</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越大，表示语义相似性越强</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">GreedyMatchingScorer</td>
-      <td class="tg-0pky">语义相关性</td>
-      <td class="tg-0pky">匹配生成文本和参考文本中语义最相似的词，计算相似度</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越大，表示语义相关性越强</td>
-    </tr>
-  </tbody>
-</table>
-
-### 基于语言模型
-
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">打分器名称</th>
-      <th class="tg-0pky">评估维度</th>
-      <th class="tg-0pky">简介</th>
-      <th class="tg-0pky">取值范围</th>
-      <th class="tg-0pky">值解释</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">WSD Scorer</td>
-      <td class="tg-0pky">语义相似性</td>
-      <td class="tg-0pky">使用 word2vec 模型计算生成文本与参考文本的词向量之间的 Word Mover's Distance (WMD)</td>
-      <td class="tg-0pky">[0, +∞)</td>
-      <td class="tg-0pky">值越小，表示生成文本与参考文本的语义距离越近</td>
-    </tr>
-    <tr>
       <td class="tg-0pky">BertScorer</td>
-      <td class="tg-0pky">语义相似性</td>
       <td class="tg-0pky">使用 Bert 模型计算生成文本与参考文本的词向量相似性，输出精确度、召回率和 F1 分数</td>
       <td class="tg-0pky">[0, 1]</td>
       <td class="tg-0pky">值越大，表示生成文本与参考文本在语义上越相似</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">BARTScorer</td>
-      <td class="tg-0pky">流畅性与信息性</td>
-      <td class="tg-0pky">利用 BART 模型计算生成文本的质量，输出生成文本的可能性分数</td>
-      <td class="tg-0pky">[-∞, +∞]</td>
-      <td class="tg-0pky">值越高，表示生成文本的质量越高</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">BELURT Scorer</td>
-      <td class="tg-0pky">语义相似性</td>
-      <td class="tg-0pky">使用预训练语言模型（如 BERT）进行微调，以语义相似性任务为目标，计算生成文本与参考文本的相似性得分</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越高，表示生成文本与参考文本在语义上越一致</td>
-    </tr>
-  </tbody>
-</table>
-
-### 其他
-
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">打分器名称</th>
-      <th class="tg-0pky">评估维度</th>
-      <th class="tg-0pky">简介</th>
-      <th class="tg-0pky">取值范围</th>
-      <th class="tg-0pky">值解释</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">TER Scorer</td>
-      <td class="tg-0pky">编辑距离</td>
-      <td class="tg-0pky">计算生成文本转化为参考文本所需的最小编辑操作次数，包括插入、删除和替换</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越小，表示生成文本与参考文本越接近</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">HLEPOR Scorer</td>
-      <td class="tg-0pky">多维度匹配</td>
-      <td class="tg-0pky">综合考虑多个权重参数（如位置、比例等），计算生成文本与参考文本在多个维度的匹配程度</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">值越高，表示生成文本与参考文本的匹配程度越高</td>
     </tr>
   </tbody>
 </table>

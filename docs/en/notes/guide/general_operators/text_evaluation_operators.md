@@ -44,6 +44,12 @@ Scorers are divided into the following four types, each scorer provides one or m
 
 Regarding data types: **[Text]** indicates accepting single-field string input, suitable for pre-training or fine-tuning data. **[Instruction]** indicates only suitable for fine-tuning data with multi-field format input.
 
+The types of open-source operators are quite limited. In order to achieve better data processing quality and fill the gap in data evaluation methods missing in open-source, we have meticulously designed and self-developed a new set of operators. The meanings of the labels are as follows:
+
+🚀 Independent Innovation: Core algorithms are original developments, filling gaps in existing algorithms or further improving performance, breaking through current performance bottlenecks.
+
+✨ Open Source Premiere: This operator is integrated into the mainstream community framework for the first time, making it easier for more developers to use and achieve open-source sharing.
+
 ### List of Scorers
 
 #### APIcaller
@@ -61,7 +67,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">AlpagasusScorer</td>
+      <td class="tg-0pky">AlpagasusScorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Evaluates the quality of instructions by calling GPT, returning a quality score. A higher score indicates higher instruction quality.</td>
@@ -69,7 +75,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2307.08701">paper</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PerspectiveScorer</td>
+      <td class="tg-0pky">PerspectiveScorer✨</td>
       <td class="tg-0pky">Safety</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Uses PerspectiveAPI to evaluate the toxicity of the text, returning a toxicity probability. A higher score indicates higher text toxicity.</td>
@@ -77,7 +83,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://perspectiveapi.com/">API</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">TreeinstructScorer</td>
+      <td class="tg-0pky">TreeinstructScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Measures instruction complexity by generating the number of nodes in the syntax tree; more nodes indicate more complex instructions.</td>
@@ -102,7 +108,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">Task2VecScorer</td>
+      <td class="tg-0pky">Task2VecScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Evaluates the diversity of the dataset using the Task2Vec method. Higher scores indicate higher dataset diversity.</td>
@@ -135,7 +141,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
   </thead>
   <tbody>
     <tr>
-      <td class="tg-0pky">DebertaV3Scorer</td>
+      <td class="tg-0pky">DebertaV3Scorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">A quality classifier based on NVIDIA's DeBERTa V3 model for evaluating text quality.</td>
@@ -143,7 +149,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://huggingface.co/nvidia/quality-classifier-deberta">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">FineWebEduScorer</td>
+      <td class="tg-0pky">FineWebEduScorer✨</td>
       <td class="tg-0pky">Educational Value</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">A classifier for evaluating the educational value of text; higher scores indicate higher educational value.</td>
@@ -151,7 +157,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2406.17557">paper</a><br><a href="https://huggingface.co/HuggingFaceFW/fineweb-edu-classifier">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">InstagScorer</td>
+      <td class="tg-0pky">InstagScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Evaluates instruction content diversity by returning the number of tags; more tags indicate higher content diversity.</td>
@@ -167,7 +173,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://aclanthology.org/W11-2123.pdf">paper</a><br><a href="https://huggingface.co/edugp/kenlm/tree/main">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">QuratingScorer</td>
+      <td class="tg-0pky">QuratingScorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness、 Educational Value</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Evaluates text quality using the Qurating model; higher scores indicate higher quality.</td>
@@ -175,7 +181,15 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2402.09739">paper</a><br><a href="https://github.com/princeton-nlp/QuRating">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">PresidioScorer</td>
+      <td class="tg-0pky">PairQualScorer🚀</td>
+      <td class="tg-0pky">Educational Value</td>
+      <td class="tg-0pky">Text</td>
+      <td class="tg-0pky">Evaluates the quality of text using the PairQual model, based on the BGE model. It supports both Chinese and English. It is trained by scoring pairwise comparisons of texts using GPT. A higher score indicates better quality.</td>
+      <td class="tg-0pky">-</td>
+      <td class="tg-0pky"><br><a href="https://huggingface.co/zks2856/PairQual-Scorer-en">code</a></td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">PresidioScorer✨</td>
       <td class="tg-0pky">Safety</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Using the Microsoft Presidio model, identify private entities (PII) in text such as credit card numbers, names, locations, etc. The scorer returns the number of PII information.</td>
@@ -183,7 +197,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://github.com/microsoft/presidio">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">SuperfilteringScorer</td>
+      <td class="tg-0pky">SuperfilteringScorer✨</td>
       <td class="tg-0pky">Fluency & Understandability</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">Evaluates the following difficulty of instructions using the Superfiltering method; higher scores indicate more difficult instructions to follow.</td>
@@ -191,7 +205,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2402.00530">paper</a><br><a href="https://github.com/tianyi-lab/Superfiltering">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">TextbookScorer</td>
+      <td class="tg-0pky">TextbookScorer✨</td>
       <td class="tg-0pky">Educational Value</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">A textbook quality classifier based on FastText, used to evaluate the educational value of text.</td>
@@ -199,15 +213,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2306.11644">paper</a><br><a href="https://huggingface.co/kenhktsui/llm-data-textbook-quality-fasttext-classifier-v2">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">UnievalScorer</td>
-      <td class="tg-0pky">Fluency & Understandability</td>
-      <td class="tg-0pky">Text</td>
-      <td class="tg-0pky">UniEval is a multi-dimensional text quality evaluation model; higher scores indicate better quality.</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky"><a href="https://arxiv.org/abs/2210.07197">paper</a><br><a href="https://github.com/maszhongming/UniEval">code</a></td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">DeitaQualityScorer</td>
+      <td class="tg-0pky">DeitaQualityScorer✨</td>
       <td class="tg-0pky">Content Accuracy & Effectiveness</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">An instruction quality scorer based on the Llama model; higher scores indicate higher instruction quality.</td>
@@ -215,7 +221,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2312.15685">paper</a><br><a href="https://huggingface.co/hkust-nlp/deita-quality-scorer">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">DeitaComplexityScorer</td>
+      <td class="tg-0pky">DeitaComplexityScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Instruction</td>
       <td class="tg-0pky">An instruction complexity scorer based on the Llama model; higher scores indicate higher instruction complexity.</td>
@@ -223,7 +229,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2312.15685">paper</a><br><a href="https://huggingface.co/hkust-nlp/deita-complexity-scorer">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">RMScorer</td>
+      <td class="tg-0pky">RMScorer✨</td>
       <td class="tg-0pky">Fluency & Understandability</td>
       <td class="tg-0pky">指令</td>
       <td class="tg-0pky">A reward-model-deberta-v3-large-v2 scorer based on human value judgment. High scores represent higher quality.</td>
@@ -256,7 +262,7 @@ Regarding data types: **[Text]** indicates accepting single-field string input, 
       <td class="tg-0pky"><a href="https://github.com/whylabs/langkit">code</a></td>
     </tr>
     <tr>
-      <td class="tg-0pky">LexicalDiversityScorer</td>
+      <td class="tg-0pky">LexicalDiversityScorer✨</td>
       <td class="tg-0pky">Diversity & Complexity</td>
       <td class="tg-0pky">Text</td>
       <td class="tg-0pky">Calculates lexical diversity scores using MTLD and HD-D methods; higher scores represent richer vocabulary use, reflecting the diversity and complexity of the text.</td>
@@ -294,7 +300,6 @@ To provide more precise data quality evaluation, we have constructed a quality e
 
 #### 3. Fluency & Understandability
 
-- **UniEvalScorer**: UniEvalFluencyScore, UniEvalUnderstandabilityScore, UniEvalNaturalnessScore
 - **LangkitScorer**: LangkitFleschReadingEaseScore, LangkitAutomatedReadabilityIndexScore, LangkitAggregateReadingLevelScore
 - **PerplexityScorer**: PerplexityScore
 - **QuratingScorer**: QuratingWritingStyleScore
@@ -311,6 +316,7 @@ To provide more precise data quality evaluation, we have constructed a quality e
 - **TextbookScorer**: TextbookScore
 - **FineWebEduScorer**: FineWebEduScore
 - **QuratingScorer**: QuratingEducationalValueScore
+- **PairQualScorer**: PairQualScore
 
 #### 6. Content Accuracy & Effectiveness
 
@@ -457,31 +463,6 @@ To better provide data quality references, we randomly selected 5k data samples 
     <td class="tg-0pky">14401.2789</td>
     <td class="tg-0pky">2366</td>
     <td class="tg-0pky">4</td>
-  </tr>
-  <tr>
-    <td class="tg-0pky" rowspan="3">UnievalScorer</td>
-    <td class="tg-0pky">UniEvalFluencyScore</td>
-    <td class="tg-0pky">Evaluates the fluency of the text. <b>The higher the score, the more fluent the text is.</b></td>
-    <td class="tg-0pky">0.8268</td>
-    <td class="tg-0pky">0.0199</td>
-    <td class="tg-0pky">0.9674</td>
-    <td class="tg-0pky">0.0036</td>
-  </tr>
-  <tr>
-      <td class="tg-0pky">UniEvalNaturalnessScore</td>
-      <td class="tg-0pky">Measures the naturalness of the text. <b>The higher the score, the more natural the language.</b></td>
-      <td class="tg-0pky">0.4224</td>
-      <td class="tg-0pky">0.0474</td>
-      <td class="tg-0pky">0.9782</td>
-      <td class="tg-0pky">0.0010</td>
-  </tr>
-  <tr>
-      <td class="tg-0pky">UniEvalUnderstandabilityScore</td>
-      <td class="tg-0pky">Measures the understandability of the text. <b>The higher the score, the more understandable the text.</b></td>
-      <td class="tg-0pky">0.4698</td>
-      <td class="tg-0pky">0.0493</td>
-      <td class="tg-0pky">0.9927</td>
-      <td class="tg-0pky">0.0006</td>
   </tr>
   <tr>
       <td class="tg-0pky" rowspan="1">TextbookScorer</td>
@@ -663,47 +644,12 @@ To better provide data quality references, we randomly selected 5k data samples 
 
 ## Generated text evaluation
 
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">Category</th>
-      <th class="tg-0pky">Number of Scorers</th>
-      <th class="tg-0pky">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">Word Overlap Based</td>
-      <td class="tg-0pky">5</td>
-      <td class="tg-0pky">Evaluates the n-gram overlap between generated and reference texts</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">Word Embeddings Based</td>
-      <td class="tg-0pky">2</td>
-      <td class="tg-0pky">Uses word embeddings to calculate similarity between generated and reference texts</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">Language Models Based</td>
-      <td class="tg-0pky">4</td>
-      <td class="tg-0pky">Utilizes pre-trained language models to evaluate semantics and fluency</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">Others</td>
-      <td class="tg-0pky">2</td>
-      <td class="tg-0pky">-</td>
-    </tr>
-  </tbody>
-</table>
-
----
-
-### Word Overlap Based
+Dataflow integrates three methods for evaluating the quality of generated text, used to evaluate the similarity between generated text and reference text.
 
 <table class="tg">
   <thead>
     <tr>
       <th class="tg-0pky">Scorer Name</th>
-      <th class="tg-0pky">Evaluation Dimension</th>
       <th class="tg-0pky">Description</th>
       <th class="tg-0pky">Value Range</th>
       <th class="tg-0pky">Description</th>
@@ -712,142 +658,21 @@ To better provide data quality references, we randomly selected 5k data samples 
   <tbody>
     <tr>
       <td class="tg-0pky">BLEU Scorer</td>
-      <td class="tg-0pky">Fluency and Lexical Match</td>
       <td class="tg-0pky">Calculates precision based on n-gram matching by comparing n-grams in generated and reference texts</td>
       <td class="tg-0pky">[0, 1]</td>
       <td class="tg-0pky">Higher values indicate greater match between generated and reference texts</td>
     </tr>
     <tr>
-      <td class="tg-0pky">ROUGE Scorer</td>
-      <td class="tg-0pky">Content Overlap</td>
-      <td class="tg-0pky">Calculates overlap between generated and reference summaries using n-gram and longest common subsequence matching</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">Higher values indicate more content overlap between generated and reference texts</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">METEOR Scorer</td>
-      <td class="tg-0pky">Semantic Matching</td>
-      <td class="tg-0pky">Calculates alignment scores based on stemming, synonym matching, and semantic relevance between generated and reference texts</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">Higher values indicate stronger semantic consistency between generated and reference texts</td>
-    </tr>
-    <tr>
       <td class="tg-0pky">CIDEr Scorer</td>
-      <td class="tg-0pky">Content Relevance</td>
       <td class="tg-0pky">Uses TF-IDF weighted n-gram statistics to compare similarity between generated and reference descriptions</td>
       <td class="tg-0pky">[0, 1]</td>
       <td class="tg-0pky">Higher values indicate stronger content consistency between generated and reference texts</td>
     </tr>
     <tr>
-      <td class="tg-0pky">CHRF Scorer</td>
-      <td class="tg-0pky">Lexical Matching</td>
-      <td class="tg-0pky">Calculates the chrF score based on character-level n-gram precision and recall between the reference text and the evaluated text</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">The higher the value, the stronger the semantic similarity</td>
-    </tr>
-  </tbody>
-</table>
-
-### Word Embeddings Based
-
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">Scorer Name</th>
-      <th class="tg-0pky">Evaluation Dimension</th>
-      <th class="tg-0pky">Description</th>
-      <th class="tg-0pky">Value Range</th>
-      <th class="tg-0pky">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">Embedding Average Score</td>
-      <td class="tg-0pky">Semantic Similarity</td>
-      <td class="tg-0pky">Computes cosine similarity of the average word embeddings of generated and reference texts</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">Higher values indicate stronger semantic similarity</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">Greedy Matching Score</td>
-      <td class="tg-0pky">Semantic Relevance</td>
-      <td class="tg-0pky">Matches semantically similar words between generated and reference texts, computes similarity</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">Higher values indicate stronger semantic relevance</td>
-    </tr>
-  </tbody>
-</table>
-
-### Language Models Based
-
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">Scorer Name</th>
-      <th class="tg-0pky">Evaluation Dimension</th>
-      <th class="tg-0pky">Description</th>
-      <th class="tg-0pky">Value Range</th>
-      <th class="tg-0pky">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">WSD Scorer</td>
-      <td class="tg-0pky">Semantic Similarity</td>
-      <td class="tg-0pky">Uses word2vec to calculate Word Mover's Distance (WMD) between generated and reference texts</td>
-      <td class="tg-0pky">[0, +∞)</td>
-      <td class="tg-0pky">Lower values indicate closer semantic distance between generated and reference texts</td>
-    </tr>
-    <tr>
       <td class="tg-0pky">BertScore</td>
-      <td class="tg-0pky">Semantic Similarity</td>
       <td class="tg-0pky">Computes similarity of word embeddings between generated and reference texts using BERT</td>
       <td class="tg-0pky">[0, 1]</td>
       <td class="tg-0pky">Higher values indicate stronger semantic similarity between generated and reference texts</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">BARTScore</td>
-      <td class="tg-0pky">Fluency and Informativeness</td>
-      <td class="tg-0pky">Uses BART model to treat the generated text as the target and computes the likelihood score</td>
-      <td class="tg-0pky">(-∞, +∞)</td>
-      <td class="tg-0pky">Higher values indicate better quality of generated text</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">BELURT Scorer</td>
-      <td class="tg-0pky">Semantic Similarity</td>
-      <td class="tg-0pky">Fine-tunes pre-trained language models (e.g., BERT) for semantic similarity tasks, computes similarity scores between generated and reference texts</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">Higher values indicate stronger semantic consistency between generated and reference texts</td>
-    </tr>
-  </tbody>
-</table>
-
-### Others
-
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">Scorer Name</th>
-      <th class="tg-0pky">Evaluation Dimension</th>
-      <th class="tg-0pky">Description</th>
-      <th class="tg-0pky">Value Range</th>
-      <th class="tg-0pky">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">TER Scorer</td>
-      <td class="tg-0pky">Edit Distance</td>
-      <td class="tg-0pky">Calculates the minimum edit operations (insertions, deletions, and substitutions) needed to transform generated text into reference text</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">Lower values indicate closer match between generated and reference texts</td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">HLEPOR Scorer</td>
-      <td class="tg-0pky">Multi-Dimensional Matching</td>
-      <td class="tg-0pky">Calculates multi-dimensional matching scores considering multiple weighted parameters (e.g., position, proportion) between generated and reference texts</td>
-      <td class="tg-0pky">[0, 1]</td>
-      <td class="tg-0pky">Higher values indicate stronger match between generated and reference texts</td>
     </tr>
   </tbody>
 </table>
