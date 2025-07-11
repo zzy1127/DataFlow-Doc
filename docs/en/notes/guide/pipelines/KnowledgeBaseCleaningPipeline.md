@@ -11,11 +11,11 @@ permalink: /en/guide/r51ooua8/
 
 The core objective of the knowledge base cleaning pipeline is to provide **end-to-end** information extraction, normalization, and necessary metadata generation services for raw documents provided by users, which often come in heterogeneous formats and contain high levels of informational noise. The extracted data can be directly used for RAG, pre-training, and various downstream tasks for large language models. Additionally, the pipeline converts the cleaned knowledge into a set of Multi-Hop QAs using a sliding window approach. According to experiments from [MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD), this QA-formatted knowledge significantly enhances the accuracy of RAG-based reasoning.
 
-The knowledge base cleaning pipeline supports the following file formats: **PDF, DOC, PPT, Markdown, HTML, and webpage information crawled from URLs**.
+The knowledge base cleaning pipeline supports the following file formats: **PDF, Markdown, HTML, and webpage information crawled from URLs**.
 
 The main workflow of the pipeline includes:
 
-1. **Information Extraction**: Utilizing tools like [MinerU](https://github.com/opendatalab/MinerU), [magic-doc](https://github.com/opendatalab/magic-doc), and [trafilatura](https://github.com/adbar/trafilatura) to extract textual information from raw documents.
+1. **Information Extraction**: Utilizing tools like [MinerU](https://github.com/opendatalab/MinerU) and [trafilatura](https://github.com/adbar/trafilatura) to extract textual information from raw documents.
 2. **Text Segmentation**: Using [chonkie](https://github.com/chonkie-inc/chonkie) to split the text into segments, supporting segmentation by tokens, characters, sentences, and other methods.
 3. **Knowledge Cleaning**: Cleaning the raw textual information by removing redundant tags, correcting formatting errors, and filtering out private or non-compliant content to make the text cleaner and more usable.
 4. **QA Construction**: Employing a sliding window of three sentences to transform the cleaned knowledge base into a series of multi-step reasoning QAs, which further improves the accuracy of RAG-based reasoning.
@@ -24,25 +24,24 @@ The main workflow of the pipeline includes:
 
 ### 1. Information Extraction
 
-The first step of the pipeline is to extract textual knowledge from users' original documents or URLs using KnowledgeExtractor. This step is crucial as it converts various formats of raw documents into unified markdown text, facilitating subsequent cleaning processes.
+The first step of the pipeline is to extract textual knowledge from users' original documents or URLs using knowledge_extractor. This step is crucial as it converts various formats of raw documents into unified markdown text, facilitating subsequent cleaning processes.
 
-In this system, PDF extraction is based on [MinerU](https://github.com/opendatalab/MinerU). Additional MinerU configuration is required beyond the basic environment. Users can configure it as follows:
+In this system, PDF file extraction is based on [MinerU](https://github.com/opendatalab/MinerU). You might need to create a new environment because of special requirements for depandencies.
+```shell
+conda create -n dataflow_kbc python=3.10
+conda activate dataflow_kbc
+git clone https://github.com/OpenDCAI/DataFlow.git
+cd DataFlow
+pip install -e .
+```
+Additional MinerU configuration is required beyond the basic environment. Users can configure it as follows:
 
 ```shell
-pip install mineru[pipeline]
-mineru-models-download
+pip install open-dataflow[kbc]
+mineru-models-download #只需安装pipeline部分
 ```
 
-For detailed information, please refer to 
-
-The extraction of DOC, PPT, PPTX and other formats in this system is based on [Magic-Doc](https://github.com/magicpdf/Magic-Doc). Users can configure it as follows:
-
-```shell
-apt-get/yum/brew install libreoffice
-pip install fairy-doc[gpu]
-```
-
-For detailed information, please refer to 
+For detailed information, please refer to https://github.com/opendatalab/mineru#local-deployment.
 
 **Input**: Original document files or URL
  ​**​Output​**: Extracted markdown text
@@ -51,7 +50,8 @@ For detailed information, please refer to
 
 ```python
 knowledge_extractor = KnowledgeExtractor(
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"
+    intermediate_dir="../example_data/KBCleaningPipeline/raw/",
+    lang="en"
 )
 extracted=knowledge_extractor.run(
     storage=self.storage,
@@ -59,8 +59,6 @@ extracted=knowledge_extractor.run(
     url=url,
 )
 ```
-
-Here's the English translation while strictly preserving all original formatting:
 
 ------
 
@@ -77,7 +75,7 @@ After document extraction, the text chunking step(CorpusTextSplitter) divides th
 text_splitter = CorpusTextSplitter(
     split_method="token",
     chunk_size=512,
-    tokenizer_name="Qwen/Qwen2.5-3B-Instruct",
+    tokenizer_name="Qwen/Qwen2.5-7B-Instruct",
 )
 text_splitter.run(
     storage=self.storage.step(),
@@ -94,14 +92,14 @@ After text chunking, the Knowledge Cleaning(KnowledgeCleaner) specializes in sta
  ​**​Output​**: Cleaned JSON file
 
 ```python
-knowledge_cleaner = KnowledgeExtractor(  
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"  
-)  
-extracted_path = knowledge_cleaner.run(  
-    storage=self.storage,  
-    raw_file=raw_file,  
-    url=url,  
-    lang="ch"  
+knowledge_cleaner = KnowledgeCleaner(
+    llm_serving=api_llm_serving,
+    lang="en"
+)
+extracted_path = knowledge_cleaner.run(
+  storage=self.storage.step(),
+  input_key= "raw_content",
+  output_key="cleaned",
 )
 ```
 
@@ -115,15 +113,15 @@ After knowledge cleaning, the MultiHop-QA Generation(MultiHopQAGenerator) specia
 **Usage Example**:
 
 ```python
-multi_hop_qa_generator = MultiHopQAGenerator(
-    llm_serving=local_llm_serving,
-    lang="en"
-)
-multi_hop_qa_generator.run(
-    storage=self.storage.step(),
-    input_key="cleaned",
-    output_key="MultiHop_QA"
-)
+  multi_hop_qa_generator = MultiHopQAGenerator(
+      llm_serving=local_llm_serving,
+      lang="en"
+  )
+  multi_hop_qa_generator.run(
+      storage=self.storage.step(),
+      input_key="cleaned",
+      output_key="MultiHop_QA"
+  )
 ```
 
 ## 3. Execution Examples
@@ -132,21 +130,15 @@ Users can execute the following scripts to meet different data requirements. Not
 
 - Knowledge base cleaning and construction for PDF files:
 
-  ```shell
-  python gpu_pipelines/kbcleaning_pipeline_pdf.py
-  ```
-
-- Knowledge base cleaning and construction for DOC files:
-
-  ```shell
-  python gpu_pipelines/kbcleaning_pipeline_doc.py
-  ```
+```shell
+python gpu_pipelines/kbcleaning_pipeline_pdf.py
+```
 
 - Knowledge base cleaning and construction after URL crawling:
 
-    ```shell
-    python gpu_pipelines/kbcleaning_pipeline_url.py
-    ```
+```shell
+python gpu_pipelines/kbcleaning_pipeline_url.py
+```
 
 ## 4. Pipeline Example
 
@@ -160,24 +152,22 @@ from dataflow.operators.generate.KnowledgeCleaning import (
     MultiHopQAGenerator,
 )
 from dataflow.utils.storage import FileStorage
-from dataflow.serving import LocalModelLLMServing_vllm
+from dataflow.serving import APILLMServing_request
 
 class KBCleaningPipeline():
     def __init__(self):
 
         self.storage = FileStorage(
             first_entry_file_name="../example_data/KBCleaningPipeline/kbc_placeholder.json",
-            cache_path="./.cache/gpu",
-            file_name_prefix="url_cleaning_step",
+            cache_path="./.cache/api",
+            file_name_prefix="pdf_cleaning_step",
             cache_type="json",
         )
 
-        local_llm_serving = LocalModelLLMServing_vllm(
-            hf_model_name_or_path="Qwen/Qwen2.5-7B-Instruct",
-            vllm_max_tokens=1024,
-            vllm_tensor_parallel_size=4,
-            vllm_gpu_memory_utilization=0.6,
-            vllm_repetition_penalty=1.2
+        api_llm_serving = APILLMServing_request(
+                api_url="https://api.openai.com/v1/chat/completions",
+                model_name="gpt-4o",
+                max_workers=100
         )
 
         self.knowledge_cleaning_step1 = KnowledgeExtractor(
@@ -192,12 +182,12 @@ class KBCleaningPipeline():
         )
 
         self.knowledge_cleaning_step3 = KnowledgeCleaner(
-            llm_serving=local_llm_serving,
+            llm_serving=api_llm_serving,
             lang="en"
         )
 
         self.knowledge_cleaning_step4 = MultiHopQAGenerator(
-            llm_serving=local_llm_serving,
+            llm_serving=api_llm_serving,
             lang="en"
         )
 
@@ -219,15 +209,14 @@ class KBCleaningPipeline():
             input_key= "raw_content",
             output_key="cleaned",
         )
-
         self.knowledge_cleaning_step4.run(
             storage=self.storage.step(),
             input_key="cleaned",
             output_key="MultiHop_QA"
         )
-
+        
 if __name__ == "__main__":
     model = KBCleaningPipeline()
-    model.forward(url="https://trafilatura.readthedocs.io/en/latest/quickstart.html")
+    model.forward(raw_file="../example_data/KBCleaningPipeline/test.pdf")
 ```
 
