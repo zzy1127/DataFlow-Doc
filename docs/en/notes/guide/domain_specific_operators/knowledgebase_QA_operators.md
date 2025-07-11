@@ -22,7 +22,7 @@ The Knowledge Base Cleaning Operator can perform extraction, organization, and c
 | Name                  | Applicable Type | Description                                                  | Official Repository/Paper                              |
 | --------------------- | :-------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
 | KnowledgeExtractor🚀✨ | Knowledge Extraction | This operator extracts various heterogeneous text knowledge into markdown format for subsequent processing. | -                                                      |
-| corpus_text_splitter✨   | Corpus Segmentation | This operator provides multiple methods to split full texts into appropriately sized segments for subsequent operations like indexing. | -                                                      |
+| CorpusTextSplitter✨   | Corpus Segmentation | This operator provides multiple methods to split full texts into appropriately sized segments for subsequent operations like indexing. | -                                                      |
 | KnowledgeCleaner🚀✨    | Knowledge Cleaning | This operator uses LLM to clean organized raw text, including but not limited to normalization and privacy removal. | -                                                      |
 | multihop_qa_generator🚀✨ | Knowledge Paraphrasing | This operator uses a three-sentence sliding window to paraphrase cleaned knowledge bases into a series of multi-step reasoning QAs, which better facilitates accurate RAG reasoning. | [MIRAID](https://github.com/eth-medical-ai-lab/MIRIAD) |
 
@@ -128,10 +128,10 @@ extracted=knowledge_extractor.run(
 ```
 
 
-### 2. corpus_text_splitter
+### 2. CorpusTextSplitter
 
 **Functional Description**:
- corpus_text_splitter is an efficient and flexible text chunking tool specifically designed for processing large-scale text corpora. This operator supports multiple chunking strategies to intelligently segment text for various NLP tasks, with special optimization for RAG (Retrieval-Augmented Generation) applications.
+ CorpusTextSplitter is an efficient and flexible text chunking tool specifically designed for processing large-scale text corpora. This operator supports multiple chunking strategies to intelligently segment text for various NLP tasks, with special optimization for RAG (Retrieval-Augmented Generation) applications.
 
 **Input Parameters**:
 
@@ -180,10 +180,10 @@ text_splitter.run(
 ```
 
 
-### 3. knowledge_cleaner
+### 3. KnowledgeCleaner
 
 **Functional Description**:
-knowledge_cleaner is a professional knowledge cleaning operator specifically designed for standardizing raw content in RAG (Retrieval-Augmented Generation) systems. By leveraging large language model interfaces, it intelligently cleans and formats unstructured knowledge to enhance the accuracy and readability of knowledge bases.
+KnowledgeCleaner is a professional knowledge cleaning operator specifically designed for standardizing raw content in RAG (Retrieval-Augmented Generation) systems. By leveraging large language model interfaces, it intelligently cleans and formats unstructured knowledge to enhance the accuracy and readability of knowledge bases.
 
 **Input Parameters**:
 
@@ -226,9 +226,9 @@ extracted_path = knowledge_cleaner.run(
 )
 ```
 
-###    4. multihop_qa_generator
+###    4. MultiHopQAGenerator
 
-**Function Description**: multihop_qa_generator is a professional multi-hop QA pair generation operator, specifically designed to automatically generate question-answer pairs requiring multi-step reasoning from text data. Through its large language model interface, this operator performs intelligent text analysis and complex question construction, making it suitable for building high-quality multi-hop QA datasets.
+**Function Description**: MultiHopQAGenerator is a professional multi-hop QA pair generation operator, specifically designed to automatically generate question-answer pairs requiring multi-step reasoning from text data. Through its large language model interface, this operator performs intelligent text analysis and complex question construction, making it suitable for building high-quality multi-hop QA datasets.
 
 **Input Parameters**:
 

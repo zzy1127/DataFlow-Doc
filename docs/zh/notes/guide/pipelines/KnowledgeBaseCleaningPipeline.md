@@ -63,7 +63,7 @@ extracted=knowledge_extractor.run(
 
 ### 2. 文本分块
 
-文档被提取之后，文本分块(corpus_text_splitter)步骤将提取中的长文本切分成块，系统支持通过token, character, sentence, semantic维度进行分块。
+文档被提取之后，文本分块(CorpusTextSplitter)步骤将提取中的长文本切分成块，系统支持通过token, character, sentence, semantic维度进行分块。
 
 **输入**：提取后的Markdown文本 **输出**：分块后的json文件
 
@@ -84,7 +84,7 @@ text_splitter.run(
 
 ### 3. 知识清洗
 
-文本被切块之后，知识清洗(knowledge_cleaner)专门用于对RAG（检索增强生成）系统中的原始知识内容进行标准化处理。该过程通过大语言模型接口，实现对非结构化知识的智能清洗和格式化，提升知识库的准确性和可读性。
+文本被切块之后，知识清洗(KnowledgeCleaner)专门用于对RAG（检索增强生成）系统中的原始知识内容进行标准化处理。该过程通过大语言模型接口，实现对非结构化知识的智能清洗和格式化，提升知识库的准确性和可读性。
 
 **输入**：分块后的json文件 **输出**：清洗后的json文件
 
@@ -102,7 +102,7 @@ extracted_path = knowledge_cleaner.run(
 
 ### 4. QA生成
 
-知识被清洗之后，多跳QA合成(multihop_qa_generator)专门用于从文本数据中自动生成需要多步推理的问题-答案对。该过程通过大语言模型接口，实现对文本的智能分析和复杂问题构建，适用于构建高质量的多跳问答数据集。根据[MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD)的实验，这种QA格式的知识更有利于RAG准确推理。
+知识被清洗之后，多跳QA合成(MultiHopQAGenerator)专门用于从文本数据中自动生成需要多步推理的问题-答案对。该过程通过大语言模型接口，实现对文本的智能分析和复杂问题构建，适用于构建高质量的多跳问答数据集。根据[MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD)的实验，这种QA格式的知识更有利于RAG准确推理。
 
 **输入**：json格式的普通文本 
 

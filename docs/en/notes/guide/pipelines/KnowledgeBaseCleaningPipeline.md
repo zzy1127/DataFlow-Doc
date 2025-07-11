@@ -64,7 +64,7 @@ extracted=knowledge_extractor.run(
 
 ### 2. Text Chunking
 
-After document extraction, the text chunking step(corpus_text_splitter) divides the extracted long text into chunks. The system supports chunking by token, character, sentence, or semantic dimensions.
+After document extraction, the text chunking step(CorpusTextSplitter) divides the extracted long text into chunks. The system supports chunking by token, character, sentence, or semantic dimensions.
 
 **Input**: Extracted Markdown text
  ​**​Output​**: Chunked JSON file
@@ -86,7 +86,7 @@ text_splitter.run(
 
 ### 3. Knowledge Cleaning
 
-After text chunking, the Knowledge Cleaning(knowledge_cleaner) specializes in standardizing raw knowledge content for RAG (Retrieval-Augmented Generation) systems. This process utilizes large language model interfaces to intelligently clean and format unstructured knowledge, improving the accuracy and readability of the knowledge base.
+After text chunking, the Knowledge Cleaning(KnowledgeCleaner) specializes in standardizing raw knowledge content for RAG (Retrieval-Augmented Generation) systems. This process utilizes large language model interfaces to intelligently clean and format unstructured knowledge, improving the accuracy and readability of the knowledge base.
 
 **Input**: Chunked JSON file
  ​**​Output​**: Cleaned JSON file
@@ -105,7 +105,7 @@ extracted_path = knowledge_cleaner.run(
 
 ### 4. QA Generation
 
-After knowledge cleaning, the MultiHop-QA Generation(multihop_qa_generator) specializes in automatically generating multi-step reasoning question-answer pairs from text data. This process uses large language model interfaces for intelligent text analysis and complex question construction, suitable for building high-quality multi-hop QA datasets. According to experiments from [MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD), this QA-formatted knowledge significantly enhances RAG reasoning accuracy.
+After knowledge cleaning, the MultiHop-QA Generation(MultiHopQAGenerator) specializes in automatically generating multi-step reasoning question-answer pairs from text data. This process uses large language model interfaces for intelligent text analysis and complex question construction, suitable for building high-quality multi-hop QA datasets. According to experiments from [MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD), this QA-formatted knowledge significantly enhances RAG reasoning accuracy.
 
 **Input**: JSON-formatted plain text
  ​**​Output​**: For each text segment, generates a set of multi-hop QAs (output in JSON format)
