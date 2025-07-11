@@ -22,9 +22,9 @@ The Knowledge Base Cleaning Operator can perform extraction, organization, and c
 | Name                  | Applicable Type | Description                                                  | Official Repository/Paper                              |
 | --------------------- | :-------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
 | KnowledgeExtractor🚀✨ | Knowledge Extraction | This operator extracts various heterogeneous text knowledge into markdown format for subsequent processing. | -                                                      |
-| CorpusTextSplitter✨   | Corpus Segmentation | This operator provides multiple methods to split full texts into appropriately sized segments for subsequent operations like indexing. | -                                                      |
+| corpus_text_splitter✨   | Corpus Segmentation | This operator provides multiple methods to split full texts into appropriately sized segments for subsequent operations like indexing. | -                                                      |
 | KnowledgeCleaner🚀✨    | Knowledge Cleaning | This operator uses LLM to clean organized raw text, including but not limited to normalization and privacy removal. | -                                                      |
-| MultiHopQAGenerator🚀✨ | Knowledge Paraphrasing | This operator uses a three-sentence sliding window to paraphrase cleaned knowledge bases into a series of multi-step reasoning QAs, which better facilitates accurate RAG reasoning. | [MIRAID](https://github.com/eth-medical-ai-lab/MIRIAD) |
+| multihop_qa_generator🚀✨ | Knowledge Paraphrasing | This operator uses a three-sentence sliding window to paraphrase cleaned knowledge bases into a series of multi-step reasoning QAs, which better facilitates accurate RAG reasoning. | [MIRAID](https://github.com/eth-medical-ai-lab/MIRIAD) |
 
 
 
@@ -32,33 +32,34 @@ The Knowledge Base Cleaning Operator can perform extraction, organization, and c
 
 Specifically, for operators that require specified storage paths or model invocations, we provide encapsulated **model interfaces** and **storage object interfaces**. You can define an LLM API interface in the following way:
 
-```
+``` python
 from dataflow.llmserving import APILLMServing_request
 
 api_llm_serving = APILLMServing_request(
-    api_url="your_api_url",
-    model_name="model_name",
-    max_workers=5
+        api_url="https://api.openai.com/v1/chat/completions",
+        model_name="gpt-4o",
+        max_workers=100
 )
+
 ```
 
 You can define a local LLM service interface as follows:
 
-```
+``` python
 from dataflow.llmserving import LocalModelLLMServing
 
-local_llm_serving = LocalModelLLMServing(
-    model_name_or_path="/data0/models/Qwen2.5-7B-Instruct",
-    max_tokens=1024,
-    tensor_parallel_size=4,
-    model_source="local",
-    gpu_memory_utilization=0.6,
+local_llm_serving = LocalModelLLMServing_vllm(
+    hf_model_name_or_path="/data0/models/Qwen2.5-7B-Instruct",
+    vllm_max_tokens=1024,
+    vllm_tensor_parallel_size=4,
+    vllm_gpu_memory_utilization=0.6,
+    vllm_repetition_penalty=1.2
 )
 ```
 
 You can predefine a storage interface for operators in the following way:
 
-```
+``` python
 from dataflow.utils.storage import FileStorage
 
 self.storage = FileStorage(
@@ -75,7 +76,7 @@ For each operator, the following sections will detail its invocation methods and
 
 ## Detailed Operator Specifications
 
-### 1. KnowledgeExtractor
+### 1. knowledge_extractor
 
 **Functional Description**:
 
@@ -98,10 +99,6 @@ The Knowledge Extractor operator is a versatile document processing tool that su
     - Uses MinerU parsing engine to extract text/tables/formulas
     - Supports three parsing modes: auto/TXT/OCR
     - Preserves original document layout structure
-  - **Office Documents**:
-    - Supports DOC/PPT/PPTX format conversion
-    - Converts to standard Markdown via DocConverter
-    - Automatically handles complex formatting in documents
   - **Web Content**:
     - Uses trafilatura to extract main content
     - Automatically filters irrelevant elements like ads
@@ -120,8 +117,8 @@ The Knowledge Extractor operator is a versatile document processing tool that su
 
 ```python
 knowledge_extractor = KnowledgeExtractor(
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/",
-    lang="ch",
+    intermediate_dir="../example_data/KBCleaningPipeline/raw/",
+    lang="en"
 )
 extracted=knowledge_extractor.run(
     storage=self.storage,
@@ -131,10 +128,10 @@ extracted=knowledge_extractor.run(
 ```
 
 
-### 2. CorpusTextSplitter
+### 2. corpus_text_splitter
 
 **Functional Description**:
- CorpusTextSplitter is an efficient and flexible text chunking tool specifically designed for processing large-scale text corpora. This operator supports multiple chunking strategies to intelligently segment text for various NLP tasks, with special optimization for RAG (Retrieval-Augmented Generation) applications.
+ corpus_text_splitter is an efficient and flexible text chunking tool specifically designed for processing large-scale text corpora. This operator supports multiple chunking strategies to intelligently segment text for various NLP tasks, with special optimization for RAG (Retrieval-Augmented Generation) applications.
 
 **Input Parameters**:
 
@@ -173,7 +170,7 @@ extracted=knowledge_extractor.run(
 text_splitter = CorpusTextSplitter(
     split_method="token",
     chunk_size=512,
-    tokenizer_name="/data0/hzy/RARE/model_base/Qwen2.5-3B-Instruct",
+    tokenizer_name="Qwen/Qwen2.5-7B-Instruct",
 )
 text_splitter.run(
     storage=self.storage.step(),
@@ -183,10 +180,10 @@ text_splitter.run(
 ```
 
 
-### 3. KnowledgeCleaner
+### 3. knowledge_cleaner
 
 **Functional Description**:
-KnowledgeCleaner is a professional knowledge cleaning operator specifically designed for standardizing raw content in RAG (Retrieval-Augmented Generation) systems. By leveraging large language model interfaces, it intelligently cleans and formats unstructured knowledge to enhance the accuracy and readability of knowledge bases.
+knowledge_cleaner is a professional knowledge cleaning operator specifically designed for standardizing raw content in RAG (Retrieval-Augmented Generation) systems. By leveraging large language model interfaces, it intelligently cleans and formats unstructured knowledge to enhance the accuracy and readability of knowledge bases.
 
 **Input Parameters**:
 
@@ -218,20 +215,20 @@ KnowledgeCleaner is a professional knowledge cleaning operator specifically desi
 **Usage Example**:
 
 ```python
-knowledge_cleaner = KnowledgeExtractor(  
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"  
-)  
-extracted_path = knowledge_cleaner.run(  
-    storage=self.storage,  
-    raw_file=raw_file,  
-    url=url,  
-    lang="ch"  
-)  
+knowledge_cleaner = KnowledgeCleaner(
+    llm_serving=api_llm_serving,
+    lang="en"
+)
+extracted_path = knowledge_cleaner.run(
+  storage=self.storage.step(),
+  input_key= "raw_content",
+  output_key="cleaned",
+)
 ```
 
-###    4. MultiHopQAGenerator
+###    4. multihop_qa_generator
 
-**Function Description**: MultiHopQAGenerator is a professional multi-hop QA pair generation operator, specifically designed to automatically generate question-answer pairs requiring multi-step reasoning from text data. Through its large language model interface, this operator performs intelligent text analysis and complex question construction, making it suitable for building high-quality multi-hop QA datasets.
+**Function Description**: multihop_qa_generator is a professional multi-hop QA pair generation operator, specifically designed to automatically generate question-answer pairs requiring multi-step reasoning from text data. Through its large language model interface, this operator performs intelligent text analysis and complex question construction, making it suitable for building high-quality multi-hop QA datasets.
 
 **Input Parameters**:
 
@@ -269,7 +266,7 @@ extracted_path = knowledge_cleaner.run(
   **Usage Example**:
 
     ```python
-  multi_hop_qa_generator = MultiHopQAGenerator(
+  multi_hop_qa_generator = multihop_qa_generator(
       llm_serving=local_llm_serving,
       lang="en"
   )
