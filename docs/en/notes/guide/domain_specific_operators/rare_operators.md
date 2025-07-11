@@ -94,6 +94,14 @@ doc2query_step.run(
 
 This operator uses the classic BM25 algorithm to retrieve and select the most relevant hard negative samples from the entire document corpus for each "question-positive document" pair. These negative samples are lexically similar to the query but are semantically incorrect or irrelevant answers. The goal is to create a challenging retrieval environment that forces the model to perform finer-grained reasoning and discrimination in subsequent steps.
 
+**Dependency Installation**
+
+The BM25HardNeg operator depends on pyserini, gensim, and JDK. The configuration method for Linux is as follows:
+```Bash
+sudo apt install openjdk-21-jdk
+pip install pyserini gensim
+```
+
 **Input Parameters**
 
   - `__init__()`
