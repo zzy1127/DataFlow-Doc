@@ -266,7 +266,7 @@ extracted_path = knowledge_cleaner.run(
   **Usage Example**:
 
     ```python
-  multi_hop_qa_generator = multihop_qa_generator(
+  multi_hop_qa_generator = MultiHopQAGenerator(
       llm_serving=local_llm_serving,
       lang="en"
   )
