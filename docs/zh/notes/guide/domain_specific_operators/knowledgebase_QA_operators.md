@@ -8,7 +8,7 @@ permalink: /zh/guide/Knowledgebase_QA_operators/
 
 ## 概述
 
-知识库清洗算子适用于面向RAG，RARE，RAFT等下游任务的知识库提取，整理，精调，主要包括：**知识提取算子(knowledge_extractor**)，**语料分块算子(CorpusTextSpliiter)**和**知识清洗算子(KnowledgeCleaner)**。这些算子能够用于多种原始格式的文件整理，以及爬取特定URL对应的网页内容，并将这些文本知识整理成可读、易用、安全的RAG知识库。
+知识库清洗算子适用于面向RAG，RARE，RAFT等下游任务的知识库提取，整理，精调，主要包括：**知识提取算子(KnowledgeExtractor**)，**语料分块算子(CorpusTextSpliiter)**和**知识清洗算子(KnowledgeCleaner)**, **Multi-Hop QA Generation Operator**。这些算子能够用于多种原始格式的文件整理，以及爬取特定URL对应的网页内容，并将这些文本知识整理成可读、易用、安全的RAG知识库。
 
 本文中算子标记继承自[强推理算子](https://opendcai.github.io/DataFlow-Doc/zh/guide/Reasoning_operators/)
 
@@ -72,7 +72,7 @@ self.storage = FileStorage(
 
 ## 详细算子说明
 
-### 1. knowledge_extractor
+### 1. KnowledgeExtractor
 
 **功能描述**：
 
