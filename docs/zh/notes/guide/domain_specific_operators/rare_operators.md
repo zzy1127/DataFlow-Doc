@@ -118,6 +118,14 @@ doc2query_step.run(
 
 该算子利用经典的 BM25 算法，为每个“问题-正面文档”对，从整个文档库中检索并筛选出最相关的困难负样本。这些负样本在词汇上与查询高度相似，但在语义上是错误的或不相关的答案，旨在构建一个具有挑战性的检索环境，迫使模型在后续步骤中进行更精细的推理和辨别。
 
+**依赖安装**
+
+BM25HardNeg算子依赖于pyserini, gensim和JDK。Linux配置方法如下：
+```Bash
+sudo apt install openjdk-21-jdk
+pip install pyserini gensim
+```
+
 **输入参数**
 
 - `__init__()`

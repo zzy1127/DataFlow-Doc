@@ -15,6 +15,13 @@ permalink: /zh/guide/rare_pipeline/
 
 该流程可以从给定的文档中，生成高质量的、知识和推理密集型的训练数据，使轻量级模型也能实现顶尖的性能，甚至超越像 GPT-4 和 DeepSeek-R1 这样的大型模型。
 
+### 依赖安装
+RAREPipeline中的`BM25HardNeg`算子依赖于`pyserini`, `gensim`和`JDK`。Linux配置方法如下：
+```bash
+sudo apt install openjdk-21-jdk
+pip install pyserini gensim
+```
+
 ---
 
 ## 2. 数据流与流程逻辑
