@@ -23,25 +23,49 @@ permalink: /zh/guide/textpipeline/
 
 ## 2. 一键运行
 
+在`DataFlow`项目路径之外新建工作文件夹，例如`workspace`，并在其中运行`dataflow init`。该操作会将流水线及示例数据复制到工作文件夹中。
+
+```bash
+cd workspace
+dataflow init
+```
+
+完整gpu流水线运行方式如下
+
 流水线1: **预训练数据过滤**
 ```bash
-python test/test_pt_filter.py
+cd gpu_pipelines
+python text_pt_filter.py
 ```
 流水线2: **预训练类phi-4数据合成**
 ```bash
-python test/test_pt_synthetic.py
+cd gpu_pipelines
+python text_pt_synthetic.py
 ```
 
 流水线3: **SFT数据过滤**
 ```bash
-python test/test_sft_filter.py
+cd gpu_pipelines
+python text_sft_filter.py
 ```
 流水线4: **SFT数据合成**
 ```bash
-python test/test_sft_synthetic.py
+cd gpu_pipelines
+python text_sft_synthetic.py
 ```
 
-> 这四个脚本中分别定义了四条通用数据处理流水线。
+此外，在同级路径下分别定义了简易版纯cpu流水线（不用显卡环境）和api流水线（需要用到api_key），运行方式如下：
+
+```bash
+cd cpu_pipelines
+python text_pt_filter.py # 简易版预训练数据过滤流水线，启发式过滤
+python text_sft_filter.py # 简易版sft数据过滤流水线，长度过滤
+```
+
+```bash
+cd api_pipelines
+python text_sft_filter.py # 使用Alpagasus质量得分过滤指令
+```
 
 ---
 
