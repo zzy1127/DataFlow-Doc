@@ -79,6 +79,12 @@ export const enNavbar = defineNavbarConfig([
                         activeMatch: '^/guide/'
                     },
                     {
+                        text: "RARE Pipeline",
+                        link: "/en/notes/guide/pipelines/RAREPipeline.md",
+                        icon: "game-icons:great-pyramid",
+                        activeMatch: '^/guide/'
+                    },
+                    {
                         text: "Knowledge Base Cleaning Pipeline",
                         link: "/en/notes/guide/pipelines/KnowledgeBaseCleaingPipeline.md",
                         icon: "solar:palette-round-linear",

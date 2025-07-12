@@ -90,19 +90,40 @@ When parsing and executing databases, corresponding database information needs t
     ]
     ```
 
-- **Database Folder**: Contains executable database files
-  - **Description**: The database folder stores actual database files. It contains multiple databases (`db_id_i`), each requiring a SQLite file (`db_id_i.sqlite`).
-  - **Reference**: The `database` folder in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).
-  - **Structure Example**:
-    ```
-    - database
-      - db_id_1
-        - db_id_1.sqlite
-      - db_id_2
-        - db_id_2.sqlite
-      - db_id_3
-        - db_id_3.sqlite
-    ```
+- **Database Folder**: Contains executable database files  
+  - **Description**: The **Database Root Folder** is the root directory for storing all databases. It contains multiple **Specific Database Folders** (folder names follow the format `db_id`), and each **Specific Database Folder** must include the corresponding **Database SQLite File** (file names follow the format `db_id.sqlite`).  
+
+  - **Important Reminder**: The name of the **Specific Database Folder** must match the name of the **Database SQLite File** inside it (excluding the `.sqlite` suffix).  
+
+  - **Example File Structure**:  
+    ```  
+    database/                    # Database Root Folder  
+    ├── db_id_1/                # Specific Database Folder  
+    │   └── db_id_1.sqlite      # Database SQLite File (names must match)  
+    ├── db_id_2/  
+    │   └── db_id_2.sqlite  
+    └── db_id_3/  
+        └── db_id_3.sqlite  
+    ```  
+
+  - **Demo Database**:  
+    For demonstration purposes, we provide an example database:  
+    https://huggingface.co/datasets/Open-Dataflow/dataflow-Text2SQL-database-example  
+
+    **Usage Steps**:  
+    1. Download the entire `dev_databases` folder locally.  
+    2. Keep the original structure of the folder intact.  
+    3. Set the `db_root_path` parameter in the code to the full local path of the `dev_databases` folder.  
+
+  - **Practical Example**:  
+    ```  
+    dev_databases/                    # Database Root Folder  
+    ├── california_schools/          # Specific Database Folder  
+    │   └── california_schools.sqlite   # Database File (name matches folder)  
+    └── hospitals/  
+        └── hospitals.sqlite  
+    ```  
+    **Configuration Example**: If your `dev_databases` folder is located at `/Users/username/data/dev_databases`, set `db_root_path` to this path.
 
 ### 2.2 Input Data
 
