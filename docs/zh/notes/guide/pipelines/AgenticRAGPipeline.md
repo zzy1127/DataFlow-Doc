@@ -1,5 +1,5 @@
 ---
-title: Agentic RAG数据合成流程  
+title: Agentic RAG数据合成流水线  
 icon: solar:palette-round-linear
 createTime: 2025/06/16 13:08:42  
 permalink: /zh/guide/agenticrag_pipeline/  
@@ -51,7 +51,11 @@ self.storage = FileStorage(
 **输出**：已选择的文本内容
 
 ```python
-embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+embedding_serving = APILLMServing_request(
+                    api_url="https://api.openai.com/v1/embeddings",
+                    model_name="text-embedding-ada-002",
+                    max_workers=100
+        )
 
 content_chooser = ContentChooser(num_samples = 5, method = "random", embedding_serving=embedding_serving)
 result = content_chooser.run(
@@ -172,7 +176,11 @@ class AgenticRAGPipeline():
         else:
             api_llm_serving = llm_serving
 
-        embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+        embedding_serving = APILLMServing_request(
+                    api_url="https://api.openai.com/v1/embeddings",
+                    model_name="text-embedding-ada-002",
+                    max_workers=100
+        )
 
         self.content_chooser_step1 = ContentChooser(num_samples=5, method="kcenter", embedding_serving=embedding_serving)
 

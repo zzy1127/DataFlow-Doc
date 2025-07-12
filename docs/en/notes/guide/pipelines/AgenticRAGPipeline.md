@@ -51,7 +51,11 @@ The first step of the process is to use the **Content Chooser** operator (`Conte
 **Output:** Selected text content
 
 ```python
-embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+embedding_serving = APILLMServing_request(
+                    api_url="https://api.openai.com/v1/embeddings",
+                    model_name="text-embedding-ada-002",
+                    max_workers=100
+        )
 
 content_chooser = ContentChooser(num_samples = 5, method = "random", embedding_serving=embedding_serving)
 result = content_chooser.run(
@@ -168,7 +172,11 @@ class AgenticRAGPipeline():
         else:
             api_llm_serving = llm_serving
 
-        embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="your_embedding_model_path", vllm_max_tokens=8192)
+        embedding_serving = APILLMServing_request(
+                    api_url="https://api.openai.com/v1/embeddings",
+                    model_name="text-embedding-ada-002",
+                    max_workers=100
+        )
 
         self.content_chooser_step1 = ContentChooser(num_samples=5, method="kcenter", embedding_serving=embedding_serving)
 
