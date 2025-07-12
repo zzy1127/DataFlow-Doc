@@ -23,6 +23,15 @@ export const Guide: ThemeNote = defineNoteConfig({
             items: [
                 'install',
                 'quickstart',
+                'translation',
+            ],
+        },
+                {
+            text: 'Dataflow 智能体',
+            collapsed: false,
+            icon: 'ri:robot-2-line',
+            prefix: 'agent',
+            items: [
                 "DataFlow-AgentPipelineOrchestration",
             ],
         },
