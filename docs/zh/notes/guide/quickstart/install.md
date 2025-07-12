@@ -42,6 +42,7 @@ open-dataflow codebase version: 0.0.2
         PyPI newest version:  0.0.2
 You are using the latest version: 0.0.2.
 ```
+具体最新版本号最新版也可参考[Github Release](https://github.com/OpenDCAI/DataFlow/releases) 和 [Pypi官网](https://pypi.org/project/open-dataflow/).
 
 此外还有`dataflow env`指令用于查看当前硬件软件环境，用于报告Bug使用。
 
