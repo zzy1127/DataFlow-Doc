@@ -19,26 +19,51 @@ The text pipeline aims to process text information in various formats, including
 ---
 
 ## 2. One-Click Execution
+Create a working folder outside the `DataFlow` project path, for example `workspace`, and run `dataflow init` inside it. This operation will copy the pipeline and sample data into the working folder.
+
+```bash
+cd workspace
+dataflow init
+```
+
+The full GPU pipeline can be run as follows:
 
 Pipeline 1: **Pretraining Data Filtering**
 ```bash
-python test/test_pt_filter.py
+cd gpu_pipelines
+python text_pt_filter.py
 ```
+
 Pipeline 2: **Phi-4 Style Pretraining Data Synthesis**
 ```bash
-python test/test_pt_synthetic.py
+cd gpu_pipelines
+python text_pt_synthetic.py
 ```
+
 Pipeline 3: **SFT Data Filtering**
 ```bash
-python test/test_sft_filter.py
+cd gpu_pipelines
+python text_sft_filter.py
 ```
+
 Pipeline 4: **SFT Data Synthesis**
 ```bash
-python test/test_sft_synthetic.py
+cd gpu_pipelines
+python text_sft_synthetic.py
 ```
 
+Additionally, there are simplified CPU pipelines (no GPU environment required) and API pipelines (require API key) defined in parallel directories. Run them as follows:
 
-> These four scripts define four general data processing pipelines respectively.
+```bash
+cd cpu_pipelines
+python text_pt_filter.py # Simplified pretraining data filtering pipeline using heuristic rules
+python text_sft_filter.py # Simplified SFT data filtering pipeline using length filtering
+```
+
+```bash
+cd api_pipelines
+python text_sft_filter.py # Uses Alpagasus quality scoring for SFT filtering
+```
 
 ---
 
