@@ -3,56 +3,59 @@ title: DataFlow-Agent
 icon: carbon:ibm-consulting-advantage-agent
 createTime: 2025/06/19 10:29:31
 permalink: /en/guide/DataFlow-AgentPipelineOrchestration/
-
 ---
 
 ## Quick Start
 
 ### 1. Overview
 
-DataFlow Agent is an automated multi-agent collaborative task processing system that covers the **entire process from task decomposition → tool registration → scheduling and execution → result validation → report generation**, aiming for intelligent management and execution of complex tasks. Based on user data types and requirements, it supports:
+DataFlow Agent is an automated task processing system based on multi-agent collaboration, covering the **full workflow from task decomposition → tool registration → scheduling and execution → result validation → report generation**. It is dedicated to intelligent management and execution of complex tasks. According to the user's data type and requirements, it supports:
 
-1. Dedicated operator recommendation, orchestration, execution, and summarization
-2. User-personalized operator generation in a Dataflow style
+1. `recommend`: Dedicated operator recommendation, orchestration, execution, and summary.
+2. `write`: User-personalized operator generation in the Dataflow style.
 
-Example scripts can be found in `test\test_dataflow_agent.py`. Most configurations can be set by configuring the parameters of the `ChatAgentRequest` class, including:
+Example scripts are located at `test/test_dataflow_agent.py`. Most configurations can be set via parameters of the `ChatAgentRequest` class, including:
 - User request (`target`)
 - Local data reading path (`json_file`)
-- Model invocation method and model type (`use_local_model`, `model`, `local_model_name_or_path`)
-- Path for storing the generated code (`py_path`)
-
+- Model invocation method and model type (`model`)
+- Path to store the generated code (`py_path`)
 
 ### 2. Data Preparation
 
 - **Supported formats**: `json`, `jsonl`, `pdf`.
-- In the example script `test\test_dataflow_agent.py`, the default data location is `example/ReasoningPipeline/pipeline_math_short.json`. You can set the `json_file` parameter to the path of your data file.
-
+- In the current example script `test/test_dataflow_agent.py`, the default data is stored at `example/ReasoningPipeline/pipeline_math_short.json`. You can set the `json_file` parameter to your own data file path.
 
 ### 3. Model Preparation
 
-DataFlow Agent supports two methods: calling large models via API and local large model deployment.
-
-- For API calls, you need to configure environment variables. On Linux systems:
-```shell
-export CHATANY_API_KEY=your_api_key
-export CHATANY_API_URL=your_api_base_url
+DataFlow Agent requires environment variable configuration to support LLM API calls. On Linux systems:
+```bash
+export DF_API_KEY=your_api_key
+export DF_API_URL=your_api_base_url
 ```
-And specify the model type via the `model` parameter when instantiating `ChatAgentRequest`.
+On Windows CMD:
+```cmd
+set DF_API_KEY=your_api_key
+set DF_API_URL=your_api_base_url
+```
+On Windows PowerShell:
+```powershell
+$env:DF_API_KEY = "your_api_key"
+$env:DF_API_URL = "your_api_base_url"
+```
 
+The model type can be specified via the `model` parameter when instantiating the `ChatAgentRequest` class.
 
-- For local large model deployment, you need to configure the local large model storage path. Set the `local_model_name_or_path` parameter of the `ChatAgentRequest` class to your local model path and set `use_local_model=True`.
+### 4. `recommend`: Operator Recommendation, Orchestration, Execution, and Summary
 
+Users can run the following commands to execute the example script. By passing in the `recommend` parameter, a simple data processing pipeline recommendation and generation for math-related data can be implemented. The generated pipeline code will be saved as `test/recommend_pipeline_2.py`.
 
-### 4. Operator Recommendation, Orchestration, Execution, and Summarization
-
-You can run the following command to execute the example script, which creates a simple data processing pipeline for mathematical data. The generated pipeline code will be saved in `test/recommend_pipeline_2.py`.
-
-```shell
+```bash
 cd DataFlow
+# set API_KEY and API_URL
 python test/test_dataflow_agent.py recommend
 ```
 
-The generated pipeline code (results may vary depending on the selected large model type and version) is roughly as follows:
+The generated pipeline code (results may vary depending on the chosen model type and version) looks roughly like this:
 ```python
 import pytest
 from dataflow.operators.generate.Reasoning.QuestionGenerator import QuestionGenerator
@@ -66,7 +69,7 @@ from dataflow.serving import APILLMServing_request, LocalModelLLMServing_vllm, L
 class RecommendPipeline():
     def __init__(self):
 
-        # -------- FileStorage (Please modify parameters as needed) --------
+        # -------- FileStorage (please modify parameters as needed) --------
         self.storage = FileStorage(
             first_entry_file_name="/mnt/public/data/lh/ygc/dataflow-agent/DataFlow/dataflow/example/ReasoningPipeline/pipeline_math_short.json",
             cache_path="./cache_local",
@@ -108,18 +111,19 @@ if __name__ == "__main__":
     pipeline.forward()
 ```
 
-You can personalize configurations by modifying the parameters in `ChatAgentRequest`.
+Users can personalize configuration by modifying the parameters in `ChatAgentRequest`.
 
-### 5. User-Personalized Operator Generation
+### 5. `write`: User-Personalized Operator Generation
 
-You can run the following command to execute the example script, which generates a simple MinHash text deduplication operator for mathematical data. The generated operator code will be saved in `test/operator.py`.
+Users can run the following commands to execute the example script. By passing in the `write` parameter, a simple MinHash text deduplication operator for math-related data can be generated. The generated operator code will be saved as `test/operator.py`.
 
 ```shell
 cd DataFlow
+# set API_KEY and API_URL
 python test/test_dataflow_agent.py write
 ```
 
-The generated operator code (results may vary depending on the selected large model type and version) is roughly as follows:
+The generated operator code (results may vary depending on the chosen model type and version) looks roughly like this:
 ```python
 from tqdm import tqdm
 from datasketch import MinHash, MinHashLSH
@@ -138,7 +142,7 @@ class TextMinHashDeduplicator(OperatorABC):
 
     @staticmethod
     def get_desc(lang: str = "zh"):
-        return "使用 MinHash 算法对文本去重" if lang == "zh" else "Deduplicate text with MinHash"
+        return "Deduplicate text with MinHash" if lang != "zh" else "使用 MinHash 算法对文本去重"
 
     def _build_minhash(self, text: str):
         m = MinHash(num_perm=self.num_perm)
@@ -162,4 +166,4 @@ class TextMinHashDeduplicator(OperatorABC):
         return [output_key]
 ```
 
-You can personalize configurations by modifying the parameters in `ChatAgentRequest`.
+Users can personalize configuration by modifying the parameters in `ChatAgentRequest`.
