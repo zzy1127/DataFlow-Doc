@@ -90,18 +90,43 @@ permalink: /zh/guide/text2sqlpipeline/
     ```
 
 - **数据库文件夹**：包含可执行的数据库文件
-  - **说明**：数据库文件夹中存放实际的数据库文件。其中有大量数据库（`db_id_i`），每个数据库中需要有sqlite文件（`db_id_i.sqlite`）
-  - **参照**：[Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view)中的`database`文件夹。
-  - **结构示例**：
+  - **说明**：**数据库总文件夹**是存放所有数据库的根目录。其中包含多个**具体数据库文件夹**（文件夹名格式为 `db_id`），每个**具体数据库文件夹**内必须包含对应的**数据库sqlite文件**（文件名格式为 `db_id.sqlite`）。
+  
+  - **重要提醒**：**具体数据库文件夹**的名称必须与其内部的**数据库sqlite文件**名称保持一致（不包含 `.sqlite` 后缀）。
+  
+  - **配置方法**：将代码中的 `db_root_path` 参数修改为您本地**数据库总文件夹**的实际路径。
+  
+  - **参照标准**：[Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view) 中的 `database` 文件夹结构。
+  
+  - **文件结构示例**：
     ```
-    - database
-      - db_id_1
-        - db_id_1.sqlite
-      - db_id_2
-        - db_id_2.sqlite
-      - db_id_3
-        - db_id_3.sqlite
+    database/                    # 数据库总文件夹
+    ├── db_id_1/                # 具体数据库文件夹
+    │   └── db_id_1.sqlite      # 数据库sqlite文件（名称必须一致）
+    ├── db_id_2/
+    │   └── db_id_2.sqlite
+    └── db_id_3/
+        └── db_id_3.sqlite
     ```
+  
+  - **演示数据库**：  
+    为便于演示，我们提供了示例数据库：  
+    https://huggingface.co/datasets/Open-Dataflow/dataflow-Text2SQL-database-example  
+    
+    **使用步骤**：  
+    1. 完整下载 `dev_databases` 文件夹到本地
+    2. 保持文件夹内的原始结构不变  
+    3. 将代码中的 `db_root_path` 参数设置为本地 `dev_databases` 文件夹的完整路径
+  
+  - **实际案例**：
+    ```
+    dev_databases/                    # 数据库总文件夹
+    ├── california_schools/          # 具体数据库文件夹
+    │   └── california_schools.sqlite   # 数据库文件（名称与文件夹一致）
+    └── hospitals/
+        └── hospitals.sqlite
+    ```
+    **配置示例**：如果您的 `dev_databases` 文件夹位于 `/Users/username/data/dev_databases`，则将 `db_root_path` 设置为该路径。
 
 ### 2.2 输入数据
 
