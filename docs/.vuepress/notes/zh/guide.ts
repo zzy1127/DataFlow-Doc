@@ -70,7 +70,8 @@ export const Guide: ThemeNote = defineNoteConfig({
             icon: 'mdi:face-agent',
             prefix: 'agent',
             items: [
-                "agent_for_data"
+                "agent_for_data",
+                "DataFlow-AgentPipelineOrchestration",
             ]
         },
         // {
