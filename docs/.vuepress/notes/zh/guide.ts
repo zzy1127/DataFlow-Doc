@@ -22,7 +22,8 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
-                'quickstart'
+                'quickstart',
+                "DataFlow-AgentPipelineOrchestration",
             ],
         },
         {
@@ -70,7 +71,8 @@ export const Guide: ThemeNote = defineNoteConfig({
             icon: 'mdi:face-agent',
             prefix: 'agent',
             items: [
-                "agent_for_data"
+                "agent_for_data",
+                "agent_for_dataflow_new",
             ]
         },
         // {
