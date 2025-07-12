@@ -12,14 +12,14 @@ permalink: /zh/guide/DataFlow-AgentPipelineOrchestration/
 
 DataFlow Agent 是一个基于多智能体协同的自动化任务处理系统，覆盖 **任务拆解 → 工具注册 → 调度执行 → 结果验证 → 报告生成** 的完整流程，致力于复杂任务的智能化管理与执行。根据用户的数据类型和用户要求，支持：
 
-1. 专属算子推荐、编排、执行和总结
-2. Dataflow风格的用户个性化算子生成
+1. `recommend`: 专属算子推荐、编排、执行和总结
+2. `write`: Dataflow风格的用户个性化算子生成
 
 
 运行脚本的示例位于`test\test_dataflow_agent.py`。其中，大部分配置可通过配置`ChatAgentRequest`类的参数来设置，包括：
 - 用户请求 (`target`)
 - 本地数据读取路径 (`json_file`)
-- 调用模型方式和模型类型 (`use_local_model`,`model`, `local_model_name_or_path`)
+- 调用模型方式和模型类型 (`model`)
 - 生成代码的存储路径 (`py_path`)
 
 
@@ -30,26 +30,34 @@ DataFlow Agent 是一个基于多智能体协同的自动化任务处理系统�
 
 
 ### 3. 模型准备
-DataFlow Agent 支持大模型API调用和大模型本地部署两种方式。
-
-- 通过API调用,需要配置环境变量。在Linux系统下：
-```shell
-export CHATANY_API_KEY=your_api_key
-export CHATANY_API_URL=your_api_base_url
+DataFlow Agent 需要先配置环境变量以支持大模型API调用。在Linux系统下：
+```bash
+export DF_API_KEY=your_api_key
+export DF_API_URL=your_api_base_url
 ```
-并在实例化`ChatAgentRequest`时通过`model`参数指定模型类型。
+在Windows CMD中：
+```cmd
+set DF_API_KEY=your_api_key
+set DF_API_URL=your_api_base_url
+```
+在Windows PowerShell中：
+```powershell
+$env:DF_API_KEY = "your_api_key"
+$env:DF_API_URL = "your_api_base_url"
+```
 
 
-- 通过本地大模型部署，需要配置本地大模型存储路径。需要设置`ChatAgentRequest`类的`local_model_name_or_path`参数为本地大模型存储路径，并设置`use_local_model=True`。
+模型类型可在实例化`ChatAgentRequest`类时通过`model`参数指定。
 
 
-### 4. 算子推荐、编排、执行和总结
+### 4. `recommend`: 算子推荐、编排、执行和总结
 
 
-用户可运行以下指令执行示例脚本，实现一个简易的针对数学类数据的数据处理Pipeline推荐和生成，生成的Pipeline代码将保存在`test/recommend_pipeline_2.py`中。
+用户可运行以下指令执行示例脚本，通过传入`recommend`参数，实现一个简易的针对数学类数据的数据处理Pipeline推荐和生成，生成的Pipeline代码将保存在`test/recommend_pipeline_2.py`中。
 
-```shell
+```bash
 cd DataFlow
+# set API_KEY and API_URL
 python test/test_dataflow_agent.py recommend
 ```
 
@@ -111,12 +119,13 @@ if __name__ == "__main__":
 
 用户可通过修改`ChatAgentRequest`中参数实现个性化配置。
 
-### 5. 用户个性化算子生成
+### 5. `write`: 用户个性化算子生成
 
-用户可运行以下指令执行示例脚本，实现一个简易的针对数学类数据的MinHash文本去重算子生成，生成的算子代码将保存在`test/operator.py`中。
+用户可运行以下指令执行示例脚本，通过传入`write`参数，实现一个简易的针对数学类数据的MinHash文本去重算子生成，生成的算子代码将保存在`test/operator.py`中。
 
 ```shell
 cd DataFlow
+# set API_KEY and API_URL
 python test/test_dataflow_agent.py write
 ```
 
