@@ -2,58 +2,57 @@
 title: DataFlow-Agent
 icon: carbon:ibm-consulting-advantage-agent
 createTime: 2025/06/19 10:29:31
-permalink: /zh/guide/agent_quickstart/
+permalink: /en/guide/DataFlow-AgentPipelineOrchestration/
 
 ---
 
-## 快速开始
+## Quick Start
 
-### 1.概述
+### 1. Overview
 
-DataFlow Agent 是一个基于多智能体协同的自动化任务处理系统，覆盖 **任务拆解 → 工具注册 → 调度执行 → 结果验证 → 报告生成** 的完整流程，致力于复杂任务的智能化管理与执行。根据用户的数据类型和用户要求，支持：
+DataFlow Agent is an automated multi-agent collaborative task processing system that covers the **entire process from task decomposition → tool registration → scheduling and execution → result validation → report generation**, aiming for intelligent management and execution of complex tasks. Based on user data types and requirements, it supports:
 
-1. 专属算子推荐、编排、执行和总结
-2. Dataflow风格的用户个性化算子生成
+1. Dedicated operator recommendation, orchestration, execution, and summarization
+2. User-personalized operator generation in a Dataflow style
 
-
-运行脚本的示例位于`test\test_dataflow_agent.py`。其中，大部分配置可通过配置`ChatAgentRequest`类的参数来设置，包括：
-- 用户请求 (`target`)
-- 本地数据读取路径 (`json_file`)
-- 调用模型方式和模型类型 (`use_local_model`,`model`, `local_model_name_or_path`)
-- 生成代码的存储路径 (`py_path`)
-
-
-### 2. 数据准备
-
-- **支持格式**：`json`, `jsonl`, `pdf`格式。
-- 当前示例脚本`test\test_dataflow_agent.py`中默认数据存放位置为`example/ReasoningPipeline/pipeline_math_short.json`。可设置`json_file`参数为用户数据文件路径。
+Example scripts can be found in `test\test_dataflow_agent.py`. Most configurations can be set by configuring the parameters of the `ChatAgentRequest` class, including:
+- User request (`target`)
+- Local data reading path (`json_file`)
+- Model invocation method and model type (`use_local_model`, `model`, `local_model_name_or_path`)
+- Path for storing the generated code (`py_path`)
 
 
-### 3. 模型准备
-DataFlow Agent 支持大模型API调用和大模型本地部署两种方式。
+### 2. Data Preparation
 
-- 通过API调用,需要配置环境变量。在Linux系统下：
+- **Supported formats**: `json`, `jsonl`, `pdf`.
+- In the example script `test\test_dataflow_agent.py`, the default data location is `example/ReasoningPipeline/pipeline_math_short.json`. You can set the `json_file` parameter to the path of your data file.
+
+
+### 3. Model Preparation
+
+DataFlow Agent supports two methods: calling large models via API and local large model deployment.
+
+- For API calls, you need to configure environment variables. On Linux systems:
 ```shell
 export CHATANY_API_KEY=your_api_key
 export CHATANY_API_URL=your_api_base_url
 ```
-并在实例化`ChatAgentRequest`时通过`model`参数指定模型类型。
+And specify the model type via the `model` parameter when instantiating `ChatAgentRequest`.
 
 
-- 通过本地大模型部署，需要配置本地大模型存储路径。需要设置`ChatAgentRequest`类的`local_model_name_or_path`参数为本地大模型存储路径，并设置`use_local_model=True`。
+- For local large model deployment, you need to configure the local large model storage path. Set the `local_model_name_or_path` parameter of the `ChatAgentRequest` class to your local model path and set `use_local_model=True`.
 
 
-### 4. 算子推荐、编排、执行和总结
+### 4. Operator Recommendation, Orchestration, Execution, and Summarization
 
-
-用户可运行以下指令执行示例脚本，实现一个简易的针对数学类数据的数据处理Pipeline推荐和生成，生成的Pipeline代码将保存在`test/recommend_pipeline_2.py`中。
+You can run the following command to execute the example script, which creates a simple data processing pipeline for mathematical data. The generated pipeline code will be saved in `test/recommend_pipeline_2.py`.
 
 ```shell
 cd DataFlow
 python test/test_dataflow_agent.py recommend
 ```
 
-生成的Pipeline代码（由于所选大模型类型和版本差异，结果可能不同）大致为：
+The generated pipeline code (results may vary depending on the selected large model type and version) is roughly as follows:
 ```python
 import pytest
 from dataflow.operators.generate.Reasoning.QuestionGenerator import QuestionGenerator
@@ -67,7 +66,7 @@ from dataflow.serving import APILLMServing_request, LocalModelLLMServing_vllm, L
 class RecommendPipeline():
     def __init__(self):
 
-        # -------- FileStorage (请根据需要修改参数) --------
+        # -------- FileStorage (Please modify parameters as needed) --------
         self.storage = FileStorage(
             first_entry_file_name="/mnt/public/data/lh/ygc/dataflow-agent/DataFlow/dataflow/example/ReasoningPipeline/pipeline_math_short.json",
             cache_path="./cache_local",
@@ -109,18 +108,18 @@ if __name__ == "__main__":
     pipeline.forward()
 ```
 
-用户可通过修改`ChatAgentRequest`中参数实现个性化配置。
+You can personalize configurations by modifying the parameters in `ChatAgentRequest`.
 
-### 5. 用户个性化算子生成
+### 5. User-Personalized Operator Generation
 
-用户可运行以下指令执行示例脚本，实现一个简易的针对数学类数据的MinHash文本去重算子生成，生成的算子代码将保存在`test/operator.py`中。
+You can run the following command to execute the example script, which generates a simple MinHash text deduplication operator for mathematical data. The generated operator code will be saved in `test/operator.py`.
 
 ```shell
 cd DataFlow
 python test/test_dataflow_agent.py write
 ```
 
-生成的算子代码（由于所选大模型类型和版本差异，结果可能不同）大致为：
+The generated operator code (results may vary depending on the selected large model type and version) is roughly as follows:
 ```python
 from tqdm import tqdm
 from datasketch import MinHash, MinHashLSH
@@ -163,4 +162,4 @@ class TextMinHashDeduplicator(OperatorABC):
         return [output_key]
 ```
 
-用户可通过修改`ChatAgentRequest`中参数实现个性化配置。
+You can personalize configurations by modifying the parameters in `ChatAgentRequest`.

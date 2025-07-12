@@ -22,7 +22,8 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
-                'quickstart'
+                'quickstart',
+                "DataFlow-AgentPipelineOrchestration",
             ],
         },
         {
@@ -71,7 +72,6 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'agent',
             items: [
                 "agent_for_data",
-                "DataFlow-AgentPipelineOrchestration",
             ]
         },
         // {
