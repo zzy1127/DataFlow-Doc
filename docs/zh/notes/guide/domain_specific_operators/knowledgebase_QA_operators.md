@@ -8,7 +8,7 @@ permalink: /zh/guide/Knowledgebase_QA_operators/
 
 ## 概述
 
-知识库清洗算子适用于面向RAG，RARE，RAFT等下游任务的知识库提取，整理，精调，主要包括：**知识提取算子(KnowledgeExtractor**)，**语料分块算子(CorpusTextSpliiter)**和**知识清洗算子(KnowledgeCleaner)**。这些算子能够用于多种原始格式的文件整理，以及爬取特定URL对应的网页内容，并将这些文本知识整理成可读、易用、安全的RAG知识库。
+知识库清洗算子适用于面向RAG，RARE，RAFT等下游任务的知识库提取，整理，精调，主要包括：**知识提取算子(KnowledgeExtractor**)，**语料分块算子(CorpusTextSpliiter)**和**知识清洗算子(KnowledgeCleaner)**, **Multi-Hop QA Generation Operator**。这些算子能够用于多种原始格式的文件整理，以及爬取特定URL对应的网页内容，并将这些文本知识整理成可读、易用、安全的RAG知识库。
 
 本文中算子标记继承自[强推理算子](https://opendcai.github.io/DataFlow-Doc/zh/guide/Reasoning_operators/)
 
@@ -30,27 +30,28 @@ permalink: /zh/guide/Knowledgebase_QA_operators/
 
 特别地，对于指定存储路径等或是调用模型的算子，我们提供了封装后的**模型接口**以及**存储对象接口**，可以通过以下方式定义LLM API接口：
 
-```python
+``` python
 from dataflow.llmserving import APILLMServing_request
 
 api_llm_serving = APILLMServing_request(
-    api_url="your_api_url",
-    model_name="model_name",
-    max_workers=5
+        api_url="https://api.openai.com/v1/chat/completions",
+        model_name="gpt-4o",
+        max_workers=100
 )
+
 ```
 
 可以通过如下方式定义本地LLM服务接口：
 
-```python
+``` python
 from dataflow.llmserving import LocalModelLLMServing
 
-local_llm_serving = LocalModelLLMServing(
-    model_name_or_path="/data0/models/Qwen2.5-7B-Instruct",
-    max_tokens=1024,
-    tensor_parallel_size=4,
-    model_source="local",
-    gpu_memory_utilization=0.6,
+local_llm_serving = LocalModelLLMServing_vllm(
+    hf_model_name_or_path="/data0/models/Qwen2.5-7B-Instruct",
+    vllm_max_tokens=1024,
+    vllm_tensor_parallel_size=4,
+    vllm_gpu_memory_utilization=0.6,
+    vllm_repetition_penalty=1.2
 )
 ```
 
@@ -97,10 +98,6 @@ self.storage = FileStorage(
        - 支持自动/TXT/OCR三种解析模式
        - 保留原始文档布局结构
 
-     - **Office文档**：
-       - 支持DOC/PPT/PPTX格式转换
-       - 通过DocConverter转换为标准Markdown
-       - 自动处理文档中的复杂格式
      - **网页内容**：
        - 使用trafilatura提取正文内容
        - 自动过滤广告等无关元素
@@ -120,8 +117,8 @@ self.storage = FileStorage(
 
 ```python
 knowledge_extractor = KnowledgeExtractor(
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/",
-    lang="ch"
+    intermediate_dir="../example_data/KBCleaningPipeline/raw/",
+    lang="en"
 )
 extracted=knowledge_extractor.run(
     storage=self.storage,
@@ -188,7 +185,7 @@ extracted=knowledge_extractor.run(
 text_splitter = CorpusTextSplitter(
     split_method="token",
     chunk_size=512,
-    tokenizer_name="/data0/hzy/RARE/model_base/Qwen2.5-3B-Instruct",
+    tokenizer_name="Qwen/Qwen2.5-7B-Instruct",
 )
 text_splitter.run(
     storage=self.storage.step(),
@@ -247,15 +244,15 @@ text_splitter.run(
    **使用示例：**
 
 ```python
-knowledge_cleaner = KnowledgeExtractor(  
-    intermediate_dir="dataflow/example/KBCleaningPipeline/raw/"  
-)  
-extracted_path = knowledge_cleaner.run(  
-    storage=self.storage,  
-    raw_file=raw_file,  
-    url=url,  
-    lang="ch"  
-)  
+KnowledgeCleaner = KnowledgeCleaner(
+    llm_serving=api_llm_serving,
+    lang="en"
+)
+extracted_path = KnowledgeCleaner.run(
+  storage=self.storage.step(),
+  input_key= "raw_content",
+  output_key="cleaned",
+)
 ```
 
 ###    4. MultiHopQAGenerator

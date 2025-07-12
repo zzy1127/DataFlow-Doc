@@ -16,6 +16,13 @@ The **RARE (Retrieval-Augmented Reasoning Modeling) Data Synthesis Pipeline** is
 
 This pipeline can generate high-quality, knowledge- and reasoning-intensive training data from a given set of documents, enabling even lightweight models to achieve top-tier performance, potentially surpassing large models like GPT-4 and DeepSeek-R1.
 
+### Dependency Installation
+The `BM25HardNeg` operator in `RAREPipeline` depends on `pyserini`, `gensim`, and `JDK`. The configuration method for Linux is as follows:
+```bash
+sudo apt install openjdk-21-jdk
+pip install pyserini gensim
+```
+
 -----
 
 ## 2\. Dataflow and Pipeline Logic
