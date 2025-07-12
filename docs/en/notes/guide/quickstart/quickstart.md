@@ -48,7 +48,7 @@ If you are using the API method, you need to export the `DF_API_KEY` field to th
 export DF_API_KEY=sh-xxxxx
 ```
 
-On Windows, you can set the environment variable using the following command:
+On Windows CMD, you can set the environment variable using the following command:
 
 ```cmd
 set DF_API_KEY=sh-xxxxx
@@ -60,7 +60,7 @@ Or in PowerShell:
 $env:DF_API_KEY = "sh-xxxxx"
 ```
 
-After setting this, the program can read the API key from the environment for invocation. Be sure not to expose the key in public code.
+After setting this, the program can read the API key from the environment for invocation. **Be sure not to expose the key in public code.**
 
 Specifically, if you want to use multiple `APIServing`, you can differentiate the environment variable names used as API keys for each serving object by modifying the `key_name_of_api_key` parameter.
 ```python
