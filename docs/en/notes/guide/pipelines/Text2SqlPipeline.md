@@ -95,10 +95,6 @@ When parsing and executing databases, corresponding database information needs t
 
   - **Important Reminder**: The name of the **Specific Database Folder** must match the name of the **Database SQLite File** inside it (excluding the `.sqlite` suffix).  
 
-  - **Configuration Method**: Modify the `db_root_path` parameter in the code to the actual local path of your **Database Root Folder**.  
-
-  - **Reference Standard**: The folder structure of the `database` folder in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).  
-
   - **Example File Structure**:  
     ```  
     database/                    # Database Root Folder  

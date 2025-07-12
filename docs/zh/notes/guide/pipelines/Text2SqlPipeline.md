@@ -94,10 +94,6 @@ permalink: /zh/guide/text2sqlpipeline/
   
   - **重要提醒**：**具体数据库文件夹**的名称必须与其内部的**数据库sqlite文件**名称保持一致（不包含 `.sqlite` 后缀）。
   
-  - **配置方法**：将代码中的 `db_root_path` 参数修改为您本地**数据库总文件夹**的实际路径。
-  
-  - **参照标准**：[Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view) 中的 `database` 文件夹结构。
-  
   - **文件结构示例**：
     ```
     database/                    # 数据库总文件夹
