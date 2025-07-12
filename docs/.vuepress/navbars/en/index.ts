@@ -86,7 +86,7 @@ export const enNavbar = defineNavbarConfig([
                     },
                     {
                         text: "Knowledge Base Cleaning Pipeline",
-                        link: "/en/notes/guide/pipelines/KnowledgeBaseCleaingPipeline.md",
+                        link: "/en/notes/guide/pipelines/KnowledgeBaseCleaningPipeline.md",
                         icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
                     }

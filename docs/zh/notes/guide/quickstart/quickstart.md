@@ -49,7 +49,7 @@ self.storage = FileStorage(
 export DF_API_KEY=sh-xxxxx
 ```
 
-在 Windows 下，可以使用以下命令设置环境变量：
+在 Windows CMD下，可以使用以下命令设置环境变量：
 
 ```cmd
 set DF_API_KEY=sh-xxxxx
@@ -61,7 +61,7 @@ set DF_API_KEY=sh-xxxxx
 $env:DF_API_KEY = "sh-xxxxx"
 ```
 
-设置完成后，程序就可以从环境中读取该 API 密钥进行调用。确保不要将密钥暴露在公开代码中。
+设置完成后，程序就可以从环境中读取该 API 密钥进行调用。**确保不要将密钥暴露在公开代码中。**
 
 特别的，如果你想使用多个API serving，可以通过修改这个`key_name_of_api_key`形参来区分不同serving对象接受的作为api key的环境变量名称。
 ```python

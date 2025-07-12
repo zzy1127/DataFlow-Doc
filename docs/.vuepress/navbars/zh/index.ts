@@ -87,7 +87,7 @@ export const zhNavbar = defineNavbarConfig([
                     },
                     {
                         text: "知识库清洗流水线",
-                        link: "/zh/notes/guide/pipelines/KnowledgeBaseCleaning.md",
+                        link: "/zh/notes/guide/pipelines/KnowledgeBaseCleaningPipeline.md",
                         icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
                     }
