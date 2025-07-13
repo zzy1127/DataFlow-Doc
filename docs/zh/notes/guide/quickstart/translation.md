@@ -32,7 +32,7 @@ export DF_API_KEY=sk xx
 ```
 generate_qa_api.py中的api_url填写方式如下：
 ```
-llm_serving = APILLMServing_request(
+self.llm_serving = APILLMServing_request(
         api_url="https://api.openai.com/v1/chat/completions",
         model_name="gpt-4o",
         max_workers=100
@@ -44,7 +44,7 @@ generate_qa_local.py本地模型填写方式如下：
 ```
 self.llm_serving = LocalModelLLMServing_vllm(
     hf_model_name_or_path="Qwen2.5-7B-Instruct", # set to your own model path
-    vllm_tensor_parallel_size=4,
+    vllm_tensor_parallel_size=1,
     vllm_max_tokens=8192,
 )
 ```

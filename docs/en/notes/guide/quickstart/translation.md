@@ -34,7 +34,7 @@ export DF_API_KEY=sk-xx
 
 Configure the `api_url` as shown below:
 ```python
-llm_serving = APILLMServing_request(
+self.llm_serving = APILLMServing_request(
     api_url="https://api.openai.com/v1/chat/completions",
     model_name="gpt-4o",
     max_workers=100
@@ -46,7 +46,7 @@ For local models, use the following configuration:
 ```python
 self.llm_serving = LocalModelLLMServing_vllm(
     hf_model_name_or_path="Qwen2.5-7B-Instruct",  # set to your own model path
-    vllm_tensor_parallel_size=4,
+    vllm_tensor_parallel_size=1,
     vllm_max_tokens=8192,
 )
 ```
