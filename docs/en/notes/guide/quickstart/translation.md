@@ -39,7 +39,7 @@ For Windows
 $env:DF_API_KEY = "sh-xxxxx"
 ```
 
-Set the `api_url` as follows:
+Configure the `api_url` as shown below:
 ```python
 self.llm_serving = APILLMServing_request(
     api_url="https://api.openai.com/v1/chat/completions",
