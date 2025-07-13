@@ -1,5 +1,5 @@
 ---
-title: Case 1. Translation
+title: Case 1-Translation
 createTime: 2025/06/30 19:19:16
 permalink: /en/guide/translation/
 icon: basil:lightning-alt-outline
@@ -23,21 +23,38 @@ cd run_dataflow
 dataflow init
 ```
 After this step, you should see:
-```
-run_dataflow/playground
+```shell
+run_dataflow/playground/generate_qa_api.py  # (api LLM)
+run_dataflow/playground/generate_qa_local.py  # (local LLM)
 ```
 
-### Step 4: Set Your API Key and API URL
+### Step 4 (API Translation Option). Set Your API Key and API URL
+For Linux/ Mac OS
 ```bash
-export DF_API_KEY=sk-xx
+export DF_API_KEY=sk-xxxx
+```
+
+For Windows
+```powershell
+$env:DF_API_KEY = "sh-xxxxx"
 ```
 
 Set the `api_url` as follows:
 ```python
-llm_serving = APILLMServing_request(
+self.llm_serving = APILLMServing_request(
     api_url="https://api.openai.com/v1/chat/completions",
     model_name="gpt-4o",
     max_workers=100
+)
+```
+
+### Step 4 (Local Model Translation Option).
+For local models, use the following configuration:
+```python
+self.llm_serving = LocalModelLLMServing_vllm(
+    hf_model_name_or_path="Qwen2.5-7B-Instruct",  # set to your own model path
+    vllm_tensor_parallel_size=1,
+    vllm_max_tokens=8192,
 )
 ```
 

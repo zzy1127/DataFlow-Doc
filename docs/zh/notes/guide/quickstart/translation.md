@@ -1,5 +1,5 @@
 ---
-title: 案例 1. 机器翻译
+title: 案例 1-机器翻译
 createTime: 2025/06/30 19:19:16
 permalink: /zh/guide/translation/
 icon: basil:lightning-alt-outline
@@ -9,34 +9,52 @@ icon: basil:lightning-alt-outline
 
 快速开始机器翻译。
 ### 第一步.安装dataflow环境
-```python
+```shell
 pip install open-dataflow
 ```
 ### 第二步.创建新的dataflow工作文件夹
-```python
+```shell
 mkdir run_dataflow
 cd run_dataflow
 ```
 ### 第三步.初始化Dataflow
-```python
+```shell
 dataflow init
 ```
 这时你会看见
-```python
-run_dataflow/playground
+```shell
+run_dataflow/playground/generate_qa_api.py  # (api模型)
+run_dataflow/playground/generate_qa_local.py  # (本地模型)
 ```
-### 第四步.填入你的api key以及api_url
-```python
+### 第四步(如果选择API翻译).填入你的api key以及api_url
+对于Linux和Mac OS
+```shell
 export DF_API_KEY=sk xx
 ```
-api_url填写方式如下：
+
+对于Windows
+```powershell
+$env:DF_API_KEY = "sh-xxxxx"
 ```
-llm_serving = APILLMServing_request(
+generate_qa_api.py中的api_url填写方式如下：
+```python
+self.llm_serving = APILLMServing_request(
         api_url="https://api.openai.com/v1/chat/completions",
         model_name="gpt-4o",
         max_workers=100
 )
 ```
+
+### 第四步(如果选择本地模型翻译).
+generate_qa_local.py本地模型填写方式如下：
+```python
+self.llm_serving = LocalModelLLMServing_vllm(
+    hf_model_name_or_path="Qwen2.5-7B-Instruct", # set to your own model path
+    vllm_tensor_parallel_size=1,
+    vllm_max_tokens=8192,
+)
+```
+
 ### 第五步.准备需要翻译的数据
 ```jsonl
 {"raw_content": "This paper presents work whose goal is to advance the field of Machine Learning. There are many potential societal consequences of our work, none which we feel must be specifically highlighted here."}
