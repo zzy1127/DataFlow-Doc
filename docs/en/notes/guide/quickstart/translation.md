@@ -1,5 +1,5 @@
 ---
-title: Case 1-Translation
+title: Case1-Translation,QA,Abbreviation
 createTime: 2025/06/30 19:19:16
 permalink: /en/guide/translation/
 icon: basil:lightning-alt-outline
@@ -73,3 +73,56 @@ self.storage = FileStorage(
     cache_type="jsonl",
 )
 ```
+
+---
+
+### Step 6: Preparing the Prompt for Translation
+
+Use the following configuration for translation tasks:
+
+```python
+self.prompt_generator = PromptedGenerator(
+    llm_serving=self.llm_serving,
+    system_prompt="Please translate to Chinese.",  # System prompt for translation
+)
+```
+
+## Answer Generation Task
+
+This task is similar to machine translation. Simply replace the script with one of the following:
+
+```shell
+generate_qa_api.py
+generate_qa_local.py
+```
+
+The key change is to replace the `system_prompt` with one suitable for answer generation:
+
+```python
+self.prompt_generator = PromptedGenerator(
+    llm_serving=self.llm_serving,
+    system_prompt="Please solve this math problem.",  # Prompt for solving math problems
+)
+```
+
+## Abbreviation Task
+
+The abbreviation task follows the same structure. Just switch to the corresponding script:
+
+```shell
+abbreviation_qa_api.py
+abbreviation_qa_local.py
+```
+
+And update the `system_prompt` to one designed for summarization:
+
+```python
+self.prompt_generator = PromptedGenerator(
+    llm_serving=self.llm_serving,
+    system_prompt="Please rewrite the following paragraph into a concise summary that preserves the core meaning and key information:",  # Prompt for abbreviation
+)
+```
+
+## Supporting Other Tasks
+
+To support additional task types, simply adjust the `system_prompt` accordingly while keeping the rest of the workflow unchanged.
