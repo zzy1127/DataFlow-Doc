@@ -8,16 +8,16 @@ icon: basil:lightning-alt-outline
 # 快速开始机器翻译,答案合成与缩写
 
 ## 机器翻译
-### 第一步.安装dataflow环境
+### 第一步:安装dataflow环境
 ```shell
 pip install open-dataflow
 ```
-### 第二步.创建新的dataflow工作文件夹
+### 第二步:创建新的dataflow工作文件夹
 ```shell
 mkdir run_dataflow
 cd run_dataflow
 ```
-### 第三步.初始化Dataflow
+### 第三步:初始化Dataflow
 ```shell
 dataflow init
 ```
@@ -26,15 +26,15 @@ dataflow init
 run_dataflow/playground/generate_qa_api.py  # (api模型)
 run_dataflow/playground/generate_qa_local.py  # (本地模型)
 ```
-### 第四步(如果选择API翻译).填入你的api key以及api_url
+### 第四步(如果选择API翻译):填入你的api key以及api_url
 对于Linux和Mac OS
 ```shell
-export DF_API_KEY=sk xx
+export DF_API_KEY="sk-xxxxx"
 ```
 
 对于Windows
 ```powershell
-$env:DF_API_KEY = "sh-xxxxx"
+$env:DF_API_KEY = "sk-xxxxx"
 ```
 generate_qa_api.py中的api_url填写方式如下：
 ```python
@@ -45,7 +45,7 @@ self.llm_serving = APILLMServing_request(
 )
 ```
 
-### 第四步(如果选择本地模型翻译).
+### 第四步:(如果选择本地模型翻译)
 generate_qa_local.py本地模型填写方式如下：
 ```python
 self.llm_serving = LocalModelLLMServing_vllm(
@@ -55,7 +55,7 @@ self.llm_serving = LocalModelLLMServing_vllm(
 )
 ```
 
-### 第五步.准备需要翻译的数据
+### 第五步:准备需要翻译的数据
 ```jsonl
 {"raw_content": "This paper presents work whose goal is to advance the field of Machine Learning. There are many potential societal consequences of our work, none which we feel must be specifically highlighted here."}
 ```
@@ -69,7 +69,7 @@ self.storage = FileStorage(
 )
 ```
 
-### 第六步：准备翻译的 Prompt
+### 第六步:准备翻译的 Prompt
 
 使用如下配置即可完成翻译任务：
 

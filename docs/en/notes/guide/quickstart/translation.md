@@ -1,5 +1,5 @@
 ---
-title: Case1-Translation,QA,Abbreviation
+title: Case1-Translation,QA Generation,Abbreviation
 createTime: 2025/06/30 19:19:16
 permalink: /en/guide/translation/
 icon: basil:lightning-alt-outline
@@ -28,15 +28,15 @@ run_dataflow/playground/generate_qa_api.py  # (api LLM)
 run_dataflow/playground/generate_qa_local.py  # (local LLM)
 ```
 
-### Step 4 (API Translation Option). Set Your API Key and API URL
+### Step 4: (API Translation Option) Set Your API Key and API URL
 For Linux/ Mac OS
 ```bash
-export DF_API_KEY=sk-xxxx
+export DF_API_KEY="sk-xxxxx"
 ```
 
 For Windows
 ```powershell
-$env:DF_API_KEY = "sh-xxxxx"
+$env:DF_API_KEY = "sk-xxxxx"
 ```
 
 Configure the `api_url` as shown below:
@@ -48,7 +48,7 @@ self.llm_serving = APILLMServing_request(
 )
 ```
 
-### Step 4 (Local Model Translation Option).
+### Step 4: (Local Model Translation Option).
 For local models, use the following configuration:
 ```python
 self.llm_serving = LocalModelLLMServing_vllm(
