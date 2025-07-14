@@ -44,23 +44,20 @@ main()
                         raise e
 ```
 2. INFO: 让用户得知目前的运行情况，如：
-```python
-def pipeline_step(yaml_path, step_name, step_type):
-    import logging
-    import yaml
-    logging.info(f"Loading yaml {yaml_path} ......")
-    with open(yaml_path, "r") as f:
-        config = yaml.safe_load(f)
-    config = merge_yaml(config)
-    logging.info(f"Load yaml success, config: {config}")
-    if step_type == "process":
-        algorithm = get_processor(step_name, config)
-    elif step_type == "generator":
-        algorithm = get_generator(step_name, config)
-    logging.info("Start running ...")
-    algorithm.run()
-```
+    ```python
+    def pipeline_step(yaml_path, step_name):
+        import yaml
+        logger = get_logger()
+        logger.info(f"Loading yaml {yaml_path} ......")
+        with open(yaml_path, "r") as f:
+            config = yaml.safe_load(f)
+        config = merge_yaml(config)
+        logger.info(f"Load yaml success, config: {config}")
+        algorithm = get_operator(step_name, config)
+        logger.info("Start running ...")
+        algorithm.run()
+    ```
 3. WARNING：可能出现问题的错误信息（暂时没有例子）
 4. ERROR：运行出现错误，打印错误信息
 
-算子内部的logging可以参考`DataFlow/dataflow/generator/algorithms/TreeSitterParser.py`
+算子内部的logging可以参考`DataFlow/dataflow/operators/generate/Reasoning/question_generator.py`

@@ -4,12 +4,9 @@ createTime: 2025/06/12 12:00:00
 permalink: /zh/dev_guide/new_algo/
 ---
 
-## New Algorithm
+## 新算子
 
-DataFlow算子在具体实现上分为两种
-1. 有统一基类的算子，位于``dataflow/Eval``或``dataflow/process``下，这些算子需要实现基类所需的固定方法（如``__init__()``, ``evaluate_batch()``, ``filter_func()``等）
-
-2. 没有统一基类的算子，位于``dataflow/generator/algorithm``文件夹，这些算子必须实现``__init__``和``run()``方法。
+DataFlow算子有统一基类`OperatorABC`，位于`dataflow/operators/generate`，`dataflow/operators/filter`或`dataflow/operators/refine`下，这些算子需要实现基类所需的固定方法`run()`
 
 如果想要在DataFlow中添加新算子，在实现算子及其所包含的方法后需要进行如下操作：
 

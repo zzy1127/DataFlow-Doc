@@ -6,6 +6,30 @@ permalink: /en/dev_guide/storage_info/
 
 # Storage Module
 
+Dataflow’s storage system is built around the DataFlowStorage abstract base class, fully decoupling the storage layer from algorithm, data-flow control and other logic. Users only need to subclass DataFlowStorage and implement the read and write interfaces to seamlessly integrate custom file systems, object storage services or databases as backends—without modifying existing operators or pipeline code.
+
+```python
+class DataFlowStorage(ABC):
+    """
+    Abstract base class for data storage.
+    """
+    @abstractmethod
+    def read(self, output_type) -> Any:
+        """
+        Read data from file.
+        type: type that you want to read to, such as "datatrame", List[dict], etc.
+        """
+        pass
+    
+    @abstractmethod
+    def write(self, data: Any) -> Any:
+        pass
+```
+
+We provide a built-in default implementation in the DataFlow system called FileStorage, which supports reading and writing common formats on the local file system (JSON/JSONL, CSV, Parquet, Pickle), helping users get started quickly and covering the majority of scenarios.
+<!--
+# Storage Module
+
 DataFlow implements interfaces for vector databases. Below is an introduction using MyScaleStorage as an example.
 
 The structure of a DataFlow data table is as follows:
@@ -98,3 +122,4 @@ This method modifies the eval columns of the existing row in the database.
         + Note: The `syn` parameter here should be changed to `Synthetic`, otherwise an error will be raised.
 
 This method modifies the `data` column of the existing row in the database.
+-->
