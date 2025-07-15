@@ -152,7 +152,7 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
   <thead>
     <tr>
       <th class="tg-0pky">名称</th>
-      <th class="tg-0pky">适用类型</th>
+      <th class="tg-0pky">类别</th>
       <th class="tg-0pky">简介</th>
       <th class="tg-0pky">官方仓库或论文</th>
     </tr>
@@ -160,37 +160,37 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
   <tbody>
     <tr>
       <td class="tg-0pky">HashDeduplicator</td>
-      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">精确去重</td>
       <td class="tg-0pky">使用多种哈希函数（如MD5、SHA256、XXH3_128）对文本进行哈希处理，通过精确的比较哈希值来识别和移除重复数据，适用于小规模简单去重场景。</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
       <td class="tg-0pky">CCNetDeduplicator</td>
-      <td class="tg-0pky">预训练</td>
+      <td class="tg-0pky">精确去重</td>
       <td class="tg-0pky">基于SHA-1哈希算法的前64位进行比较，以识别重复文本。旨在平衡哈希安全性和计算效率。</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
       <td class="tg-0pky">NgramHashDeduplicator</td>
-      <td class="tg-0pky">预训练</td>
+      <td class="tg-0pky">近似去重</td>
       <td class="tg-0pky">结合n-gram技术与哈希算法，将文本分割为多个n-gram片段并分别进行哈希处理。通过多个哈希值的比较来识别相似或重复的文本，适用于处理具有细微差异的重复数据。</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1607.04606">Paper</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">SemDeduplicator</td>
-      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">近似去重</td>
       <td class="tg-0pky">基于BERT模型的语义相似度计算，通过生成文本的嵌入向量并计算余弦相似度来识别重复内容。适用于需要语义理解的高级去重场景，能够识别语义上相似但表述不同的文本。</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1810.04805">Paper</a> <br> <a href="https://github.com/facebookresearch/SemDeDup">Code</a> </td>
     </tr>
     <tr>
       <td class="tg-0pky">SimHashDeduplicator</td>
-      <td class="tg-0pky">预训练</td>
+      <td class="tg-0pky">近似去重</td>
       <td class="tg-0pky">采用SimHash算法，通过生成文本的SimHash指纹并计算汉明距离来判断文本的相似度。适用于高效的相似文本检测，能够快速处理大规模数据集中的重复或相似文本。</td>
       <td class="tg-0pky"><a href="https://dl.acm.org/doi/abs/10.1145/1242572.1242592">Paper</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">MinHashDeduplicator</td>
-      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">近似去重</td>
       <td class="tg-0pky">结合MinHash与LSH，通过将集合中的元素哈希成一个较小的签名（通常是一个固定长度的整数或比特串），从而以很小的内存占用和低计算成本比较两个集合之间的相似度。</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1811.04633">Paper</a></td>
     </tr>
