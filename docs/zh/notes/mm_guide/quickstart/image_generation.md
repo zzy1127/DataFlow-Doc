@@ -1,7 +1,7 @@
 ---
-title: 文本到图片生成、图片编辑
-createTime: 2025/07/14 22.24.56
-permalink: /zh/guide/aigc-image-gen/
+title: AIGC 图像生成与评估
+createTime: 2025/07/15 22:38:45
+permalink: /zh/mm_guide/5ub4phag/
 icon: basil:lightning-alt-outline
 ---
 

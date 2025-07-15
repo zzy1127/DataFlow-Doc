@@ -1,7 +1,7 @@
 ---
 title: Text‑to‑Image Generation and Image Editing
-createTime: 2025/07/14 22:24:56
-permalink: /zh/guide/aigc-image-gen/
+createTime: 2025/07/15 22:39:14
+permalink: /en/mm_guide/rzf2l7kq/
 icon: basil:lightning-alt-outline
 ---
 

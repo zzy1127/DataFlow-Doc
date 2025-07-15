@@ -103,8 +103,50 @@ export const zhNavbar = defineNavbarConfig([
     // },
     {
         text: '多模态指南（飞速施工中）',
-        link: '/zh/notes/mm_guide/basicinfo/intro.md',
-        icon: 'material-symbols:article-outline'
+        // link: '/zh/notes/mm_guide/basicinfo/intro.md',
+        icon: 'material-symbols:article-outline',
+        items: [
+            {
+                text: '基本信息',
+                items: [
+                            {
+                                text: '简介',
+                                link: '/zh/notes/mm_guide/basicinfo/intro.md',
+                                icon: 'mdi:tooltip-text-outline',
+                                activeMatch: '^/guide/'
+                            },
+                            {
+                                text: '框架设计',
+                                link: '/zh/notes/mm_guide/basicinfo/framework.md',
+                                icon: 'material-symbols:auto-transmission-sharp',
+                                activeMatch: '^/guide/'
+                            },
+                ]
+            },
+            {
+                text: '快速开始',
+                items: [
+                    {
+                        text: '安装',
+                        link: '/zh/notes/mm_guide/quickstart/install.md',
+                        icon: 'material-symbols-light:download-rounded',
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: '快速开始',
+                        link: '/zh/notes/mm_guide/quickstart/quickstart.md',
+                        icon: 'solar:flag-2-broken',
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: '图片生成示例',
+                        link: '/zh/notes/mm_guide/quickstart/image_generation.md',
+                        icon: 'solar:flag-2-broken',
+                        activeMatch: '^/guide/'
+                    },
+                ]
+            }
+        ]
     },
     {
         text: '开发者指南',

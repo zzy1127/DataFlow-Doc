@@ -101,8 +101,51 @@ export const enNavbar = defineNavbarConfig([
     // },
     {
         text: 'Multi-Modal Guide (Under Construction)',
-        link: '/en/notes/mm_guide/basicinfo/intro.md',
-        icon: 'material-symbols:article-outline'
+        // link: '/en/notes/mm_guide/basicinfo/intro.md',
+        icon: 'material-symbols:article-outline',
+        items: [
+
+            {
+                text: 'Basic Info',
+                items: [
+                    {
+                        text: 'Introduction',
+                        link: '/en/notes/mm_guide/basicinfo/intro.md',
+                        icon: 'mdi:tooltip-text-outline',
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: 'Framework Design',
+                        link: '/en/notes/mm_guide/basicinfo/framework.md',
+                        icon: 'material-symbols:auto-transmission-sharp',
+                        activeMatch: '^/guide/'
+                    },
+                ]
+            },
+            {
+                text: 'Start with Dataflow',
+                items: [
+                    {
+                        text: 'Installation',
+                        link: '/en/notes/mm_guide/quickstart/install.md',
+                        icon: 'material-symbols-light:download-rounded',
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: 'Quick Start',
+                        link: '/en/notes/mm_guide/quickstart/quickstart.md',
+                        icon: 'solar:flag-2-broken',
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: 'Image Generation',
+                        link: '/en/notes/mm_guide/quickstart/image_generation.md',
+                        icon: 'solar:flag-2-broken',
+                        activeMatch: '^/guide/'
+                    },
+                ]
+            }
+        ]
     },
     {
         text: 'Developer Guide',
