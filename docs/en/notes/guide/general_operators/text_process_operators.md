@@ -175,25 +175,25 @@ DataFlow currently supports text data processing at the data point level, catego
     </tr>
     <tr>
       <td class="tg-0pky">NgramHashDeduplicator</td>
-      <td class="tg-0pky">Approximate Deduplication</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Combines n-gram techniques with hashing to detect duplicates based on multiple hash comparisons of n-gram segments. Useful for identifying near-duplicates.</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1607.04606">Paper</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">SemDeduplicator</td>
-      <td class="tg-0pky">Approximate Deduplication</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Uses semantic similarity based on BERT embeddings and cosine similarity to detect duplicates. Ideal for detecting semantically similar but differently phrased text.</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1810.04805">Paper</a> <br> <a href="https://github.com/facebookresearch/SemDeDup">Code</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">SimHashDeduplicator</td>
-      <td class="tg-0pky">Approximate Deduplication</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Uses the SimHash algorithm to detect similar text based on Hamming distance of fingerprints. Efficient for large-scale data deduplication.</td>
       <td class="tg-0pky"><a href="https://dl.acm.org/doi/abs/10.1145/1242572.1242592">Paper</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">MinHashDeduplicator</td>
-      <td class="tg-0pky">Approximate Deduplication</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Combines MinHash and LSH to compare sets with minimal memory usage and computation cost, detecting similarity between sets.</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1811.04633">Paper</a></td>
     </tr>
