@@ -190,7 +190,7 @@ database_manager = DatabaseManager(
 )
 ```
 
-后文使用的`api_llm_serving`、`self.storage`和`database_manager`即为此处已定义的接口对象，完整调用示例可参考`test/test_text2sql.py`。
+后文使用的`api_llm_serving`、`self.storage`和`database_manager`即为此处已定义的接口对象，完整调用示例可参考`/pipelines/api_pipelines/text2sql_pipeline_refine.py`。
 
 对于传参，算子对象的构造函数主要传递与算子配置相关的信息，配置后可以一配置多调用；而`X.run()`函数传递与IO相关的`key`信息，详细可见后文算子说明示例。
 

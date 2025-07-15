@@ -189,7 +189,7 @@ database_manager = DatabaseManager(
 )  
 ```  
 
-The `api_llm_serving`, `self.storage`, and `database_manager` objects defined above are used in subsequent operator calls. For complete examples, refer to `test/test_text2sql.py`.  
+The `api_llm_serving`, `self.storage`, and `database_manager` objects defined above are used in subsequent operator calls. For complete examples, refer to `/pipelines/api_pipelines/text2sql_pipeline_refine.py`.  
 
 For parameter passing:  
 - Operator constructors accept configuration-related parameters (reusable).  

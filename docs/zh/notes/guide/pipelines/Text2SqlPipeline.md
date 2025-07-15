@@ -9,37 +9,36 @@ permalink: /zh/guide/text2sqlpipeline/
 
 ## 1. 概述
 
-**Text-to-SQL数据合成流水线**的核心目标是通过清洗和扩充现有的Text-to-SQL数据，并为每个样本生成包含训练提示词（prompt）和长链推理过程（chain-of-thought）的高质量问答数据。流水线能够一键完成从原始数据到最终训练数据的全流程处理。目前支持两种数据生成流程：
+**Text-to-SQL数据合成流水线**的核心目标是通过清洗和扩充现有的Text-to-SQL数据，为每个样本生成包含训练提示词（prompt）和思维链（chain-of-thought）的高质量问答数据。本流水线能够一键完成从原始数据到最终训练数据的全流程处理，目前支持以下两种数据生成模式：
 
-我们支持以下应用场景：
-* 对已有的数据进行筛选、扩充和构建，生成高质量训练数据
-  - 必须包含数据库id、自然语言问题和标准SQL答案三个部分
-* 从数据库中合成数据，生成高质量训练数据
-  - 不需要已有数据，直接从数据库中合成数据
+### 支持的应用场景：
+* **数据优化模式**：
+  - 对已有数据进行筛选、扩充和增强，生成高质量训练数据
+  - 输入要求：必须包含数据库ID、自然语言问题和标准SQL答案三要素
+* **数据合成模式**：
+  - 直接从数据库生成训练数据
+  - 特点：无需现有数据样本，零样本启动
 
-流水线的主要流程包括：
+### 处理流程：
 1. **数据过滤**：
-  - 执行过滤：筛选无效SQL和无法执行的SQL
-  - 一致性过滤：筛选与问题和数据库Schema不一致的数据
+  - 执行过滤：剔除无效SQL和无法执行的SQL语句
+  - 一致性过滤：确保问题、SQL与数据库Schema三者一致
 2. **数据生成**：
-  - SQL变体生成：基于已有的SQL，生成SQL的变体
-  - SQL生成：基于数据库Schema，生成SQL
-  - 问题生成：基于SQL和数据库Schema，生成自然语言问题
-3. **训练数据生成**：
-  - 提示词生成：构建提示词问题，包含自然语言问题、数据库Schema和提示信息
-  - 长链推理生成：构建解决问题所需的长链推理过程，用于模型训练
-4. **数据分类**：
-  - 难度分类：基于SQL语法复杂度划分难度等级
-  - 执行难度分类：基于执行通过率划分生成难度
+  - SQL变体生成：基于现有SQL生成语义等效的变体
+  - SQL合成：根据数据库Schema生成新的SQL语句
+  - 问题生成：基于SQL和Schema生成对应的自然语言描述
+3. **训练数据构建**：
+  - 提示词生成：整合自然语言问题、数据库Schema和指令提示
+  - 思维链生成：构建分步推理过程（Chain-of-Thought）
+4. **数据分级**：
+  - 语法难度分级：根据SQL语句的复杂度划分等级
+  - 执行难度分级：基于SQL执行通过率评估难度
 
+## 2. 输入数据
 
-## 2. 数据格式
+根据需要的不同，我们将流水线分为两条，一条数据优化流水线：从已有数据进行筛选并扩充，另一条数据合成流水线：不需要已有数据，直接从数据库中合成数据。
 
-### 2.2 输入数据
-
-分为两条流水线，一条数据优化流水线：从已有数据进行筛选并扩充，另一条数据合成流水线：不需要已有数据，直接从数据库中合成数据。
-
-#### 数据优化流水线
+### 2.1 数据优化流水线
 
 流水线的输入数据主要包括以下字段：
 
@@ -56,36 +55,414 @@ permalink: /zh/guide/text2sqlpipeline/
   }
   ```
 - **演示数据集**：  
-  `example_data/Text2SQLPipeline/pipeline_refine.json`  
+  `example_data/Text2SQLPipeline/pipeline_refine.jsonl`  
   包含数据库id、自然语言问题和标准SQL答案，适用于快速测试和演示。
 
 这些输入数据可以存储在指定的文件（如`json`、`jsonl`）中，并通过`FileStorage`对象进行管理和读取。示例中会载入默认的数据路径，实际使用场景下可以根据需求修改路径以载入自定义的数据和缓存路径：
 
 ```python
 self.storage = FileStorage(
-    first_entry_file_name="../example_data/Text2SQLPipeline/pipeline_refine.json",
+    first_entry_file_name="../example_data/Text2SQLPipeline/pipeline_refine.jsonl",
     cache_path="./cache_local",
     file_name_prefix="dataflow_cache_step",
     cache_type="jsonl"
 )
 ```
 
-#### 数据合成流水线
+### 2.2 数据合成流水线
 
-流水线不需要已有数据，直接从数据库中合成数据。因此这里只需要配置数据库即可。将数据库配置好之后，送入DatabaseManager进行管理。
-
-此时不需要传入first_entry_file_name，因此将first_entry_file_name设置为None即可。
+该流水线不需要已有数据，直接从数据库中合成数据。因此这里只需要配置数据库即可。将数据库配置好之后，送入DatabaseManager进行管理。此时不需要传入first_entry_file_name，因此将first_entry_file_name设置为`""`即可。
 
 ```python
 self.storage = FileStorage(
-    first_entry_file_name=None,
-    cache_path="./cache_local",
+    first_entry_file_name="",
+    cache_path="./cache",
     file_name_prefix="dataflow_cache_step",
     cache_type="jsonl"
 )
 ```
 
-### 2.3 输出数据
+## 3. 配置说明
+
+在开始执行流水线之前，请阅读以下配置说明，完成相关参数的配置后即可运行。
+
+### 3.1 数据库配置
+
+在进行数据库解析和执行时，需要配置相应的数据库信息。目前支持 SQLite 数据库和 MySQL 数据库，对其他数据库的支持正在持续更新中。
+
+#### 3.1.1 SQLite 数据库
+
+SQLite 是一种基于文件的数据库系统，因此在使用时需要指定数据库文件的存储路径。
+
+- **数据库根目录**：用于存放所有数据库文件的目录  
+  - **说明**：该目录下应包含多个 `.sqlite` 或 `.db` 格式的数据库文件。数据库管理器会自动扫描该目录并加载所有数据库文件。
+  
+  - **重要提示**：每个数据库文件的文件名即为 `db_id`，格式必须为 `db_id.sqlite` 或 `db_id.db`，且与输入数据中的 `db_id` 字段保持一致。
+
+  - **支持的目录结构**：  
+    数据库管理器支持任意嵌套层级的目录结构，以下为几种合法结构示例：
+    ```
+    databases/
+      ├── california_schools.sqlite
+      └── hospitals.sqlite
+    ```
+
+    ```
+    databases/
+      ├── forder1/
+      │   └── california_schools.sqlite
+      └── forder2/
+          └── hospitals.sqlite
+    ```
+
+    ```
+    databases/
+      ├── california_schools.sqlite
+      └── forder1/
+          └── hospitals.sqlite
+    ```
+
+  - **演示数据库**：  
+    我们提供了示例数据库用于测试，请访问：  
+    [https://huggingface.co/datasets/Open-Dataflow/dataflow-Text2SQL-database-example](https://huggingface.co/datasets/Open-Dataflow/dataflow-Text2SQL-database-example)
+
+    **使用步骤**：
+    1. 下载 `databases` 压缩包并解压到本地
+    2. 将解压后的路径赋值给变量 `db_root_path`
+    3. 在代码中配置数据库管理器如下：
+
+    ```python
+    database_manager = DatabaseManager(
+        db_type="sqlite",
+        config={
+            "root_path": db_root_path
+        }
+    )
+    ```
+
+    > 注意：`db_type` 必须设置为 `"sqlite"`，`root_path` 应为数据库文件夹的路径。
+
+#### 3.1.2 MySQL 数据库
+
+MySQL 数据库是以服务器形式存在的，因此需要管理连接服务器的信息。请确保您的 MySQL 服务处于开启状态，并已正确配置用户名和密码。在 DataFlow 中，我们使用 `pymysql` 库来连接 MySQL 服务器。
+
+- **配置方式**：
+  1. 准备 MySQL 服务器信息  
+  2. 将 MySQL 服务器信息配置到 `database_manager`：
+    ```python
+    database_manager = DatabaseManager(
+        db_type="mysql",
+        config={
+            "host": "localhost",
+            "user": "root",
+            "password": "password"
+        }
+    )
+    ```
+   > 其中 `db_type` 必须设定为 `mysql`，在 `config` 中，需设定 `host`、`user` 和 `password` 为 MySQL 服务器的相关信息。请确保所需使用的数据库存在于 MySQL 服务器中，并且您具有相应的访问权限。
+
+## 3.2 模型配置
+
+### 3.2.1 API LLM 服务配置
+
+在 DataFlow 中，我们使用 `APILLMServing_request` 类来管理基于 API 的 LLM 服务。
+
+```python
+api_llm_serving = APILLMServing_request(
+    api_url="https://api.openai.com/v1/chat/completions",
+    model_name="chatgpt",
+    max_workers=100
+)
+
+cot_generation_api_llm_serving = APILLMServing_request(
+    api_url="https://api.openai.com/v1/chat/completions",
+    model_name="gpt-4o",  # 使用性能更强的模型生成长链推理过程
+    max_workers=100
+)
+
+embedding_api_llm_serving = APILLMServing_request(
+    api_url="https://api.openai.com/v1/embeddings",
+    model_name="text-embedding-ada-002",
+    max_workers=100
+)
+```
+
+其中：
+- `api_llm_serving` 用于处理通用提示生成任务；
+- `cot_generation_api_llm_serving` 用于生成复杂推理链（Chain-of-Thought）；
+- `embedding_api_llm_serving` 用于生成文本嵌入向量。
+
+在实际使用中，您可以根据需求更换为其他模型或 API 提供商。
+
+### 3.2.2 本地模型服务配置
+
+在 DataFlow 中，我们使用 `LocalModelLLMServing_vllm` 类来管理本地部署的大语言模型服务。
+
+```python
+llm_serving = LocalModelLLMServing_vllm(
+    hf_model_name_or_path="Qwen/Qwen2.5-7B-Instruct", 
+    vllm_tensor_parallel_size=1,
+    vllm_max_tokens=8192,
+)
+
+cot_generation_llm_serving = LocalModelLLMServing_vllm(
+    hf_model_name_or_path="Qwen/Qwen2.5-7B-Instruct", 
+    vllm_tensor_parallel_size=1,
+    vllm_max_tokens=8192,
+)
+
+embedding_serving = LocalModelLLMServing_vllm(
+    hf_model_name_or_path="Alibaba-NLP/gte-Qwen2-7B-instruct", 
+    vllm_max_tokens=8192
+)
+```
+
+其中：
+- `llm_serving` 用于处理通用提示生成任务；
+- `cot_generation_llm_serving` 用于生成复杂推理链；
+- `embedding_serving` 用于生成文本嵌入向量。
+
+## 3.3 其他参数配置
+
+### 3.3.1 难度分类配置
+
+```python
+execution_difficulty_config = {
+    'thresholds': [2, 5, 9],
+    'labels': ['easy', 'medium', 'hard', 'extra']
+}
+
+component_difficulty_config = {
+    'thresholds': [2, 4, 6],      
+    'labels': ['easy', 'medium', 'hard', 'extra']
+}
+```
+
+其中：
+- `execution_difficulty_config` 用于执行难度分类；
+- `component_difficulty_config` 用于 SQL 组件复杂度分类。
+
+#### 注意事项：
+- `thresholds` 和 `labels` 必须同时存在；
+- `thresholds` 必须按升序排列；
+- `labels` 的数量必须比 `thresholds` 多 1；
+- 分类依据是得分，范围为 0–10，得分越高表示难度越大，因此 `thresholds` 的值应控制在 0–10 范围内。
+
+### 3.3.2 提示词模板配置
+
+```python
+prompt_template = '''Task Overview:
+            /* Given the following database schema: */
+            {schema}
+            /* Answer the following: {question} */
+            Let's think step by step'''
+```
+
+该模板用于构建输入给模型的提示信息，其中 `{schema}` 和 `{question}` 是占位符，分别表示数据库 Schema 和用户提出的自然语言问题。  
+您可根据需要自定义模板内容，但**必须保留这两个占位符**以确保数据注入的完整性。
+
+### 3.3.3 数据库 Schema 配置
+
+```python
+schema_config = {
+    'format': 'ddl',  # 可选值：'ddl' 或 'formatted_schema'
+    'use_example': False  # 是否包含示例数据
+}
+```
+
+说明：
+- `format`：指定输出数据库 Schema 的格式，支持 `'ddl'`（数据定义语言）和 `'formatted_schema'`（结构化展示）；
+- `use_example`：是否在 Schema 中包含示例数据，取值为 `True` 或 `False`。
+
+
+## 4. 数据流与流水线逻辑
+
+### 4.1 数据过滤器
+
+#### 4.1.1 **SQL执行过滤器（ExecutionFilter）**
+
+**SQL执行过滤器**（`ExecutionFilter`）通过实际执行SQL语句来验证其正确性，过滤掉无法正常执行的SQL语句。
+
+**功能：**
+
+* 验证SQL语句的可执行性
+* 过滤掉语法错误或执行失败的SQL语句
+
+**输入**：SQL语句和数据库ID
+**输出**：可正常执行的SQL语句
+
+```python
+execution_filter = ExecutionFilter(
+    database_manager=database_manager
+)
+```
+
+#### 4.1.2 **SQL一致性过滤器（ConsistencyFilter）**
+
+**SQL一致性过滤器**（`ConsistencyFilter`）检查SQL语句与问题、数据库Schema之间的一致性，确保生成的SQL能够正确回答对应的问题。
+
+**功能：**
+
+* 验证SQL语句与问题、数据库Schema之间的一致性
+* 过滤掉与问题、数据库Schema不匹配的SQL语句
+
+**输入**：SQL语句、数据库ID和问题
+**输出**：与问题一致的SQL语句
+
+```python
+consistency_filter = ConsistencyFilter(
+    llm_serving=api_llm_serving,
+    database_manager=database_manager
+)
+```
+
+### 4.2 数据生成器
+
+#### 4.2.1 **SQL生成器（SQLGenerator）**
+
+**SQL生成器**（`SQLGenerator`）负责基于数据库schema生成SQL查询语句，为后续的数据处理流程提供原始SQL数据。
+
+**功能：**
+
+* 基于数据库schema自动生成SQL查询语句
+* 支持批量生成指定数量的SQL语句
+
+**输入**：数据库schema信息
+**输出**：生成的SQL语句和对应的数据库ID
+
+```python
+sql_generator = SQLGenerator(
+    llm_serving=api_llm_serving,
+    database_manager=database_manager,
+    generate_num=300
+)
+```
+
+#### 4.2.2 **SQL变体生成器（SQLVariationGenerator）**
+
+**SQL变体生成器**（`SQLVariationGenerator`）基于现有的SQL语句生成多个功能等价的变体，丰富数据集的多样性。
+
+**功能：**
+
+* 生成功能等价的SQL变体
+* 增加SQL语句的多样性和复杂性
+
+**输入**：原始SQL语句和数据库ID
+**输出**：SQL变体集合
+
+```python
+sql_variation_generator = SQLVariationGenerator(
+    llm_serving=api_llm_serving,
+    database_manager=database_manager,
+    num_variations=5
+)
+```
+
+#### 4.2.3 **问题生成器（QuestionGeneration）**
+
+**问题生成器**（`QuestionGeneration`）根据给定的SQL语句生成对应的自然语言问题，构建Text-to-SQL的问答对。
+
+**功能：**
+
+* 基于SQL语句生成自然语言问题
+* 支持生成多个候选问题
+
+**输入**：SQL语句和数据库ID
+**输出**：自然语言问题
+
+```python
+question_generator = QuestionGeneration(
+    llm_serving=api_llm_serving,
+    embedding_api_llm_serving=embedding_api_llm_serving,
+    database_manager=database_manager,
+    question_candidates_num=5
+)
+```
+
+#### 4.2.4 **提示词生成器（PromptGenerator）**
+
+**提示词生成器**（`PromptGenerator`）根据问题和数据库schema生成用于模型训练的提示模板。
+
+**功能：**
+
+* 生成结构化的提示模板
+* 整合问题和数据库schema信息
+
+**输入**：问题和数据库ID
+**输出**：格式化的提示模板
+
+```python
+prompt_generator = PromptGenerator(
+    database_manager=database_manager,
+    prompt_template=prompt_template,
+    schema_config=schema_config
+)
+```
+
+#### 4.2.5 **长链推理生成器（CoTGenerator）**
+
+**长链推理生成器**（`CoTGenerator`）为SQL查询生成详细的推理过程，帮助模型理解从问题到SQL的转换逻辑。
+
+**功能：**
+
+* 生成SQL查询的推理过程
+* 支持重试机制确保生成质量
+
+**输入**：SQL语句、问题和数据库ID
+**输出**：思维链推理过程
+
+```python
+cot_generator = CoTGenerator(
+    llm_serving=cot_generation_api_llm_serving,
+    database_manager=database_manager,
+    schema_config=schema_config,
+    max_retries=3,
+    enable_retry=True
+)
+```
+
+### 4.3 数据评估器
+
+#### 4.3.1 **组件难度评估器（ComponentClassifier）**
+
+**组件难度评估器**（`ComponentClassifier`）分析SQL语句的组件复杂度，为数据样本标注难度等级。
+
+**功能：**
+
+* 分析SQL语句的组件复杂度
+* 为样本标注难度等级
+
+**输入**：SQL语句
+**输出**：SQL组件难度等级
+
+```python
+component_classifier = ComponentClassifier(
+    difficulty_config=component_difficulty_config
+)
+```
+
+#### 4.3.2 **执行难度评估器（ExecutionClassifier）**
+
+**执行难度评估器**（`ExecutionClassifier`）评估SQL查询的执行难度，基于多次生成结果进行综合判断。
+
+**功能：**
+
+* 评估SQL查询的执行难度
+* 基于多次生成进行难度评估
+
+**输入**：SQL语句、数据库ID和提示
+**输出**：SQL执行难度等级
+
+```python
+execution_classifier = ExecutionClassifier(
+    llm_serving=api_llm_serving,
+    database_manager=database_manager,
+    difficulty_config=execution_difficulty_config,
+    num_generations=5
+)
+```
+
+## 5. **输出数据**
 
 - **格式**：`jsonl`（每个步骤都会生成一个文件）  
 - **字段说明**：
@@ -109,145 +486,58 @@ self.storage = FileStorage(
   }
   ```
 
-## 配置说明
+## 6. 运行方式
 
-### 2.1 数据库配置
+这里设计了两套流水线，通过简单的Python命令执行不同的配置，满足不同的数据需求：
 
-在进行数据库解析和执行时，需要配置相应的数据库信息。目前支持 SQLite 数据库和MySQL数据库，对其他数据库的支持正在更新中。
+* **数据优化流水线**：
 
-#### SQLite 数据库
-
-SQLite 数据库是以文件形式存在的，因此需要管理读取文件的路径
-
-- **数据库文件夹**：包含可执行的数据库文件
-  - **说明**：**数据库文件夹**是存放所有数据库的目录。其中包含多个数据库文件，格式可以为`.sqlite`或者`.db`。只需确保数据库文件夹中存在数据库文件即可，数据库管理器会找到其中的数据库文件，并进行管理。
-
-  - **重要提醒**：数据库文件的名称就是`db_id`，所有数据库的格式需要为`db_id.sqlite`或者`db_id.db`，在传入的数据中，`db_id`需要和数据库文件的名称对应
-
-  - **数据库格式**：对于您传入的数据库文件夹，由于数据库管理器会找到其中的数据库文件，并进行管理。因此对于数据库文件夹中数据库文件的路径并没有要求，只需要存在即可，因此下面任何一种文件夹都是可以的。
+  ```bash
+  python /pipelines/api_pipelines/text2sql_pipeline_refine.py
   ```
-  databases/                    # 数据库文件夹
-    ├── california_schools.sqlite   # 数据库文件
-    └── hospitals.sqlite
-    ```
-  和
+
+* **数据合成流水线**：
+
+  ```bash
+  python /pipelines/api_pipelines/text2sql_pipeline_gen.py
   ```
-  databases/                    # 数据库文件夹
-    ├── forder1/         
-    │   └── california_schools.sqlite   # 数据库文件
-    └── forder2/
-        └── hospitals.sqlite
-    ```
-  和  
-  databases/                    # 数据库文件夹
-    ├── california_schools.sqlite   # 数据库文件
-    └── forder1/
-        └── hospitals.sqlite
-    ```
-    
-  - **演示**：  
-    为便于演示，我们提供了示例数据库，你可以使用演示数据库来测试流水线的功能：  
-    https://huggingface.co/datasets/Open-Dataflow/dataflow-Text2SQL-database-example  
-    
-    **使用步骤**：  
-    1. 完整下载 `databases` 压缩包到本地
-    2. 使用`  `指令对压缩文件进行解压
-    3. 将代码中的 `db_root_path` 参数设置为本地解压后的 `databases` 文件夹的完整路径，即如果您的 `databases` 文件夹位于 `/Users/username/data/databases`，则将 `db_root_path` 设置为该路径。
-  
-  - **配置方式**：
-  1. 准备数据库文件夹
-  2. 将数据库文件夹的完整路径设置为`db_root_path`
-  3. 配置`database_manager`：
-  ```python
-  database_manager = DatabaseManager(
-            db_type="sqlite",
-            config={
-                "root_path": db_root_path
-            }
-        )
-  ```其中db_type必须设定为`sqlite`，在config中，只需设定root_path为数据库文件夹的完整路径即可。
 
-请确保数据库文件夹中存在数据库文件，并且数据库文件的名称就是`db_id`，所有数据库的格式需要为`db_id.sqlite`或者`db_id.db`，在传入的数据中，`db_id`需要和数据库文件的名称对应。
 
-#### MySQL 数据库
+## 7. 流水线示例
 
-MySQL 数据库是以服务器形式存在的，因此需要管理读取服务器的信息，请确保您的MySQL服务处于开启状态，并配置好相应的用户名和密码。在DataFlow中，我们使用`pymysql`库来连接MySQL服务器。
+以下给出示例流水线，演示如何使用多个算子进行推理数据处理。该示例展示了如何初始化一个推理数据处理流水线，并且顺序执行各个过滤和清理步骤。
 
-- **配置方式**：
-  1. 准备MySQL服务器信息
-  2. 将MySQL服务器信息设置为`database_manager`：
-  ```python
-  database_manager = DatabaseManager(
-            db_type="mysql",
-            config={
-                "host": "localhost",
-                "user": "root",
-                "password": "password"
-            }
-        )
-  ```
-  其中db_type必须设定为`mysql`，在config中，只需设定host、user、password为MySQL服务器信息即可。
-
-  
-请确保需要使用的数据库在MySQL服务器中，并且有相应的权限。
-
-### 2.2 模型配置
-
-#### API LLM服务配置
-
-在DataFlow中，我们使用`APILLMServing_request`来管理API LLM服务。
+* **数据优化流水线**：
 
 ```python
+class Text2SQLPipeline():
+    def __init__(self):
+
+        self.storage = FileStorage(
+            first_entry_file_name="../example_data/Text2SQLPipeline/pipeline_refine.jsonl",
+            cache_path="./cache_local",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl"
+        )
+
         api_llm_serving = APILLMServing_request(
-            api_url="https://api.openai.com/v1/chat/completions",
+            api_url="http://api.openai.com/v1/chat/completions",
             model_name="gpt-4o",
             max_workers=100
         )
 
         cot_generation_api_llm_serving = APILLMServing_request(
-            api_url="https://api.openai.com/v1/chat/completions",
-            model_name="gpt-4o", # 使用更好的模型生成长链推理过程
+            api_url="http://api.openai.com/v1/chat/completions",
+            model_name="gpt-4o", 
             max_workers=100
         )
 
         embedding_api_llm_serving = APILLMServing_request(
-            api_url="https://api.openai.com/v1/embeddings",
+            api_url="http://api.openai.com/v1/embeddings",
             model_name="text-embedding-ada-002",
             max_workers=100
         )
-```
 
-其中api_llm_serving是用于生成提示词的模型，cot_generation_api_llm_serving是用于生成长链推理的模型，embedding_api_llm_serving是用于生成embedding的模型。在实际使用中，您可以更换为其他模型，或者使用其他API LLM服务。
-
-#### 本地模型服务配置
-
-在DataFlow中，我们使用`LocalModelLLMServing`来管理本地模型服务。
-
-```python
-llm_serving = LocalModelLLMServing_vllm(
-            hf_model_name_or_path="Qwen/Qwen2.5-7B-Instruct", # set to your own model path
-            vllm_tensor_parallel_size=1,
-            vllm_max_tokens=8192,
-        )
-
-        # It is recommended to use better LLMs for the generation of Chain-of-Thought (CoT) reasoning process.
-        cot_generation_llm_serving = LocalModelLLMServing_vllm(
-            hf_model_name_or_path="Qwen/Qwen2.5-7B-Instruct", # set to your own model path
-            vllm_tensor_parallel_size=1,
-            vllm_max_tokens=8192,
-        )
-
-        embedding_serving = LocalModelLLMServing_vllm(hf_model_name_or_path="Alibaba-NLP/gte-Qwen2-7B-instruct", vllm_max_tokens=8192)
-```
-
-其中llm_serving是用于生成提示词的模型，cot_generation_llm_serving是用于生成长链推理的模型，embedding_serving是用于生成embedding的模型。在实际使用中，您可以更换为其他模型，或者使用其他本地模型服务。
-
-### 2.3 参数配置
-
-#### 难度配置
-
-```python
-        # You can customize the difficulty config here, but it must contain 'thresholds' and 'labels' keys
         execution_difficulty_config = {
             'thresholds': [2, 5, 9],
             'labels': ['easy', 'medium', 'hard', 'extra']
@@ -257,129 +547,309 @@ llm_serving = LocalModelLLMServing_vllm(
             'thresholds': [2, 4, 6],      
             'labels': ['easy', 'medium', 'hard', 'extra']
         }
-```
 
-其中execution_difficulty_config是用于执行难度分类的配置，component_difficulty_config是用于SQL组件复杂度分类的配置。注意，thresholds和labels必须同时存在，且thresholds必须为升序排列。
-
-#### 提示词模板配置
-
-```python
-prompt_template = '''Task Overview:
+        prompt_template = '''Task Overview:
             /* Given the following database schema: */
             {schema}
             /* Answer the following: {question} */
             Let's think step by step'''
-```
 
-其中prompt_template是用于生成提示词的模板，其中{schema}和{question}是占位符，分别表示数据库Schema和自然语言问题。这里你可以根据需要进行修改，但必须包含{schema}和{question}这两个占位符。
-
-#### 数据库Schema配置
-
-```python
-schema_config = {
-            'format': 'ddl',  # Optional: 'ddl', 'formatted_schema'
-            'use_example': False  # Whether to include example data
+        schema_config = {
+            'format': 'ddl',  
+            'use_example': False  
         }
+
+        db_root_path = "path/to/your/database"  
+
+        database_manager = DatabaseManager(
+            db_type="sqlite",
+            config={
+                "root_path": db_root_path
+            }
+        )
+        
+        self.sql_execution_filter_step1 = ExecutionFilter(
+            database_manager=database_manager
+        )
+
+        self.sql_consistency_filter_step2 = ConsistencyFilter(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager
+        )
+
+        self.sql_variation_generator_step3 = SQLVariationGenerator(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            num_variations=5
+        )
+
+        self.sql_execution_filter_step4 = ExecutionFilter(
+            database_manager=database_manager
+        )
+
+        self.text2sql_question_generator_step5 = QuestionGeneration(
+            llm_serving=api_llm_serving,
+            embedding_api_llm_serving=embedding_api_llm_serving,
+            database_manager=database_manager,
+            question_candidates_num=5
+        )
+
+        self.text2sql_prompt_generator_step6 = PromptGenerator(
+            database_manager=database_manager,
+            prompt_template=prompt_template,
+            schema_config=schema_config
+        )
+
+        self.sql_cot_generator_step7 = CoTGenerator(
+            llm_serving=cot_generation_api_llm_serving,
+            database_manager=database_manager,
+            schema_config=schema_config,
+            max_retries=3,
+            enable_retry=True
+        )
+
+        self.sql_component_classifier_step8 = ComponentClassifier(
+            difficulty_config=component_difficulty_config
+        )
+
+        self.sql_execution_classifier_step9 = ExecutionClassifier(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            difficulty_config=execution_difficulty_config,
+            num_generations=5
+        )
+        
+        
+    def forward(self):
+
+        sql_key = "SQL"
+        db_id_key = "db_id"
+        question_key = "question"
+
+        self.sql_execution_filter_step1.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
+
+        self.sql_consistency_filter_step2.run(
+            storage=self.storage.step(),   
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            input_question_key=question_key
+        )
+
+        self.sql_variation_generator_step3.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
+
+        self.sql_execution_filter_step4.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
+
+        self.text2sql_question_generator_step5.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            output_question_key=question_key
+        )
+
+        self.text2sql_prompt_generator_step6.run(
+            storage=self.storage.step(),
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_prompt_key="prompt"
+        )
+
+        self.sql_cot_generator_step7.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_cot_key="cot_reasoning"
+        )
+
+        self.sql_component_classifier_step8.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            output_difficulty_key="sql_component_difficulty"
+        )
+
+        self.sql_execution_classifier_step9.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            input_prompt_key="prompt",
+            output_difficulty_key="sql_execution_difficulty"
+        )
+
+if __name__ == "__main__":
+    model = Text2SQLPipeline()
+    model.forward()
 ```
 
-其中format是用于指定数据库Schema的格式，可选值为'ddl'和'formatted_schema'。use_example是用于指定是否包含示例数据，可选值为True和False。这表示是否在数据库Schema中包含示例数据。
+* **数据合成流水线**：
+```python
+class Text2SQLPipeline():
+    def __init__(self):
 
-## 3. **数据处理流程**
+        self.storage = FileStorage(
+            first_entry_file_name="",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl",
+        )
 
-### 3.1 **SQL过滤器（SQLFilter）**
-**功能**：
-* 剔除执行异常的gold SQL
-* 过滤与问题描述不一致的SQL
+        api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/chat/completions",
+            model_name="gpt-4o",
+            max_workers=100
+        )
 
-**输入**：原始输入数据
-**输出**：有效的Text-to-SQL数据
+        cot_generation_api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/chat/completions",
+            model_name="gpt-4o", 
+            max_workers=100
+        )
 
-### 3.2 **SQL难度分类器（SQLDifficultyClassifier）**
-**功能**：
-* 参考Spider标准，基于SQL语法复杂度划分难度等级
-* 难度等级：easy/medium/hard/extra
+        embedding_api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/embeddings",
+            model_name="text-embedding-ada-002",
+            max_workers=100
+        )
 
-**输入**：过滤后的数据
-**输出**：带有难度标签的数据
+        execution_difficulty_config = {
+            'thresholds': [2, 5, 9],
+            'labels': ['easy', 'medium', 'hard', 'extra']
+        }
 
-### 3.3 **模式链接器（SchemaLinking）**
-**功能**：
-* 基于SQL查询，从全量数据库Schema中提取使用的关联表和列
+        component_difficulty_config = {
+            'thresholds': [2, 4, 6],      
+            'labels': ['easy', 'medium', 'hard', 'extra']
+        }
 
-**输入**：带有难度标签的数据
-**输出**：包含Schema链接信息的数据
+        prompt_template = '''Task Overview:
+            /* Given the following database schema: */
+            {schema}
+            /* Answer the following: {question} */
+            Let's think step by step'''
 
-### 3.4 **Schema提取器（DatabaseSchemaExtractor）**
-**功能**：
-* 构建完整的数据库Schema信息
-* 生成格式化的Schema描述
-* 包括DDL语句和自然语言描述
+        schema_config = {
+            'format': 'ddl',  
+            'use_example': True  
+        }
 
-**输入**：Schema链接后的数据
-**输出**：带有完整Schema信息的数据
+        db_root_path = "path/to/your/database"  
 
-### 3.5 **知识生成器（ExtraKnowledgeGeneration）**
-**功能**：
-* 构建自然语言问题推到至SQL查询所需的额外知识
-* 解释量词对应数值
-* 明确名词实体映射关系
+        database_manager = DatabaseManager(
+            db_type="sqlite",
+            config={
+                "root_path": db_root_path
+            }
+        )
+        
+        self.sql_generator_step1 = SQLGenerator(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            generate_num=300
+        )
 
-**输入**：带有Schema信息的数据
-**输出**：包含额外知识的数据
+        self.sql_execution_filter_step2 = ExecutionFilter(
+            database_manager=database_manager
+        )
 
-### 3.6 **问题优化器（QuestionRefiner）**
-**功能**：
-* 标准化问题表述
-* 拆分复合问句
-* 统一提问句式（What/How开头）
+        self.text2sql_question_generator_step3 = QuestionGeneration(
+            llm_serving=api_llm_serving,
+            embedding_api_llm_serving=embedding_api_llm_serving,
+            database_manager=database_manager,
+            question_candidates_num=5
+        )
 
-**输入**：包含额外知识的数据
-**输出**：优化后的问题数据
+        self.text2sql_prompt_generator_step4 = PromptGenerator(
+            database_manager=database_manager,
+            prompt_template=prompt_template,
+            schema_config=schema_config
+        )
 
-### 3.7 **提示词生成器（PromptGeneration）**
-**功能**：
-* 构建用于SFT训练的问题
-* 生成长链推理过程的高质量回答
-* 生成用于RL训练的问题
+        self.sql_cot_generator_step5 = CoTGenerator(
+            llm_serving=cot_generation_api_llm_serving,
+            database_manager=database_manager,
+            schema_config=schema_config,
+            max_retries=3,
+            enable_retry=True
+        )
 
-**输入**：优化后的问题数据
-**输出**：训练用的问答数据
+        self.sql_component_classifier_step6 = ComponentClassifier(
+            difficulty_config=component_difficulty_config
+        )
 
-### 3.8 **执行难度分类器（Text2SQLDifficultyClassifier）**
-**功能**：
-* 基于执行通过率划分生成难度
-* 支持多模型测试
-* 难度等级：easy/medium/hard/extra
+        self.sql_execution_classifier_step7 = ExecutionClassifier(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            difficulty_config=execution_difficulty_config,
+            num_generations=5
+        )
+        
+        
+    def forward(self):
 
-**输入**：生成的问答数据
-**输出**：带有执行难度标签的最终数据
+        sql_key = "SQL"
+        db_id_key = "db_id"
+        question_key = "question"
 
-## 4. **输出数据**
+        self.sql_generator_step1.run(
+            storage=self.storage.step(),
+            output_sql_key=sql_key,
+            output_db_id_key=db_id_key
+        )
 
-最终输出数据包含以下字段：
-* **evidence**：推理过程中提取的关键证据
-* **selected_schema**：从SQL中提取的数据库schema信息
-* **raw_schema**：原始完整的数据库schema
-* **ddl**：数据库表结构定义语句
-* **whole_format_schema**：完整格式化的schema说明
-* **selected_format_schema**：筛选后格式化的schema说明
-* **refined_question**：优化后的自然语言问题
-* **rl_prompt**：最终生成的提示词模板
-* **sft_output**：监督式微调模型的原始输出
-* **sql_component_difficulty**：SQL组件复杂度评估
-* **sql_execution_difficulty**：SQL执行复杂度评估
+        self.sql_execution_filter_step2.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
 
-示例输出：
-```json
-{
-  
-}
-```
+        self.text2sql_question_generator_step3.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            output_question_key=question_key
+        )
 
-## 5. 运行方式
+        self.text2sql_prompt_generator_step4.run(
+            storage=self.storage.step(),
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_prompt_key="prompt"
+        )
 
-该流水线通过简单的Python命令执行：
+        self.sql_cot_generator_step5.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_cot_key="cot_reasoning"
+        )
 
-```bash
-python test/test_text2sql.py
+        self.sql_component_classifier_step6.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            output_difficulty_key="sql_component_difficulty"
+        )
+
+        self.sql_execution_classifier_step7.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            input_prompt_key="prompt",
+            output_difficulty_key="sql_execution_difficulty"
+        )
+
+if __name__ == "__main__":
+    model = Text2SQLPipeline()
+    model.forward()
 ```
