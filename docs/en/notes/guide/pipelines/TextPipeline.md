@@ -62,7 +62,8 @@ python text_sft_filter.py # Simplified SFT data filtering pipeline using length 
 
 ```bash
 cd api_pipelines
-python text_sft_filter.py # Uses Alpagasus quality scoring for SFT filtering
+python text_sft_synthesis_pipeline.py # Synthesize SFT data from scratch
+python text_conversation_synthesis_pipeline.py # Synthesize multi-turn dialogue from scratch
 ```
 
 ---

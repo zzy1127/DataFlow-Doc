@@ -64,7 +64,8 @@ python text_sft_filter.py # 简易版sft数据过滤流水线，长度过滤
 
 ```bash
 cd api_pipelines
-python text_sft_filter.py # 使用Alpagasus质量得分过滤指令
+python text_sft_synthesis_pipeline.py # 从0开始合成SFT数据
+python text_conversation_synthesis_pipeline.py # 从0开始合成多轮对话数据
 ```
 
 ---
