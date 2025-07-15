@@ -19,7 +19,7 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
   <tbody>
     <tr>
       <td class="tg-0pky">数据改写器</td>
-      <td class="tg-0pky">15</td>
+      <td class="tg-0pky">16</td>
       <td class="tg-0pky">通过数据处理、数据增强等方式改善数据点内容（不改变总数量）</td>
     </tr>
     <tr>
@@ -47,6 +47,12 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td class="tg-0pky">CondorRefiner</td>
+      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">利用大模型API生成对SFT回复的评价并改写，提升QA对质量</td>
+      <td class="tg-0pky"><a href="https://arxiv.org/pdf/2501.12273">paper</a></td>
+    </tr>
     <tr>
       <td class="tg-0pky">LowercaseRefiner</td>
       <td class="tg-0pky">NLP</td>

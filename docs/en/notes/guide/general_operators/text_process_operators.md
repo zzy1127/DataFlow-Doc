@@ -22,7 +22,7 @@ DataFlow currently supports text data processing at the data point level, catego
   <tbody>
     <tr>
       <td class="tg-0pky">Refiners</td>
-      <td class="tg-0pky">15</td>
+      <td class="tg-0pky">16</td>
       <td class="tg-0pky">Improves the content of data points through processing and augmentation without altering the total count.</td>
     </tr>
     <tr>
@@ -50,6 +50,12 @@ DataFlow currently supports text data processing at the data point level, catego
     </tr>
   </thead>
   <tbody>
+    <tr>
+        <td class="tg-0pky">CondorRefiner</td>
+        <td class="tg-0pky">SFT</td>
+        <td class="tg-0pky">Generate evaluations and rewrites of SFT responses using LLM APIs to improve QA quality</td>
+        <td class="tg-0pky"><a href="https://arxiv.org/pdf/2501.12273">paper</a></td>
+    </tr>
     <tr>
       <td class="tg-0pky">LowercaseRefiner</td>
       <td class="tg-0pky">NLP</td>
