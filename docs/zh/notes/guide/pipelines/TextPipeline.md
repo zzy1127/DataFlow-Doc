@@ -337,7 +337,7 @@ self.instag_filter_step4 = InstagFilter(
 
 在**流水线1**和**流水线3**的基础上添加如下算子：
 
-1. **SFT数据合成 (SupervisedFinetuneGenerator)**  
+1. **SFT数据合成 (SFTGeneratorSeed)**  
 - 使用llm根据种子文档合成SFT格式数据
 - prompt见`dataflow/prompts/general_text.py`，可更改
 ```python
@@ -347,7 +347,7 @@ self.llm_serving = LocalModelLLMServing(
             max_tokens=8192,
             model_source="local"
         )
-self.sft_generator = SupervisedFinetuneGenerator(
+self.sft_generator = SFTGeneratorSeed(
             llm_serving=self.llm_serving
         )
 ```
