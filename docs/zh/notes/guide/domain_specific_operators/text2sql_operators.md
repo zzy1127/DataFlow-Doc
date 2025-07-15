@@ -120,31 +120,77 @@ Text-to-SQL算子是专门用于Text-to-SQL问题数据处理和质量提升的�
 
 ## 算子接口调用说明
 
-特别地，对于指定存储路径等或是调用模型的算子，我们提供了封装后的**模型接口**以及**存储对象接口**，可以通过以下方式为算子进行模型API参数预定义：
+特别地，对于指定存储路径等或是调用模型的算子，我们提供了封装后的**模型接口**、**存储对象接口**和**数据库管理接口**，可以通过这些接口，对所需要使用的配置进行预定义。
+
+### 模型接口配置
+
+可以通过以下方式为算子进行模型API参数预定义，包括生成式模型和嵌入模型：
 
 ```python
 from dataflow.llmserving import APILLMServing_request
 
 api_llm_serving = APILLMServing_request(
-                api_url="your_api_url",
-                model_name="model_name",
-                max_workers=5
-        )
+    api_url="your_api_url",        # API服务地址
+    model_name="model_name",       # 模型名称
+    max_workers=5                  # 最大并发数
+)
 ```
+
+### 存储接口配置  
+
 可以通过以下方式为算子进行存储参数预定义：
 
 ```python
 from dataflow.utils.storage import FileStorage
 
-self.storage = FileStorage(
-            first_entry_file_name="your_file_path",
-            cache_path="./cache",
-            file_name_prefix="dataflow_cache_step",
-            cache_type="jsonl", # jsonl, json, ...
-        )
+storage = FileStorage(
+    first_entry_file_name="your_file_path",           # 初始文件路径
+    cache_path="./cache",                             # 缓存目录
+    file_name_prefix="dataflow_cache_step",           # 文件名前缀
+    cache_type="jsonl",                               # 缓存文件类型
+)
 ```
 
-后文使用的`api_llm_serving`以及`self.storage`即为此处已定义的接口对象，完整调用示例可参考`test/test_text2sql.py`。
+### 数据库管理接口配置
+
+由于需要使用数据库Schema信息，可以通过以下的方式对数据库管理进行预定义，在算子中，通过与数据库管理器进行交互，实现对数据库信息的读取和管理：
+
+```python
+from dataflow.utils.text2sql.database_manager import DatabaseManager
+
+database_manager = DatabaseManager(
+    db_type="your_db_type", # 目前支持 SQLite 和 MySQL
+        config={
+            "your_db_config_key": "your_db_config_value"
+        }    
+)
+```
+
+需要注意的是，对于 SQLite 和 MySQL 数据库，分别需要按照下面的方式来进行配置：
+
+```python
+# SQLite 完整示例
+database_manager = DatabaseManager(
+    db_type="sqlite",
+    config={
+        "root_path": "/path/to/your/database/folder"  # 包含SQLite文件的目录路径
+    }
+)
+
+# MySQL 完整示例
+database_manager = DatabaseManager(
+    db_type="mysql",
+    config={
+        "host": "localhost",           # 数据库主机地址
+        "user": "root",               # 用户名
+        "password": "your_password",   # 密码
+        "database": "your_database_name",  # 数据库名
+        "port": 3306                  # 端口号（可选，默认3306）
+    }
+)
+```
+
+后文使用的`api_llm_serving`、`self.storage`和`database_manager`即为此处已定义的接口对象，完整调用示例可参考`test/test_text2sql.py`。
 
 对于传参，算子对象的构造函数主要传递与算子配置相关的信息，配置后可以一配置多调用；而`X.run()`函数传递与IO相关的`key`信息，详细可见后文算子说明示例。
 
@@ -152,7 +198,7 @@ self.storage = FileStorage(
 
 ### 数据生成算子
 
-#### 1. SQLGenerator🚀
+#### 1. SQLGenerator
 
 **功能描述：** 基于数据库Schema生成多样化的SQL语句
 - 生成覆盖各种SQL语法、难度的查询语句
@@ -191,89 +237,10 @@ sql_generator.run(
 )
 ```
 
-#### 2. ExecutionFilter✨
+#### 2. SQLVariationGenerator🚀
 
-**功能描述：** 过滤无法正常执行的SQL语句
-- 验证SQL语法正确性
-- 检查SQL在目标数据库上的可执行性
-- 自动剔除执行异常的语句
-- 提供详细的错误统计信息
-
-**输入参数：**
-
-- `__init__()`
-  - `database_manager`: 数据库管理器，用于SQL执行验证
-
-- `run()`
-  - `input_sql_key`: SQL语句字段名，默认"SQL"
-  - `input_db_id_key`: 数据库ID字段名，默认"db_id"
-
-**主要特性：**
-
-- 高效的批量SQL执行验证
-- 支持多种数据库引擎
-- 自动错误捕获和分类
-- 保留执行成功的高质量数据
-
-**使用示例：**
-
-```python
-execution_filter = ExecutionFilter(
-    database_manager=database_manager
-)
-execution_filter.run(
-    storage=self.storage.step(),
-    input_sql_key="SQL",
-    input_db_id_key="db_id"
-)
-```
-
-#### 3. ConsistencyFilter✨
-
-**功能描述：** 验证SQL与问题描述的语义一致性
-- 使用LLM判断SQL执行结果是否回答了问题
-- 检查问题与SQL逻辑的匹配度
-- 过滤语义不一致的数据对
-- 提升数据集的质量和可靠性
-
-**输入参数：**
-
-- `__init__()`
-  - `llm_serving`: LLM服务接口，用于一致性判断
-  - `database_manager`: 数据库管理器，用于SQL执行
-
-- `run()`
-  - `input_sql_key`: SQL语句字段名，默认"SQL"
-  - `input_db_id_key`: 数据库ID字段名，默认"db_id"
-  - `input_question_key`: 问题字段名，默认"question"
-
-**主要特性：**
-
-- 智能语义一致性检查
-- 结合SQL执行结果和问题语义
-- 自动过滤不匹配的数据对
-- 支持复杂查询的一致性验证
-
-**使用示例：**
-
-```python
-consistency_filter = ConsistencyFilter(
-    llm_serving=api_llm_serving,
-    database_manager=database_manager
-)
-consistency_filter.run(
-    storage=self.storage.step(),
-    input_sql_key="SQL",
-    input_db_id_key="db_id",
-    input_question_key="question"
-)
-```
-
-### 4. SQLVariationGenerator🚀
-
-**功能描述：** 生成功能等价的SQL语句变体
-- 基于原始SQL生成多种等价表达
-- 保持查询结果一致性的前提下增加语法多样性
+**功能描述：** 基于SQL语句和数据库Schema生成SQL语句变体
+- 增加语法多样性
 - 支持别名替换、子查询转换、JOIN重写等
 - 有效扩充训练数据的多样性
 
@@ -290,9 +257,8 @@ consistency_filter.run(
 
 **主要特性：**
 
-- 智能SQL重写和变体生成
-- 保证功能等价性的前提下增加多样性
-- 自动验证变体的正确性
+- 智能SQL变体生成
+- 覆盖多种不同变体方向，确保SQL语句的多样性
 - 支持复杂查询的多种表达方式
 
 **使用示例：**
@@ -310,7 +276,7 @@ sql_variation_generator.run(
 )
 ```
 
-### 5. QuestionGeneration🚀
+#### 3. QuestionGeneration
 
 **功能描述：** 基于SQL语句生成对应的自然语言问题
 - 分析SQL语义生成合理的自然语言问题
@@ -355,7 +321,7 @@ question_generation.run(
 )
 ```
 
-### 6. PromptGenerator
+#### 4. PromptGenerator✨
 
 **功能描述：** 构建包含Schema和问题的训练提示词
 - 格式化数据库Schema信息
@@ -405,7 +371,7 @@ prompt_generator.run(
 )
 ```
 
-### 7. CoTGenerator🚀
+#### 5. CoTGenerator
 
 **功能描述：** 生成SQL推理的逐步思维链过程
 - 基于问题和SQL生成详细的推理步骤
@@ -457,7 +423,9 @@ cot_generator.run(
 )
 ```
 
-### 8. ComponentClassifier
+### 数据评估算子
+
+#### 1. ComponentClassifier
 
 **功能描述：** 基于SQL语法复杂度进行难度分级
 - 分析SQL语句的语法组件复杂度
@@ -468,7 +436,7 @@ cot_generator.run(
 **输入参数：**
 
 - `__init__()`
-  - `difficulty_config`: 难度配置，包含thresholds和labels字段
+  - `difficulty_config`: 难度配置，包含thresholds和labels字段，支持自定义
 
 - `run()`
   - `input_sql_key`: SQL语句字段名，默认"SQL"
@@ -497,7 +465,7 @@ component_classifier.run(
 )
 ```
 
-### 9. ExecutionClassifier🚀
+#### 2. ExecutionClassifier🚀
 
 **功能描述：** 基于模型执行成功率进行难度分级
 - 使用LLM多次尝试生成SQL来评估难度
@@ -546,3 +514,83 @@ execution_classifier.run(
     output_difficulty_key="sql_execution_difficulty"
 )
 ```
+
+### 数据过滤算子
+
+#### 1. ExecutionFilter✨
+
+**功能描述：** 验证SQL语句的可执行性和语法正确性
+- 在真实数据库环境中执行SQL语句
+- 检测语法错误、运行时错误和逻辑错误
+- 过滤无法正常执行的SQL语句
+- 确保数据集中SQL的有效性和可用性
+
+**输入参数：**
+
+- `__init__()`
+  - `database_manager`: 数据库管理器，用于SQL执行和验证
+
+- `run()`
+  - `input_sql_key`: SQL语句字段名，默认"SQL"
+  - `input_db_id_key`: 数据库ID字段名，默认"db_id"
+
+**主要特性：**
+
+- 实时SQL执行验证
+- 自动过滤执行失败的SQL语句
+- 高效的批量处理能力
+
+**使用示例：**
+
+```python
+execution_filter = ExecutionFilter(
+    database_manager=database_manager
+)
+execution_filter.run(
+    storage=self.storage.step(),
+    input_sql_key="SQL",
+    input_db_id_key="db_id"
+)
+```
+
+#### 2. ConsistencyFilter✨
+
+**功能描述：** 验证SQL与问题描述的语义一致性
+- 使用LLM判断SQL执行结果是否回答了问题
+- 检查问题与SQL逻辑的匹配度
+- 过滤语义不一致的数据对
+- 提升数据集的质量和可靠性
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`: LLM服务接口，用于一致性判断
+  - `database_manager`: 数据库管理器，用于SQL执行
+
+- `run()`
+  - `input_sql_key`: SQL语句字段名，默认"SQL"
+  - `input_db_id_key`: 数据库ID字段名，默认"db_id"
+  - `input_question_key`: 问题字段名，默认"question"
+
+**主要特性：**
+
+- 智能语义一致性检查
+- 结合SQL执行结果和问题语义
+- 自动过滤不匹配的数据对
+- 支持复杂查询的一致性验证
+
+**使用示例：**
+
+```python
+consistency_filter = ConsistencyFilter(
+    llm_serving=api_llm_serving,
+    database_manager=database_manager
+)
+consistency_filter.run(
+    storage=self.storage.step(),
+    input_sql_key="SQL",
+    input_db_id_key="db_id",
+    input_question_key="question"
+)
+```
+
