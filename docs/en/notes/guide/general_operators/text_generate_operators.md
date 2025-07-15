@@ -5,7 +5,7 @@ permalink: /en/guide/text_generate_operators/
 ---
 
 # Text Data Generation
-Currently, Dataflow integrates four fundamental text data generators, covering pre-training document data, SFT-format data, and multi-turn dialogues.
+Currently, Dataflow integrates five text data generators, covering various formats such as pretraining document data, SFT-format data, and multi-turn dialogues.
 
 <table class="tg">
   <thead>
@@ -34,6 +34,12 @@ Currently, Dataflow integrates four fundamental text data generators, covering p
       <td class="tg-0pky">SFT</td>
       <td class="tg-0pky">Two-stage synthesis of SFT-format data from scratch based on preset knowledge tree labels (recommend increasing label variety if generating more than 5000 samples)</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/2501.12273">paper</a></td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">PromptedGenerator</td>
+      <td class="tg-0pky">-</td>
+      <td class="tg-0pky">Generate data based on user-defined prompts</td>
+      <td class="tg-0pky">-</td>
     </tr>
     <tr>
           <td class="tg-0pky">ConsistentChatGenerator</td>
