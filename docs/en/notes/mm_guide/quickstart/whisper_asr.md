@@ -1,6 +1,7 @@
 ---
-title: whisper_asr
+title: Use Whisper for Speech Transcription or Translation
 createTime: 2025/07/15 21:32:12
+icon: material-symbols-light:interpreter-mode
 permalink: /en/mm_guide/p55dq1rm/
 ---
 

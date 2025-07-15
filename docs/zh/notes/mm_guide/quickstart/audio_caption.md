@@ -1,6 +1,7 @@
 ---
-title: audio_caption
+title: 音频字幕生成
 createTime: 2025/07/15 21:33:01
+icon: material-symbols-light:autoplay
 permalink: /zh/mm_guide/2gjc47qb/
 ---
 

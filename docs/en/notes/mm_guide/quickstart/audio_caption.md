@@ -1,6 +1,7 @@
 ---
-title: audio_caption
+title: Audio Caption Generation
 createTime: 2025/07/15 21:31:49
+icon: material-symbols-light:autoplay
 permalink: /en/mm_guide/09q1xv7v/
 ---
 

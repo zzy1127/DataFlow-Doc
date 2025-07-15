@@ -1,6 +1,7 @@
 ---
-title: whisper_asr
+title: 使用Whisper进行语音转录或翻译
 createTime: 2025/07/15 21:32:36
+icon: material-symbols-light:interpreter-mode
 permalink: /zh/mm_guide/dl0jhc6u/
 ---
 
@@ -52,7 +53,7 @@ generator = WhisperTranscriptionGenerator(self.llm_serving)
 ```
 
 ## 第七步: 执行算子
-语音转录
+语音转录文字
 ```python
 generator.run(
     storage=self.storage.step(), 
@@ -63,8 +64,7 @@ generator.run(
 )
 ```
 
-## 语音翻译
-将语音中的语言翻译为英文
+语音翻译, 将语音中的语言翻译为英文
 ```python
 generator.run(
     storage=self.storage.step(), 
