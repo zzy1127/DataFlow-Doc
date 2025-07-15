@@ -34,21 +34,60 @@ AgenticRAG 算子是一套专为 agentic RAG（检索增强生成）任务设计
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
+      <td class="tg-0pky">AtomicTaskGenerator✨</td>
+      <td class="tg-0pky">原子任务生成</td>
+      <td class="tg-0pky">为提供的文本内容生成合适的高质量问题与可验证答案</td>
+      <td class="tg-0pky">从https://github.com/OPPO-PersonalAI/TaskCraft提炼并改进</td>
+    </tr>
+    <tr>
       <td class="tg-0pky">QAGenerator✨</td>
       <td class="tg-0pky">问答生成</td>
       <td class="tg-0pky">使用大语言模型和生成的提示词，为给定文本内容生成问题和答案。</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
+      <td class="tg-0pky">WidthQAGenerator✨</td>
+      <td class="tg-0pky">问答广度扩展</td>
+      <td class="tg-0pky">结合多个问答对，扩展成新的高难度问答对。</td>
+      <td class="tg-0pky">从https://github.com/OPPO-PersonalAI/TaskCraft提炼并改进</td>
+    </tr>
+    <tr>
+      <td class="tg-0pky">DepthQAGenerator✨</td>
+      <td class="tg-0pky">问答深度扩展</td>
+      <td class="tg-0pky">将问答对扩展成新的高难度问答对。</td>
+      <td class="tg-0pky">从https://github.com/OPPO-PersonalAI/TaskCraft提炼并改进</td>
+    </tr>
+  </tbody>
+</table>
+
+## 数据评估算子
+
+数据评估算子负责评估与 RAG 相关的强化学习训练数据，包括问题、答案的质量评分。
+
+<table class="tg">
+  <thead>
+    <tr>
+      <th class="tg-0pky">名称</th>
+      <th class="tg-0pky">应用类型</th>
+      <th class="tg-0pky">描述</th>
+      <th class="tg-0pky">官方仓库或论文</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
       <td class="tg-0pky">QAScorer✨</td>
       <td class="tg-0pky">问答评分</td>
       <td class="tg-0pky">对问答对及其相关内容进行问题质量、答案一致性、答案可验证性和下游价值的评估。</td>
       <td class="tg-0pky">-</td>
     </tr>
+        <tr>
+      <td class="tg-0pky">F1Scorer🚀</td>
+      <td class="tg-0pky">问答评分</td>
+      <td class="tg-0pky">对问答任务在有无黄金文档支持下的可验证性评估。</td>
+      <td class="tg-0pky">-</td>
+    </tr>
   </tbody>
 </table>
-
-
 
 ## 处理算子
 
@@ -137,7 +176,41 @@ result = prompt_generator.run(
         )
 ```
 
-#### 2. QAGenerator
+#### 2. AtomicTaskGenerator
+
+**函数描述：**  
+该算子用于为提供的文本内容生成合适的高质量问题与可验证答案。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：要使用的大语言模型接口对象（默认值：如上所述的预定义值）
+- `run()`
+  - `storage`：存储接口对象（默认值：如上所述的预定义值）
+  - `input_key`：输入文本内容字段名（默认值："prompts"）
+  - `output_question_key`：输出问题字段名（默认值："question"）
+  - `output_answer_key`：输出答案字段名（默认值："answer"）
+  - `output_refined_answer_key`：输出精炼答案字段名（默认值："refined_answer"）
+  - `output_optional_answer_key`：输出可替代精炼答案字段名（默认值："optional_answer"）
+  - `output_golden_doc_answer_key`：输出黄金文档回答字段名（默认值："golden_doc_answer"）
+
+**主要特性：**
+
+- 支持多种类型的文本内容
+- 能够生成合适的问题和答案对
+- 生成可验证答案和可替代答案
+
+**使用示例：**
+
+```python
+atomic_task_gen = AtomicTaskGenerator(llm_serving=api_llm_serving)
+result = atomic_task_gen.run(
+            storage = self.storage.step(),
+            input_key = "text",
+        )
+```
+
+#### 3. QAGenerator
 
 **函数描述：**  
 该算子用于为特定内容生成一对问题和答案。
@@ -171,10 +244,73 @@ result = qa_gen.run(
           )
 ```
 
-#### 3. QAScorer
+#### 4. WidthQAGenerator
 
 **函数描述：**  
-该算子用于为生成的问题和答案对打出多项评估分数。
+该算子用于结合两个问答，生成新的问题。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：要使用的大语言模型接口对象（默认值：如上所述的预定义值）
+- `run()`
+  - `storage`：存储接口对象（默认值：如上所述的预定义值）
+  - `input_question_key`：输入问题字段名（默认值："question"）
+  - `input_identifier_key`：输入标识符字段名（默认值："identifier"）
+  - `input_answer_key`：输入答案字段名（默认值："answer"）
+  - `output_question_key`：输出问题字段名（默认值："generated_width_task"）
+
+**主要特性：**
+
+- 结合两个问答生成更复杂的新问题。
+
+**使用示例：**
+
+```python
+width_qa_gen = WidthQAGenerator(llm_serving=api_llm_serving)
+result = width_qa_gen.run(
+            storage = self.storage.step(),
+            input_question_key = "question",
+            input_identifier_key= "identifier",
+            input_answer_key = "refined_answer"
+          )
+```
+
+#### 5. DepthQAGenerator
+
+**函数描述：**  
+该算子以已有问答生成更深度的问题。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：要使用的大语言模型接口对象（默认值：如上所述的预定义值）
+- `run()`
+  - `storage`：存储接口对象（默认值：如上所述的预定义值）
+  - `input_key`：输入字段名（默认值："question"）
+  - `output_key`：输出字段名（默认值："depth_question"）
+
+**主要特性：**
+
+- 以已有问答生成更深度的问题
+
+**使用示例：**
+
+```python
+depth_qa_gen = DepthjQAGenerator(llm_serving=api_llm_serving)
+result = depth_qa_gen.run(
+            storage = self.storage.step(),
+            input_key= "question",
+            output_key="depth_question"
+          )
+```
+
+### 数据评估算子
+
+#### 1. QAScorer
+
+**函数描述：**  
+该算子用于为问题和答案对打出多项评估分数。
 
 **输入参数：**
 
@@ -210,6 +346,37 @@ result = qa_scorer.run(
             output_answer_alignment_key="answer_alignment_grades",
             output_answer_alignment_feedback_key="answer_alignment_feedbacks",
             output_answer_verifiability_key="answer_verifiability_grades",
+          )
+```
+
+#### 2. F1Scorer
+
+**函数描述：**  
+该算子用于对问答任务在有无黄金文档支持下的可验证性评估。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：要使用的大语言模型接口对象（默认值：如上所述的预定义值）
+- `run()`
+  - `storage`：存储接口对象（默认值：如上所述的预定义值）
+  - `prediction_key`：输入预测字段名（默认值："refined_answer"）
+  - `ground_truth_key`：输入基准答案字段名（默认值："golden_doc_answer"）
+  - `output_key`：输出问答质量字段名（默认值："F1Score"）
+
+**主要特性：**
+
+- 生成在有无黄金文档支持下的可验证性评估，便于后续筛选
+
+**使用示例：**
+
+```python
+f1_scorer = F1Scorer(llm_serving=api_llm_serving)
+result = qa_scorer.run(
+            storage = self.storage.step(),
+            prediction_key="refined_answer",
+            ground_truth_key="golden_doc_answer",
+            output_key="F1Score",
           )
 ```
 
