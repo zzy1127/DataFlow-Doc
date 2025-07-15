@@ -1,21 +1,20 @@
 ---
-title: 文本到图片生成、图片编辑
-createTime: 2025/07/14 22.24.56
+title: Text‑to‑Image Generation and Image Editing
+createTime: 2025/07/14 22:24:56
 permalink: /zh/guide/aigc-image-gen/
 icon: basil:lightning-alt-outline
 ---
 
-# 快速开始
-为了让DataFlow可以支持图片生成功能，我们基于[diffuser](https://github.com/huggingface/diffusers)中最新的图片生成方法实现大规模的图像生成与编辑，并基于Qwen-VL模型
+# Quick Start
+To give **DataFlow** image‑generation capabilities, we implemented large‑scale image creation and editing on top of the latest methods in [diffusers](https://github.com/huggingface/diffusers) and the **Qwen‑VL** model.
 
-## 文本到图片生成
-### 第一步:安装dataflow环境
+## Text‑to‑Image Generation
+### Step 1 – Install the DataFlow environment
 ```shell
 pip install open-dataflow
 ```
 
-### 第二步:(如果选择本地模型进行图片生成)
-本地模型调用方式如下：
+### Step 2 – Use a local model for image generation
 ```python
 from dataflow.serving import LocalImageGenServing
 
@@ -27,13 +26,16 @@ self.serving = LocalImageGenServing(
 )
 ```
 
-### 第三步:准备用于生成图片的文本提示词数据
+### Step 3 – Prepare the text‑prompt data for generation
 ```jsonl
 {"conversations": [{"content": "a fox darting between snow-covered pines at dusk", "role": "user"}], "images": [""]}
 {"conversations": [{"content": "a kite surfer riding emerald waves under a cloudy sky", "role": "user"}], "images": [""]}
 ```
-提供上述格式的数据，并且将数据路径填入
+
+Specify the data path:
 ```python
+from dataflow.utils.storage import FileStorage
+
 self.storage = FileStorage(
     first_entry_file_name="your path",
     cache_path="./cache",
@@ -44,8 +46,7 @@ self.storage = FileStorage(
 )
 ```
 
-### 第四步:进行图片生成
-根据如下脚本可完成生图任务
+### Step 4 – Generate images
 ```python
 from dataflow.operators import Text2ImageGenerator
 
@@ -58,10 +59,10 @@ self.generator.run(
 )
 ```
 
-## 图片编辑
-该任务和文本到图片生成基本一致，需要对模型调用、数据准备以及算子调用进行一定的微调
+## Image Editing
+The workflow is almost identical to text‑to‑image generation; only minor tweaks are required.
 
-本地模型调用方式如下：
+### Call a local model
 ```python
 from dataflow.serving import LocalImageGenServing
 
@@ -75,13 +76,13 @@ self.serving = LocalImageGenServing(
 )
 ```
 
-数据准备调整如下：
+### Prepare the data
 ```jsonl
 {"conversations": [{"content": "Change the woman's clothes to a white dress.", "role": "user"}], "images": ["./dataflow/example/test_image_editing/images/image1.png"], "edited_images": [""]}
 {"conversations": [{"content": "Change the vase to red.", "role": "user"}], "images": ["./dataflow/example/test_image_editing/images/image2.png"], "edited_images": [""]}
 ```
 
-生成脚本调整如下：
+### Run the editing pipeline
 ```python
 from dataflow.operators import ImageEditor
 
@@ -91,24 +92,23 @@ self.generator.run(
     storage=self.storage.step(),
     input_key=["conversations", "images"],
     output_key="edited_images",
-    save_interval = save_interval
+    save_interval=save_interval
 )
 ```
 
+## Image Quality Assessment
+We use a multimodal large model to score and filter generated images.
 
-## 图片质量评估
-为了评估图片质量并进行筛选，我们采用多模态大模型来评估图片的质量
-
-数据准备格式为：
+### Data format
 ```jsonl
 {"conversations": [{"content": "four cups were filled with hot coffee", "role": "user"}], "images": ["./dataflow/example/test_text_to_image_eval/images/four cups were filled with hot coffee_001005.png"]}
 {"conversations": [{"content": "four balloons, one cup, four desks, two dogs and four microwaves", "role": "user"}], "images": ["./dataflow/example/test_text_to_image_eval/images/four balloons, one cup, four desks, two dogs and four microwaves_003032.png"]}
 ```
 
-具体测试脚如下：
+### Evaluation script
 ```python
 from dataflow.prompts.EvalImageGenerationPrompt import EvalImageGenerationPrompt
-from dataflow.serving import LocalModelLLMServing_vllm 
+from dataflow.serving import LocalModelLLMServing_vllm
 from qwen_vl_utils import process_vision_info
 from dataflow.operators.eval.image.image_evaluator import EvalImageGenerationGenerator
 from dataflow.utils.storage import FileStorage
