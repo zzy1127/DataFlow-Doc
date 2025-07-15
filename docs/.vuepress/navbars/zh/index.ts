@@ -80,6 +80,12 @@ export const zhNavbar = defineNavbarConfig([
                         activeMatch: '^/guide/'
                     },
                     {
+                        text: "Agentic RAG数据合成流水线2",
+                        link: "/zh/notes/guide/pipelines/AgenticRAGPipeline2.md",
+                        icon: "solar:palette-round-linear",
+                        activeMatch: '^/guide/'
+                    },
+                    {
                         text: "RARE数据合成流水线",
                         link: "/zh/notes/guide/pipelines/RAREPipeline.md",
                         icon: "game-icons:great-pyramid",

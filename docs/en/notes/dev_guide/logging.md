@@ -53,19 +53,16 @@ Principles for assigning log levels:
 2. **INFO**: Used to let users know the current execution status, such as:
 
     ```python
-    def pipeline_step(yaml_path, step_name, step_type):
-        import logging
+    def pipeline_step(yaml_path, step_name):
         import yaml
-        logging.info(f"Loading yaml {yaml_path} ......")
+        logger = get_logger()
+        logger.info(f"Loading yaml {yaml_path} ......")
         with open(yaml_path, "r") as f:
             config = yaml.safe_load(f)
         config = merge_yaml(config)
-        logging.info(f"Load yaml success, config: {config}")
-        if step_type == "process":
-            algorithm = get_processor(step_name, config)
-        elif step_type == "generator":
-            algorithm = get_generator(step_name, config)
-        logging.info("Start running ...")
+        logger.info(f"Load yaml success, config: {config}")
+        algorithm = get_operator(step_name, config)
+        logger.info("Start running ...")
         algorithm.run()
     ```
 
@@ -73,4 +70,4 @@ Principles for assigning log levels:
 
 4. **ERROR**: Errors that occur during execution; used to print error messages.
 
-For logging inside operators, refer to `DataFlow/dataflow/generator/algorithms/TreeSitterParser.py`.
+For logging inside operators, refer to `DataFlow/dataflow/operators/generate/Reasoning/question_generator.py`.
