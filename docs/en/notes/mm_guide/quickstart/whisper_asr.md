@@ -64,8 +64,7 @@ generator.run(
 )
 ```
 
-Speech Translation
-Translate the language in the speech into English.
+Speech Translation, translate the language in the speech into English.
 ```python
 generator.run(
     storage=self.storage.step(), 
