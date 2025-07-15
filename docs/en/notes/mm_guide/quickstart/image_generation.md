@@ -6,7 +6,7 @@ icon: basil:lightning-alt-outline
 ---
 
 # Quick Start
-To give **DataFlow** image‑generation capabilities, we implemented large‑scale image creation and editing on top of the latest methods in [diffusers](https://github.com/huggingface/diffusers) and the **Qwen‑VL** model.
+To enable **DataFlow** to support image‑generation capabilities, we have implemented large‑scale image creation and editing using the latest diffusion‑based methods available in [diffusers](https://github.com/huggingface/diffusers). We then evaluate the quality of the generated images with the [Qwen‑VL](https://huggingface.co/Qwen/Qwen2.5-VL-72B-Instruct) model. A detailed explanation follows.
 
 ## Text‑to‑Image Generation
 ### Step 1 – Install the DataFlow environment

@@ -6,7 +6,7 @@ icon: basil:lightning-alt-outline
 ---
 
 # 快速开始
-为了让DataFlow可以支持图片生成功能，我们基于[diffuser](https://github.com/huggingface/diffusers)中最新的图片生成方法实现大规模的图像生成与编辑，并基于Qwen-VL模型
+为了让DataFlow可以支持图片生成功能，我们基于[diffuser](https://github.com/huggingface/diffusers)中最新的图片生成方法实现大规模的图像生成与编辑，并基于[Qwen-VL](https://huggingface.co/Qwen/Qwen2.5-VL-72B-Instruct)模型对生成图片质量进行评估，下面进行具体介绍。
 
 ## 文本到图片生成
 ### 第一步:安装dataflow环境
