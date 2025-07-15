@@ -6,10 +6,31 @@ permalink: /zh/dev_guide/storage_info/
 
 # Storage 模块
 
-DataFlow实现了向量数据库的相关接口，下面以MyScaleStorage为例进行介绍。
+Dataflow 的存储系统以 DataFlowStorage 抽象基类为核心，将存储层与算法、数据流控制等逻辑完全解耦。用户只需继承 DataFlowStorage 并实现 read、write 接口，就能无缝接入自定义文件系统、对象存储或数据库等后端，无需改动现有算子和流程代码。
+
+```python
+class DataFlowStorage(ABC):
+    """
+    Abstract base class for data storage.
+    """
+    @abstractmethod
+    def read(self, output_type) -> Any:
+        """
+        Read data from file.
+        type: type that you want to read to, such as "datatrame", List[dict], etc.
+        """
+        pass
+    
+    @abstractmethod
+    def write(self, data: Any) -> Any:
+        pass
+```
+
+我们在DataFlow系统中内置了 FileStorage 默认实现，支持本地文件系统下常见的 JSON/JSONL、CSV、Parquet、Pickle 等格式读写，帮助用户快速上手并满足大多数场景需求。
+
+<!-- DataFlow实现了向量数据库的相关接口，下面以MyScaleStorage为例进行介绍。
 
 DataFlow数据表的结构如下
-<!-- 
 | 字段名              | 类型                | 描述                                                         |
 |---------------------|---------------------|--------------------------------------------------------------|
 | id                  | uuid                 | Primary Key                                                  |
@@ -27,7 +48,7 @@ DataFlow数据表的结构如下
 | eval_score_{$i}     | float / BOOL / int  | 第 i 个算法添加的内容                                       |
 | eval_algorithm_{$i} | TEXT                | 描述第 i 个算法是什么                                       |
 | eval_info_{$i}      | TEXT                | 报错                                                         | -->
-
+<!-- 
 | 字段名              | 类型                | 描述                                                         |
 |---------------------|---------------------|--------------------------------------------------------------|
 | id                  | uuid                | Primary Key                                                  |
@@ -115,4 +136,5 @@ DataFlow数据表的结构如下
     * !``__some_keys__``: 如果data其他非eval字段需要修改，可以传入可变参数中。
         + 注意：此处的syn参数要改成Syntheic，否则会报错。
 
-使用该方法将对数据库中原数据所在的行的data列进行修改。
+使用该方法将对数据库中原数据所在的行的data列进行修改。 
+-->

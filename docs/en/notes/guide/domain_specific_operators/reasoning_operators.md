@@ -8,7 +8,7 @@ permalink: /en/guide/Reasoning_operators/
 
 ## Overview
 
-Strong reasoning operators are a specialized collection of operators designed for mathematical reasoning and problem-solving tasks. They are primarily divided into two categories: **Data Generation Operators (Generators)** and **Processing Operators (Processors)**. These operators can handle complex mathematical reasoning tasks, including answer generation, verification, filtering, and formatting, while supporting various mathematical representation formats.
+Strong reasoning operators are a specialized collection of operators designed for mathematical reasoning and problem-solving tasks. They are primarily divided into three categories: **Generators**,**Filters** and **Refiners**. These operators can handle complex mathematical reasoning tasks, including answer generation, verification, filtering, and formatting, while supporting various mathematical representation formats.
 
 The variety of open-source operators is quite limited. To achieve better data processing quality and fill the gaps in open-source data synthesis and processing methods, we have carefully designed and **self-developed** a new operator set. The marking meanings are as follows:
 

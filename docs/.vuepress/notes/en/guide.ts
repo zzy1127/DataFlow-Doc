@@ -22,7 +22,17 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
-                'quickstart'
+                'quickstart',
+                'translation',
+            ],
+        },
+        {
+            text: 'Dataflow Agent',
+            collapsed: false,
+            icon: 'ri:robot-2-line',
+            prefix: 'agent',
+            items: [
+                'DataFlow-AgentPipelineOrchestration'
             ],
         },
         {
@@ -35,6 +45,7 @@ export const Guide: ThemeNote = defineNoteConfig({
                 "ReasoningPipeline",
                 "Text2SqlPipeline",
                 "AgenticRAGPipeline",
+                "AgenticRAGPipeline2",
                 "RAREPipeline",
                 "KnowledgeBaseCleaningPipeline",
             ]

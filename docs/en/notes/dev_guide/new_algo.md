@@ -4,20 +4,14 @@ createTime: 2025/06/12 12:00:00
 permalink: /en/dev_guide/new_algo/
 ---
 
-## New Algorithm
+## New Operator
 
-DataFlow operators are implemented in two forms:
+DataFlow operators share a unified base class `OperatorABC`, located under `dataflow/operators/generate`, `dataflow/operators/filter` or `dataflow/operators/refine`. These operators must implement the fixed method `run()` required by the base class.
 
-1. Operators with a unified base class, located under `dataflow/Eval` or `dataflow/process`. These operators are required to implement specific methods defined by the base class, such as `__init__()`, `evaluate_batch()`, `filter_func()`, etc.
+If you want to add a new operator to DataFlow, after implementing the operator and its constituent methods, you must perform the following steps:
 
-2. Operators without a unified base class, located in the `dataflow/generator/algorithm` directory. These operators must implement the `__init__` and `run()` methods.
+1. In the operator’s directory, add a file that contains the operator class.  
+2. In that file, import the `Registry` instance and decorate the class with the `register()` decorator.  
+3. In the `__init__.py` file of the operator’s directory, add the operator’s relative path to the `_import_structure` variable.
 
-To add a new operator to DataFlow, follow these steps after implementing the operator and its required methods:
-
-1. Add a new file containing the operator class under the appropriate directory.
-
-2. Import the `Registry` instance in that file and decorate the operator class using the `register()` method.
-
-3. In the `__init__.py` file of the operator's directory, add the relative path to the operator file in the `_import_structure` variable.
-
-If you need to add a new operator directory, you must also modify `dataflow/utils/registry.py` accordingly.
+If it is necessary to add a new operator directory, you must also make the corresponding modifications in `dataflow/utils/registry.py`.
