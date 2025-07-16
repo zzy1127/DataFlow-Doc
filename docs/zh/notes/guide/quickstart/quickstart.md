@@ -82,9 +82,9 @@ llm_serving_deepseek = APILLMServing_request(
 )
 ```
 
-当修改好Python脚本后，即可运行脚本，体验DataFlow舒适的数据治理功能：
+当修改好Python脚本后，即可运行脚本，体验DataFlow高效的数据治理功能（如下为`test`目录下的一个pipeline运行命令）：
 ```shell
-python reasoning_pipeline.py
+python reasoning_pipeline_general.py
 ```
 
 

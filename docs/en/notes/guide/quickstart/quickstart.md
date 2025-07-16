@@ -82,7 +82,7 @@ llm_serving_deepseek = APILLMServing_request(
 ```
 
 
-Once you have modified the Python script, you can run it to experience DataFlow's comfortable data governance capabilities:
+After modifying the Python script, you can run it to experience DataFlow’s efficient data governance capabilities (an example pipeline execution command under the `test` directory is shown below):
 ```shell
-python reasoning_pipeline.py
+python reasoning_pipeline_general.py
 ```
