@@ -22,7 +22,9 @@ export const MMGuide: ThemeNote = defineNoteConfig({
             prefix: 'quickstart',
             items: [
                 'install',
-                'quickstart'
+                'quickstart',
+                'audio_caption',
+                'whisper_asr'
             ],
         },
     ]
