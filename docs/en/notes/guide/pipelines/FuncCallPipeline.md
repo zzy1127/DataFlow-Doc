@@ -35,7 +35,7 @@ This input data can be stored in a specified file (e.g., `json`, `jsonl`) and ma
 
 ```python
 self.storage = FileStorage(
-    first_entry_file_name="./dataflow/example/FuncCallPipeline/chat_data.jsonl",
+    first_entry_file_name="../example_data/FuncCallPipeline/chat_data.jsonl",
     cache_path="./cache",
     file_name_prefix="dataflow_cache_step",
     cache_type="jsonl",
@@ -171,10 +171,13 @@ multi_turn_conversations_generator = MultiTurnConversationGenerator(
 
 ## 3. How to Run
 
-This pipeline can be executed with a simple Python command:
+You can create a new working directory outside the `DataFlow` project path, for example, `workspace`, and run `dataflow init` inside it. This command will copy the pipelines and example data into your working directory. Then, navigate to the `api_pipelines/` path to execute the pipelines.
 
 ```bash
-python test/test_func_call.py
+cd workspace
+dataflow init
+cd api_pipelines/
+python func_call_synthesis.py 
 ```
 
 ## 4. Pipeline Example
@@ -199,7 +202,7 @@ class FuncCallPipeline:
     def __init__(self):
 
         self.storage = FileStorage(
-            first_entry_file_name="./dataflow/example/FuncCallPipeline/chat_data.jsonl",
+            first_entry_file_name="../example_data/FuncCallPipeline/chat_data.jsonl",
             cache_path="./cache",
             file_name_prefix="dataflow_cache_step",
             cache_type="jsonl",
