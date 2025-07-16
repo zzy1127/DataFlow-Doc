@@ -1,7 +1,7 @@
 ---
 title: Case 2. Synthesizing SFT Data from Scratch
 createTime: 2025/7/15 14:19:16
-permalink: /en/guide/sft_synthesis
+permalink: /en/guide/sft_synthesis/
 icon: basil:lightning-alt-outline
 ---
 

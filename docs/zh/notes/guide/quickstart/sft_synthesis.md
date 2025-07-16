@@ -1,7 +1,7 @@
 ---
 title: 案例2. 从0开始合成SFT数据
 createTime: 2025/7/15 14:19:16
-permalink: /zh/guide/sft_synthesis
+permalink: /zh/guide/sft_synthesis/
 icon: basil:lightning-alt-outline
 ---
 
