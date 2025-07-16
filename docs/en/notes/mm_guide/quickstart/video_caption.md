@@ -9,7 +9,7 @@ icon: material-symbols-light:interpreter-mode
 
 ## Step 1: Prepare the DataFlow environment
 ```bash
-conda create -n myvenv python=3.12
+conda create -n dataflow-mm python=3.12
 pip install open-dataflow
 pip install open-dataflow[vllm]
 ```
@@ -25,7 +25,7 @@ Call the Local Model Service:
 
 ```python
 llm_serving = LocalModelLLMServing_vllm(
-    hf_model_name_or_path="/path/to/qwen2.5-vl", # set to your own model path
+    hf_model_name_or_path="Qwen/Qwen2.5-VL-7B-Instruct", # set to your own model path
     vllm_tensor_parallel_size=2,
     vllm_max_tokens=None,
     vllm_gpu_memory_utilization=0.7
