@@ -37,7 +37,7 @@ export const Guide: ThemeNote = defineNoteConfig({
             ],
         },
         {
-            text: "Pipelines",
+            text: "Guide for Pipelines",
             collapsed: false,
             icon: 'carbon:flow',
             prefix: 'pipelines',

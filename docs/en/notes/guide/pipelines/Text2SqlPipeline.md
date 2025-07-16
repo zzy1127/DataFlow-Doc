@@ -10,280 +10,522 @@ permalink: /en/guide/text2sqlpipeline/
 
 ## 1. Overview
 
-The core objective of the **Text-to-SQL Data Synthesis Pipeline** is to generate high-quality Q&A data containing training prompts and chain-of-thought reasoning processes by cleaning and augmenting existing Text-to-SQL data. The pipeline can complete the entire process from raw data to final training data with one click.
+The **Text-to-SQL Data Synthesis Pipeline** is designed to clean and enhance existing Text-to-SQL datasets while generating high-quality Q&A samples containing training prompts and chain-of-thought reasoning. This end-to-end pipeline supports two operational modes:
 
-We support the following data requirements:
-* Must contain three components: database ID, natural language question, and standard SQL answer
-* Supports both `json` and `jsonl` input formats
+### Supported Use Cases:
+* **Data Refinement Mode**:
+  - Filters, expands, and enhances existing training data
+  - Input Requirements: Must include database ID, natural language question, and standard SQL answer
+* **Data Synthesis Mode**:
+  - Generates training data directly from databases
+  - Feature: Requires no existing samples (zero-shot initialization)
 
-The main workflow of the pipeline includes:
-1. **Data Filtering**: Screening invalid SQL and data with inconsistent question descriptions
-2. **Difficulty Classification**: Classifying difficulty levels based on SQL syntax complexity and execution pass rate
-3. **Schema Processing**: Extracting and formatting database schema information
-4. **Knowledge Generation**: Constructing additional knowledge required for mapping natural language questions to SQL queries
-5. **Question Optimization**: Standardizing question expressions
-6. **Prompt Generation**: Building high-quality Q&A data for training
+### Processing Workflow:
+1. **Data Filtering**:
+  - Execution Filter: Eliminates invalid/non-executable SQL
+  - Consistency Filter: Ensures question-SQL-schema alignment
+2. **Data Generation**:
+  - SQL Variation: Produces semantically equivalent SQL variants
+  - SQL Synthesis: Generates new SQL from database schema
+  - Question Generation: Creates natural language descriptions from SQL
+3. **Training Data Construction**:
+  - Prompt Engineering: Integrates questions, schema, and instructions
+  - Chain-of-Thought: Builds step-by-step reasoning processes
+4. **Difficulty Classification**:
+  - Syntax Complexity: Grades SQL structural difficulty
+  - Execution Difficulty: Evaluates based on success rates
 
----
+## 2. Input Data Specifications
 
-## 2. Data Formats
+The pipeline operates in two distinct modes with different input requirements:
 
-### 2.1 Database Configuration
+### 2.1 Data Refinement Pipeline
 
-When parsing and executing databases, corresponding database information needs to be configured.
+**Required Fields**:
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| db_id | string | Database identifier | "california_schools" |
+| question | string | Natural language query | "Find highest free meal eligibility rate..." |
+| SQL | string | Standard SQL answer | "SELECT `Free Meal Count...`" |
 
-- **Schema Definition File**: `tables.json` (JSON format)
-  - **Description**: This file defines the database schema information.
-  - **Reference**: The `tables.json` file in the [Spider dataset](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view).
-  - **Example**:
-    ```json
-    [
-      {
-        "db_id": "banking",
-        "table_names_original": ["accounts", "customers", "transactions"],
-        "table_names": ["Accounts", "Customers", "Transactions"],
-        "column_names_original": [
-          [-1, "*"],
-          [0, "account_id"],
-          [0, "customer_id"],
-          [0, "balance"],
-          [1, "customer_id"],
-          [1, "name"],
-          [1, "email"],
-          [2, "transaction_id"],
-          [2, "account_id"],
-          [2, "amount"],
-          [2, "date"]
-        ],
-        "column_names": [
-          [-1, "*"],
-          [0, "Account ID"],
-          [0, "Customer ID"],
-          [0, "Balance"],
-          [1, "Customer ID"],
-          [1, "Name"],
-          [1, "Email"],
-          [2, "Transaction ID"],
-          [2, "Account ID"],
-          [2, "Amount"],
-          [2, "Date"]
-        ],
-        "column_types": [
-          "text",
-          "integer",
-          "integer",
-          "real",
-          "integer",
-          "text",
-          "text",
-          "integer",
-          "integer",
-          "real",
-          "date"
-        ],
-        "primary_keys": [1, 4, 7],
-        "foreign_keys": [
-          [2, 4],
-          [8, 1]
-        ]
-      }
-    ]
-    ```
-
-- **Database Folder**: Contains executable database files  
-  - **Description**: The **Database Root Folder** is the root directory for storing all databases. It contains multiple **Specific Database Folders** (folder names follow the format `db_id`), and each **Specific Database Folder** must include the corresponding **Database SQLite File** (file names follow the format `db_id.sqlite`).  
-
-  - **Important Reminder**: The name of the **Specific Database Folder** must match the name of the **Database SQLite File** inside it (excluding the `.sqlite` suffix).  
-
-  - **Example File Structure**:  
-    ```  
-    database/                    # Database Root Folder  
-    ├── db_id_1/                # Specific Database Folder  
-    │   └── db_id_1.sqlite      # Database SQLite File (names must match)  
-    ├── db_id_2/  
-    │   └── db_id_2.sqlite  
-    └── db_id_3/  
-        └── db_id_3.sqlite  
-    ```  
-
-  - **Demo Database**:  
-    For demonstration purposes, we provide an example database:  
-    https://huggingface.co/datasets/Open-Dataflow/dataflow-Text2SQL-database-example  
-
-    **Usage Steps**:  
-    1. Download the entire `dev_databases` folder locally.  
-    2. Keep the original structure of the folder intact.  
-    3. Set the `db_root_path` parameter in the code to the full local path of the `dev_databases` folder.  
-
-  - **Practical Example**:  
-    ```  
-    dev_databases/                    # Database Root Folder  
-    ├── california_schools/          # Specific Database Folder  
-    │   └── california_schools.sqlite   # Database File (name matches folder)  
-    └── hospitals/  
-        └── hospitals.sqlite  
-    ```  
-    **Configuration Example**: If your `dev_databases` folder is located at `/Users/username/data/dev_databases`, set `db_root_path` to this path.
-
-### 2.2 Input Data
-
-- **Supported Formats**: `json`, `jsonl`  
-- **Required Fields**:  
-  - `db_id`: Database ID
-  - `question`: Natural language question  
-  - `SQL`: Standard SQL answer
-- **Optional Fields**: Other fields will be ignored, but it's recommended to keep only necessary fields to avoid conflicts with subsequent processing.  
-- **Example** (`json`):
-  ```json
-  {
-    "db_id": "california_schools",
-    "question": "What is the highest eligible free rate for K-12 students in the schools in Alameda County?",
-    "SQL": "SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1"
-  }
-  ```
-- **Demo Dataset**:  
-  `Text2SqlPipeline/bird_example/dev_20240627/dev.json`  
-  Contains database IDs, natural language questions, and standard SQL answers, suitable for quick testing and demonstration.
-
-### 2.3 Output Data
-
-- **Format**: `jsonl` (Each step generates a file)  
-- **Field Descriptions**:
-  - `evidence`: Key evidence or intermediate results extracted during reasoning
-  - `selected_schema`: Filtered database schema information
-  - `raw_schema`: Original complete database schema
-  - `ddl`: Database table structure definition statements
-  - `whole_format_schema`: Complete formatted database schema description
-  - `selected_format_schema`: Filtered formatted database schema description
-  - `refined_question`: Semantically optimized natural language question
-  - `rl_prompt`: Final generated prompt template
-  - `sft_output`: Raw output of supervised fine-tuning (SFT) model
-  - `sql_component_difficulty`: SQL component complexity assessment (easy/medium/hard/extra)
-  - `sql_execution_difficulty`: SQL execution complexity assessment (easy/medium/hard)
-- **Example**:
-  ```json
-  {
-    "evidence": "Eligible free rate = `Free Meal Count` / `Enrollment`",
-    "selected_schema": "[{'table_name': ...]}]",
-    "raw_schema": "{'tables': {'frpm': [...], 'schools': [...]}}",
-    "ddl": "CREATE TABLE frpm (...);\nCREATE TABLE schools (...);",
-    "whole_format_schema": "## Table: frpm ...",
-    "selected_format_schema": "Table frpm ...",
-    "refined_question": "What is the highest free benefit rate for K-12 in Alameda?",
-    "rl_prompt": "Task: Generate SQL from schema...\nSchema: {...}\nQuestion: {...}",
-    "sft_output": "Let's think step by step...",
-    "sql_component_difficulty": "medium",
-    "sql_execution_difficulty": "medium"
-  }
-  ```
-
-## 3. **Data Processing Workflow**
-
-### 3.1 **SQL Filter (SQLFilter)**
-**Function**:
-* Eliminates gold SQL with execution exceptions
-* Filters SQL inconsistent with question descriptions
-
-**Input**: Raw input data  
-**Output**: Valid Text-to-SQL data
-
-### 3.2 **SQL Difficulty Classifier (SQLDifficultyClassifier)**
-**Function**:
-* Classifies difficulty levels based on SQL syntax complexity, referencing Spider standards
-* Difficulty levels: easy/medium/hard/extra
-
-**Input**: Filtered data  
-**Output**: Data with difficulty labels
-
-### 3.3 **Schema Linker (SchemaLinking)**
-**Function**:
-* Extracts associated tables and columns used from the full database schema
-* Identifies mapping relationships between entities mentioned in questions and database schema
-
-**Input**: Data with difficulty labels  
-**Output**: Data containing schema linking information
-
-### 3.4 **Schema Extractor (DatabaseSchemaExtractor)**
-**Function**:
-* Constructs complete database schema information
-* Generates formatted schema descriptions
-* Includes DDL statements and natural language descriptions
-
-**Input**: Schema-linked data  
-**Output**: Data with complete schema information
-
-### 3.5 **Knowledge Generator (ExtraKnowledgeGeneration)**
-**Function**:
-* Constructs additional knowledge required for mapping natural language questions to SQL queries
-* Explains quantifier corresponding values
-* Clarifies noun entity mapping relationships
-
-**Input**: Data with schema information  
-**Output**: Data containing additional knowledge
-
-### 3.6 **Question Optimizer (QuestionRefiner)**
-**Function**:
-* Standardizes question expressions
-* Splits compound questions
-* Unifies question formats (starting with What/How)
-
-**Input**: Data with additional knowledge  
-**Output**: Optimized question data
-
-### 3.7 **Prompt Generator (PromptGeneration)**
-**Function**:
-* Constructs questions for SFT training
-* Generates high-quality answers with chain-of-thought reasoning
-* Creates questions for RL training
-
-**Input**: Optimized question data  
-**Output**: Training Q&A data
-
-### 3.8 **Execution Difficulty Classifier (Text2SQLDifficultyClassifier)**
-**Function**:
-* Classifies generation difficulty based on execution pass rate
-* Supports multi-model testing
-* Difficulty levels: easy/medium/hard/extra
-
-**Input**: Generated Q&A data  
-**Output**: Final data with execution difficulty labels
-
-## 4. **Output Data**
-
-The final output data includes the following fields:
-* **evidence**: Key evidence extracted during reasoning
-* **selected_schema**: Filtered database schema information
-* **raw_schema**: Original complete database schema
-* **ddl**: Database table structure definition statements
-* **whole_format_schema**: Complete formatted schema description
-* **selected_format_schema**: Filtered formatted schema description
-* **refined_question**: Optimized natural language question
-* **rl_prompt**: Final generated prompt template
-* **sft_output**: Raw output of supervised fine-tuning model
-* **sql_component_difficulty**: SQL component complexity assessment
-* **sql_execution_difficulty**: SQL execution complexity assessment
-
-Example output:
+**Sample Input (JSON)**:
 ```json
 {
-  "evidence": "Eligible free rate = `Free Meal Count` / `Enrollment`",
-  "selected_schema": "[{'table_name': ...]}]",
-  "raw_schema": "{'tables': {'frpm': [...], 'schools': [...]}}",
-  "ddl": "CREATE TABLE frpm (...);\nCREATE TABLE schools (...);",
-  "whole_format_schema": "## Table: frpm ...",
-  "selected_format_schema": "Table frpm ...",
-  "refined_question": "What is the highest free benefit rate for K-12 in Alameda?",
-  "rl_prompt": "Task: Generate SQL from schema...\nSchema: {...}\nQuestion: {...}",
-  "sft_output": "Let's think step by step...",
-  "sql_component_difficulty": "medium",
-  "sql_execution_difficulty": "medium"
+  "db_id": "california_schools",
+  "question": "What is the highest eligible free rate...",
+  "SQL": "SELECT `Free Meal Count...`"
 }
 ```
 
-## 5. Execution Method
+**Demo Dataset**:  
+`example_data/Text2SQLPipeline/pipeline_refine.jsonl`  
+Contains ready-to-use samples with all required fields for quick testing.
 
-The pipeline is executed via a simple Python command:
+**Storage Configuration**:
+```python
+self.storage = FileStorage(
+    first_entry_file_name="../example_data/Text2SQLPipeline/pipeline_refine.jsonl",
+    cache_path="./cache_local",
+    file_name_prefix="dataflow_cache_step",
+    cache_type="jsonl"
+)
+```
 
+### 2.2 Data Synthesis Pipeline
+
+This mode requires only database configuration:
+
+```python
+self.storage = FileStorage(
+    first_entry_file_name="",  # Empty for synthesis mode
+    cache_path="./cache",
+    file_name_prefix="dataflow_cache_step",
+    cache_type="jsonl"
+)
+```
+
+## 3. Configuration Guide
+
+### 3.1 Database Configuration
+
+#### 3.1.1 SQLite Databases
+**Requirements**:
+- Database files must use `.sqlite` or `.db` extension
+- File naming convention: `[db_id].sqlite` or `[db_id].db`
+- Supports nested directory structures
+
+**Sample Structures**:
+```
+databases/
+  ├── db1.sqlite
+  └── subfolder/
+      └── db2.db
+```
+
+**Configuration**:
+```python
+database_manager = DatabaseManager(
+    db_type="sqlite",
+    config={"root_path": "/path/to/databases"}
+)
+```
+
+#### 3.1.2 MySQL Databases
+**Requirements**:
+- MySQL service must be running
+- Valid credentials required
+
+**Configuration**:
+```python
+database_manager = DatabaseManager(
+    db_type="mysql",
+    config={
+        "host": "localhost",
+        "user": "username",
+        "password": "password"
+    }
+)
+```
+
+## 4. Pipeline Components
+
+### 4.1 Data Processors
+
+#### Execution Filter
+- Validates SQL executability
+- Removes syntactically invalid queries
+
+#### Consistency Filter
+- Ensures SQL-question-schema alignment
+- Uses LLM-based verification
+
+### 4.2 Data Generators
+
+#### SQL Generator
+- Creates new SQL from schema
+- Configurable output volume
+
+#### Question Generator
+- Produces natural language questions
+- Generates multiple question variants
+
+## 5. Output Specifications
+
+**Format**: JSON Lines (.jsonl)  
+**Fields**:
+- Complete prompt templates
+- Annotated difficulty levels
+- Detailed chain-of-thought reasoning
+
+**Sample Output**:
+```json
+{
+  "db_id": "schools_db",
+  "SQL": "SELECT AVG(score) FROM...",
+  "prompt": "Task: Given schema...",
+  "cot_reasoning": "1. Identify required tables...",
+  "difficulty": "intermediate"
+}
+```
+
+## 6. Execution Methods
+
+**Refinement Pipeline**:
 ```bash
-python test/test_text2sql.py
+python pipelines/text2sql_refine.py
+```
+
+**Synthesis Pipeline**:
+```bash
+python pipelines/text2sql_synthesize.py
+```
+
+## 7. Pipeline Examples
+
+Below is an example pipeline demonstrating how to use multiple operators for inference data processing. This example illustrates how to initialize an inference data processing pipeline and sequentially execute various filtering and cleaning steps.
+
+**Refinement Pipeline**:
+```python
+class Text2SQLPipeline():
+    def __init__(self):
+
+        self.storage = FileStorage(
+            first_entry_file_name="../example_data/Text2SQLPipeline/pipeline_refine.jsonl",
+            cache_path="./cache_local",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl"
+        )
+
+        api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/chat/completions",
+            model_name="gpt-4o",
+            max_workers=100
+        )
+
+        cot_generation_api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/chat/completions",
+            model_name="gpt-4o", 
+            max_workers=100
+        )
+
+        embedding_api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/embeddings",
+            model_name="text-embedding-ada-002",
+            max_workers=100
+        )
+
+        execution_difficulty_config = {
+            'thresholds': [2, 5, 9],
+            'labels': ['easy', 'medium', 'hard', 'extra']
+        }
+
+        component_difficulty_config = {
+            'thresholds': [2, 4, 6],      
+            'labels': ['easy', 'medium', 'hard', 'extra']
+        }
+
+        prompt_template = '''Task Overview:
+            /* Given the following database schema: */
+            {schema}
+            /* Answer the following: {question} */
+            Let's think step by step'''
+
+        schema_config = {
+            'format': 'ddl',  
+            'use_example': False  
+        }
+
+        db_root_path = "path/to/your/database"  
+
+        database_manager = DatabaseManager(
+            db_type="sqlite",
+            config={
+                "root_path": db_root_path
+            }
+        )
+        
+        self.sql_execution_filter_step1 = ExecutionFilter(
+            database_manager=database_manager
+        )
+
+        self.sql_consistency_filter_step2 = ConsistencyFilter(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager
+        )
+
+        self.sql_variation_generator_step3 = SQLVariationGenerator(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            num_variations=5
+        )
+
+        self.sql_execution_filter_step4 = ExecutionFilter(
+            database_manager=database_manager
+        )
+
+        self.text2sql_question_generator_step5 = QuestionGeneration(
+            llm_serving=api_llm_serving,
+            embedding_api_llm_serving=embedding_api_llm_serving,
+            database_manager=database_manager,
+            question_candidates_num=5
+        )
+
+        self.text2sql_prompt_generator_step6 = PromptGenerator(
+            database_manager=database_manager,
+            prompt_template=prompt_template,
+            schema_config=schema_config
+        )
+
+        self.sql_cot_generator_step7 = CoTGenerator(
+            llm_serving=cot_generation_api_llm_serving,
+            database_manager=database_manager,
+            schema_config=schema_config,
+            max_retries=3,
+            enable_retry=True
+        )
+
+        self.sql_component_classifier_step8 = ComponentClassifier(
+            difficulty_config=component_difficulty_config
+        )
+
+        self.sql_execution_classifier_step9 = ExecutionClassifier(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            difficulty_config=execution_difficulty_config,
+            num_generations=5
+        )
+        
+        
+    def forward(self):
+
+        sql_key = "SQL"
+        db_id_key = "db_id"
+        question_key = "question"
+
+        self.sql_execution_filter_step1.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
+
+        self.sql_consistency_filter_step2.run(
+            storage=self.storage.step(),   
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            input_question_key=question_key
+        )
+
+        self.sql_variation_generator_step3.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
+
+        self.sql_execution_filter_step4.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
+
+        self.text2sql_question_generator_step5.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            output_question_key=question_key
+        )
+
+        self.text2sql_prompt_generator_step6.run(
+            storage=self.storage.step(),
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_prompt_key="prompt"
+        )
+
+        self.sql_cot_generator_step7.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_cot_key="cot_reasoning"
+        )
+
+        self.sql_component_classifier_step8.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            output_difficulty_key="sql_component_difficulty"
+        )
+
+        self.sql_execution_classifier_step9.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            input_prompt_key="prompt",
+            output_difficulty_key="sql_execution_difficulty"
+        )
+
+if __name__ == "__main__":
+    model = Text2SQLPipeline()
+    model.forward()
+```
+
+**Synthesis Pipeline**:
+```python
+class Text2SQLPipeline():
+    def __init__(self):
+
+        self.storage = FileStorage(
+            first_entry_file_name="",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl",
+        )
+
+        api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/chat/completions",
+            model_name="gpt-4o",
+            max_workers=100
+        )
+
+        cot_generation_api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/chat/completions",
+            model_name="gpt-4o", 
+            max_workers=100
+        )
+
+        embedding_api_llm_serving = APILLMServing_request(
+            api_url="http://api.openai.com/v1/embeddings",
+            model_name="text-embedding-ada-002",
+            max_workers=100
+        )
+
+        execution_difficulty_config = {
+            'thresholds': [2, 5, 9],
+            'labels': ['easy', 'medium', 'hard', 'extra']
+        }
+
+        component_difficulty_config = {
+            'thresholds': [2, 4, 6],      
+            'labels': ['easy', 'medium', 'hard', 'extra']
+        }
+
+        prompt_template = '''Task Overview:
+            /* Given the following database schema: */
+            {schema}
+            /* Answer the following: {question} */
+            Let's think step by step'''
+
+        schema_config = {
+            'format': 'ddl',  
+            'use_example': True  
+        }
+
+        db_root_path = "path/to/your/database"  
+
+        database_manager = DatabaseManager(
+            db_type="sqlite",
+            config={
+                "root_path": db_root_path
+            }
+        )
+        
+        self.sql_generator_step1 = SQLGenerator(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            generate_num=300
+        )
+
+        self.sql_execution_filter_step2 = ExecutionFilter(
+            database_manager=database_manager
+        )
+
+        self.text2sql_question_generator_step3 = QuestionGeneration(
+            llm_serving=api_llm_serving,
+            embedding_api_llm_serving=embedding_api_llm_serving,
+            database_manager=database_manager,
+            question_candidates_num=5
+        )
+
+        self.text2sql_prompt_generator_step4 = PromptGenerator(
+            database_manager=database_manager,
+            prompt_template=prompt_template,
+            schema_config=schema_config
+        )
+
+        self.sql_cot_generator_step5 = CoTGenerator(
+            llm_serving=cot_generation_api_llm_serving,
+            database_manager=database_manager,
+            schema_config=schema_config,
+            max_retries=3,
+            enable_retry=True
+        )
+
+        self.sql_component_classifier_step6 = ComponentClassifier(
+            difficulty_config=component_difficulty_config
+        )
+
+        self.sql_execution_classifier_step7 = ExecutionClassifier(
+            llm_serving=api_llm_serving,
+            database_manager=database_manager,
+            difficulty_config=execution_difficulty_config,
+            num_generations=5
+        )
+        
+        
+    def forward(self):
+
+        sql_key = "SQL"
+        db_id_key = "db_id"
+        question_key = "question"
+
+        self.sql_generator_step1.run(
+            storage=self.storage.step(),
+            output_sql_key=sql_key,
+            output_db_id_key=db_id_key
+        )
+
+        self.sql_execution_filter_step2.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key
+        )
+
+        self.text2sql_question_generator_step3.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            output_question_key=question_key
+        )
+
+        self.text2sql_prompt_generator_step4.run(
+            storage=self.storage.step(),
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_prompt_key="prompt"
+        )
+
+        self.sql_cot_generator_step5.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_question_key=question_key,
+            input_db_id_key=db_id_key,
+            output_cot_key="cot_reasoning"
+        )
+
+        self.sql_component_classifier_step6.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            output_difficulty_key="sql_component_difficulty"
+        )
+
+        self.sql_execution_classifier_step7.run(
+            storage=self.storage.step(),
+            input_sql_key=sql_key,
+            input_db_id_key=db_id_key,
+            input_prompt_key="prompt",
+            output_difficulty_key="sql_execution_difficulty"
+        )
+
+if __name__ == "__main__":
+    model = Text2SQLPipeline()
+    model.forward()
 ```

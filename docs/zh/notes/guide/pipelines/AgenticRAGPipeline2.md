@@ -1,5 +1,5 @@
 ---
-title: Agentic RAG数据合成流水线 2
+title: AgenticRAG数据合成流水线-Beta
 icon: solar:palette-round-linear
 createTime: 2025/07/14 16:37:14  
 permalink: /zh/guide/agenticrag_pipeline2/  

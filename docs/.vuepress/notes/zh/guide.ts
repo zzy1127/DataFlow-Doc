@@ -37,7 +37,7 @@ export const Guide: ThemeNote = defineNoteConfig({
             ],
         },
         {
-            text:"流水线",
+            text:"流水线教程",
             collapsed: false,
             icon: 'carbon:flow',
             prefix: 'pipelines',
