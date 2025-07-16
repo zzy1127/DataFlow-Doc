@@ -25,7 +25,8 @@ export const MMGuide: ThemeNote = defineNoteConfig({
                 'quickstart',
                 'image_generation',
                 'audio_caption',
-                'whisper_asr'
+                'whisper_asr',
+                'video_caption',
             ],
         },
     ]
