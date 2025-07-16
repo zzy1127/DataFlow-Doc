@@ -50,6 +50,7 @@ export const Guide: ThemeNote = defineNoteConfig({
                 "AgenticRAGPipeline2",
                 "RAREPipeline",
                 "KnowledgeBaseCleaningPipeline",
+                "FuncCallPipeline",
             ]
         },
         {
