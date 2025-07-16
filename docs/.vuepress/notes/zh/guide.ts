@@ -24,7 +24,8 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'install',
                 'quickstart',
                 'translation',
-                'sft_synthesis'
+                'sft_synthesis',
+                'conversation_synthesis'
             ],
         },
                 {
