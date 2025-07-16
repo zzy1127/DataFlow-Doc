@@ -1,5 +1,5 @@
 ---
-title: Agentic RAG Data Synthesis Pipeline 2
+title: Agentic RAG Data Synthesis Pipeline-Beta
 icon: solar:palette-round-linear
 createTime: 2025/07/14 16:37:14  
 permalink: /en/guide/agenticrag_pipeline2/  
