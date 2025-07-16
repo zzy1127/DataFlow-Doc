@@ -15,7 +15,7 @@ permalink: /zh/dev_guide/lazy_loader/
 if TYPE_CHECKING:
     # GeneralText
     from .GeneralText.pretrain_generator import PretrainGenerator
-    from .GeneralText.sft_generator import SupervisedFinetuneGenerator
+    from .GeneralText.condor_generator import CondorGenerator
     from .GeneralText.prompted_generator import PromptedGenerator  # 像这样加在这里
     
     # Reasoning  

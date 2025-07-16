@@ -62,7 +62,8 @@ python text_sft_filter.py # Simplified SFT data filtering pipeline using length 
 
 ```bash
 cd api_pipelines
-python text_sft_filter.py # Uses Alpagasus quality scoring for SFT filtering
+python text_sft_synthesis_pipeline.py # Synthesize SFT data from scratch
+python text_conversation_synthesis_pipeline.py # Synthesize multi-turn dialogue from scratch
 ```
 
 ---
@@ -312,7 +313,7 @@ self.instag_filter_step4 = InstagFilter(
 
 Based on **Pipeline 1** and **Pipeline 3**, add the following operator:
 
-1. **SupervisedFinetuneGenerator**  
+1. **SFTGeneratorSeed**  
    - Use llm to synthesize SFT-format data from seed documents  
    - Prompt can be found in 'dataflow/prompts/generat_text.py', which can be modified
 ```python
@@ -322,7 +323,7 @@ self.llm_serving = LocalModelLLMServing(
             max_tokens=8192,
             model_source="local"
         )
-self.sft_generator = SupervisedFinetuneGenerator(
+self.sft_generator = SFTGeneratorSeed(
             llm_serving=self.llm_serving
         )
 ```

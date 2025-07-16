@@ -64,7 +64,8 @@ python text_sft_filter.py # 简易版sft数据过滤流水线，长度过滤
 
 ```bash
 cd api_pipelines
-python text_sft_filter.py # 使用Alpagasus质量得分过滤指令
+python text_sft_synthesis_pipeline.py # 从0开始合成SFT数据
+python text_conversation_synthesis_pipeline.py # 从0开始合成多轮对话数据
 ```
 
 ---
@@ -337,7 +338,7 @@ self.instag_filter_step4 = InstagFilter(
 
 在**流水线1**和**流水线3**的基础上添加如下算子：
 
-1. **SFT数据合成 (SupervisedFinetuneGenerator)**  
+1. **SFT数据合成 (SFTGeneratorSeed)**  
 - 使用llm根据种子文档合成SFT格式数据
 - prompt见`dataflow/prompts/general_text.py`，可更改
 ```python
@@ -347,7 +348,7 @@ self.llm_serving = LocalModelLLMServing(
             max_tokens=8192,
             model_source="local"
         )
-self.sft_generator = SupervisedFinetuneGenerator(
+self.sft_generator = SFTGeneratorSeed(
             llm_serving=self.llm_serving
         )
 ```

@@ -22,7 +22,7 @@ DataFlow currently supports text data processing at the data point level, catego
   <tbody>
     <tr>
       <td class="tg-0pky">Refiners</td>
-      <td class="tg-0pky">15</td>
+      <td class="tg-0pky">16</td>
       <td class="tg-0pky">Improves the content of data points through processing and augmentation without altering the total count.</td>
     </tr>
     <tr>
@@ -50,6 +50,12 @@ DataFlow currently supports text data processing at the data point level, catego
     </tr>
   </thead>
   <tbody>
+    <tr>
+        <td class="tg-0pky">CondorRefiner</td>
+        <td class="tg-0pky">SFT</td>
+        <td class="tg-0pky">Generate evaluations and rewrites of SFT responses using LLM APIs to improve QA quality</td>
+        <td class="tg-0pky"><a href="https://arxiv.org/pdf/2501.12273">paper</a></td>
+    </tr>
     <tr>
       <td class="tg-0pky">LowercaseRefiner</td>
       <td class="tg-0pky">NLP</td>
@@ -149,7 +155,7 @@ DataFlow currently supports text data processing at the data point level, catego
   <thead>
     <tr>
       <th class="tg-0pky">Name</th>
-      <th class="tg-0pky">Applicable Type</th>
+      <th class="tg-0pky">Type</th>
       <th class="tg-0pky">Description</th>
       <th class="tg-0pky">Repository or Paper</th>
     </tr>
@@ -157,66 +163,39 @@ DataFlow currently supports text data processing at the data point level, catego
   <tbody>
     <tr>
       <td class="tg-0pky">HashDeduplicator</td>
-      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">Exact Deduplication</td>
       <td class="tg-0pky">Uses various hash functions (e.g., MD5, SHA256, XXH3_128) to remove duplicate data based on exact hash value comparison. Suitable for small-scale simple deduplication.</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
       <td class="tg-0pky">CCNetDeduplicator</td>
-      <td class="tg-0pky">Pre-training</td>
+      <td class="tg-0pky">Exact Deduplication</td>
       <td class="tg-0pky">Compares the first 64 bits of the SHA-1 hash to identify duplicate text, balancing security and computational efficiency.</td>
       <td class="tg-0pky">-</td>
     </tr>
     <tr>
       <td class="tg-0pky">NgramHashDeduplicator</td>
-      <td class="tg-0pky">Pre-training</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Combines n-gram techniques with hashing to detect duplicates based on multiple hash comparisons of n-gram segments. Useful for identifying near-duplicates.</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1607.04606">Paper</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">SemDeduplicator</td>
-      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Uses semantic similarity based on BERT embeddings and cosine similarity to detect duplicates. Ideal for detecting semantically similar but differently phrased text.</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1810.04805">Paper</a> <br> <a href="https://github.com/facebookresearch/SemDeDup">Code</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">SimHashDeduplicator</td>
-      <td class="tg-0pky">Pre-training</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Uses the SimHash algorithm to detect similar text based on Hamming distance of fingerprints. Efficient for large-scale data deduplication.</td>
       <td class="tg-0pky"><a href="https://dl.acm.org/doi/abs/10.1145/1242572.1242592">Paper</a></td>
     </tr>
     <tr>
       <td class="tg-0pky">MinHashDeduplicator</td>
-      <td class="tg-0pky">SFT</td>
+      <td class="tg-0pky">Near Deduplication</td>
       <td class="tg-0pky">Combines MinHash and LSH to compare sets with minimal memory usage and computation cost, detecting similarity between sets.</td>
       <td class="tg-0pky"><a href="https://arxiv.org/abs/1811.04633">Paper</a></td>
-    </tr>
-  </tbody>
-</table>
-
-## Generators
-
-<table class="tg">
-  <thead>
-    <tr>
-      <th class="tg-0pky">Name</th>
-      <th class="tg-0pky">Applicable Type</th>
-      <th class="tg-0pky">Description</th>
-      <th class="tg-0pky">Repository or Paper</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="tg-0pky">PretrainGenerator</td>
-      <td class="tg-0pky">Pretrain</td>
-      <td class="tg-0pky">Synthesize phi-4 question and answer data pairs using pre trained document data, and retell the document in QA format</td>
-      <td class="tg-0pky"><a href="https://arxiv.org/pdf/2401.16380">Paper</a></td>
-    </tr>
-    <tr>
-      <td class="tg-0pky">SupervisedFinetuneGenerator</td>
-      <td class="tg-0pky">SFT</td>
-      <td class="tg-0pky">Synthesize SFT format QA data pairs based on seed documents and return original information</td>
-      <td class="tg-0pky">-</td>
     </tr>
   </tbody>
 </table>

@@ -21,7 +21,7 @@ After the operator logic is implemented, open the `__init__.py` file one level a
 if TYPE_CHECKING:
     # GeneralText
     from .GeneralText.pretrain_generator import PretrainGenerator
-    from .GeneralText.sft_generator import SupervisedFinetuneGenerator
+    from .GeneralText.condor_generator import CondorGenerator
     from .GeneralText.prompted_generator import PromptedGenerator  # Add yours here
 
     # Reasoning
