@@ -94,6 +94,7 @@ python playground/text_sft_synthesis_from_seed.py
 ```
 
 ### Example of Generated Data
+The `raw_comtent` field is the original seed data.
 ```json
 {
     "instruction":"What historical significance does the Banc Texas Allen Parkway, completed in 1983, hold, and how might a middle school student find more information about its architectural design using the resources from Rice University's Woodson Research Center?",

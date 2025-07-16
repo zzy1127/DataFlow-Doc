@@ -87,6 +87,7 @@ python playground/text_sft_synthesis_from_seed.py
 ```
 
 ### 合成数据示例
+其中，`raw_content`字段为原始种子数据。
 ```json
 {
     "instruction":"What historical significance does the Banc Texas Allen Parkway, completed in 1983, hold, and how might a middle school student find more information about its architectural design using the resources from Rice University's Woodson Research Center?",
