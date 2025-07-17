@@ -161,9 +161,9 @@ MySQL 数据库是以服务器形式存在的，因此需要管理连接服务�
     ```
    > 其中 `db_type` 必须设定为 `mysql`，在 `config` 中，需设定 `host`、`user` 和 `password` 为 MySQL 服务器的相关信息。请确保所需使用的数据库存在于 MySQL 服务器中，并且您具有相应的访问权限。
 
-## 3.2 模型配置
+### 3.2 模型配置
 
-### 3.2.1 API LLM 服务配置
+#### 3.2.1 API LLM 服务配置
 
 在 DataFlow 中，我们使用 `APILLMServing_request` 类来管理基于 API 的 LLM 服务。
 
@@ -194,7 +194,7 @@ embedding_api_llm_serving = APILLMServing_request(
 
 在实际使用中，您可以根据需求更换为其他模型或 API 提供商。
 
-### 3.2.2 本地模型服务配置
+#### 3.2.2 本地模型服务配置
 
 在 DataFlow 中，我们使用 `LocalModelLLMServing_vllm` 类来管理本地部署的大语言模型服务。
 
@@ -222,9 +222,9 @@ embedding_serving = LocalModelLLMServing_vllm(
 - `cot_generation_llm_serving` 用于生成复杂推理链；
 - `embedding_serving` 用于生成文本嵌入向量。
 
-## 3.3 其他参数配置
+### 3.3 其他参数配置
 
-### 3.3.1 难度分类配置
+#### 3.3.1 难度分类配置
 
 ```python
 execution_difficulty_config = {
@@ -242,13 +242,13 @@ component_difficulty_config = {
 - `execution_difficulty_config` 用于执行难度分类；
 - `component_difficulty_config` 用于 SQL 组件复杂度分类。
 
-#### 注意事项：
+注意事项：
 - `thresholds` 和 `labels` 必须同时存在；
 - `thresholds` 必须按升序排列；
 - `labels` 的数量必须比 `thresholds` 多 1；
 - 分类依据是得分，范围为 0–10，得分越高表示难度越大，因此 `thresholds` 的值应控制在 0–10 范围内。
 
-### 3.3.2 提示词模板配置
+#### 3.3.2 提示词模板配置
 
 ```python
 prompt_template = '''Task Overview:
@@ -261,7 +261,7 @@ prompt_template = '''Task Overview:
 该模板用于构建输入给模型的提示信息，其中 `{schema}` 和 `{question}` 是占位符，分别表示数据库 Schema 和用户提出的自然语言问题。  
 您可根据需要自定义模板内容，但**必须保留这两个占位符**以确保数据注入的完整性。
 
-### 3.3.3 数据库 Schema 配置
+#### 3.3.3 数据库 Schema 配置
 
 ```python
 schema_config = {
