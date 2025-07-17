@@ -3,9 +3,7 @@ title: 知识库清洗流水线
 icon: fa6-regular:bookmark
 createTime: 2025/06/16 13:08:42
 permalink: /zh/guide/kbcpipeline/
-
 ---
-
 # 知识库清洗及QA合成流水线
 
 ## 1. 概述
@@ -27,25 +25,131 @@ permalink: /zh/guide/kbcpipeline/
 
 流水线第一步是通过KnowledgeExtractor从用户原始文档或URL中提取文本知识。此步骤至关重要，它将各种格式的原始文档提取成统一的markdown格式文本，方便后续清洗步骤进行。
 
-由于MinerU的特殊配置要求，你可能需要新建一个conda环境。
+> *由于 `MinerU` 主要基于 `SGLang` 进行部署，`open-dataflow[minerU]` 环境主要基于 `Dataflow[SGLang]` 进行处理，文未有基于 `Dataflow[vllm]` 的处理教程。*
+
 ```shell
-conda create -n dataflow_kbc python=3.10
-conda activate dataflow_kbc
+conda create -n dataflow python=3.10
+conda activate dataflow
 git clone https://github.com/OpenDCAI/DataFlow.git
 cd DataFlow
-pip install -e .
+pip install -e .[mineru]
 ```
 
 本系统中PDF文件的提取基于[MinerU](https://github.com/opendatalab/MinerU),需进行额外配置，用户可通过如下方式配置。
 
-```shell
-pip install open-dataflow[kbc]
-mineru-models-download #只需安装pipeline部分
-```
+> #### 使用本地模型
+>
+> 为了在本地运行 `MinerU` 模型，您需要先将它们下载到本地存储。`MinerU` 提供了一个交互式命令行工具来简化此过程。
+>
+> #### 1. 下载工具指引：
+>
+> 您可以使用以下命令查看模型下载工具的帮助信息：
+>
+> ```bash
+> mineru-models-download --help
+> ```
+>
+> #### 2. 启动模型下载：
+>
+> 执行以下命令开始下载过程：
+>
+> ```bash
+> mineru-models-download
+> ```
+>
+> 在下载过程中，您将看到以下交互式提示：
+>
+> * **选择模型下载源**：
+>
+>   ```bash
+>   Please select the model download source: (huggingface, modelscope) [huggingface]:
+>   ```
+>
+>   *建议您选择 `modelscope` 作为下载源，以获取更优的下载体验。*
+> * **选择`MinerU` 版本**：
+>
+>   `MinerU1`为`pipeline`形式解析，速度较慢，显存要求低。
+>   `MinerU2`为`vlm`形式解析，速度较快，显存要求高。
+>
+>   用户可以按需自由选择想使用的MinerU解析版本然后下载到本地。
+>
+>   <table>
+>     <tbody>
+>       <tr>
+>         <td>解析后端</td>
+>         <td>pipeline</td>
+>         <td>vlm-sglang</td>
+>       </tr>
+>       <tr>
+>         <td>操作系统</td>
+>         <td>Linux / Windows / macOS</td>
+>         <td>Linux / Windows (via WSL2)</td>
+>       </tr>
+>       <tr>
+>         <td>CPU推理支持</td>
+>         <td>✅</td>
+>         <td colspan="2">❌</td>
+>       </tr>
+>       <tr>
+>         <td>GPU要求</td>
+>         <td>Turing及以后架构，6G显存以上或Apple Silicon</td>
+>         <td colspan="2">Turing及以后架构，8G显存以上</td>
+>       </tr>
+>       <tr>
+>         <td>内存要求</td>
+>         <td colspan="3">最低16G以上，推荐32G以上</td>
+>       </tr>
+>       <tr>
+>         <td>磁盘空间要求</td>
+>         <td colspan="3">20G以上，推荐使用SSD</td>
+>       </tr>
+>       <tr>
+>         <td>python版本</td>
+>         <td colspan="3">3.10-3.13</td>
+>       </tr>
+>     </tbody>
+>   </table>
+>
+>   ```bash
+>   Please select the model type to download: (pipeline, vlm, all) [all]:
+>   ```
+>
+>   *建议您选择 `vlm` (MinerU2) 版本，因为它提供了更快的解析速度。如果您对显存有严格要求或偏好传统流水线处理，可以选择 `pipeline` (MinerU1)。您也可以选择 `all` 来下载所有可用版本。*
+>
+> #### 3. 模型路径配置
+>
+> `mineru.json` 配置文件会在您首次使用 `mineru-models-download` 命令时自动生成。模型下载完成后，其本地路径将会在当前终端窗口显示，并自动写入您用户目录下的 `mineru.json` 文件中，方便后续使用。
+>
+> #### 4. MinerU环境验证
+>
+> 最简单的命令行调用方式来进行环境验证:
+>
+> ```bash
+> mineru -p <input_path> -o <output_path> -b <MinerU_Backend> --source local
+> ```
+>
+> * `<input_path>`：本地 PDF/图片文件或目录（`./demo.pdf`或`./image_dir`）
+> * `<output_path>`：输出目录
+> * `<mineru_backend>`：MinerU 版本的选择接口，使用`MinerU2`，请将 `MinerU_Backend` 参数设置为 `"vlm-sglang-engine"`；使用 `MinerU1`：请将 `MinerU_Backend` 参数设置为 `"pipeline"`。
+>
+> #### 5. 工具使用
+>
+> `KnowledgeExtractor` 算子提供了 MinerU 版本的选择接口，允许用户根据需求选择合适的后端引擎。
+>
+> * 如果用户使用 `MinerU1`：请将 `MinerU_Backend` 参数设置为 `"pipeline"`。这将启用传统的流水线处理方式。
+> * 如果用户使用 `MinerU2` **(默认推荐)**：请将 `MinerU_Backend` 参数设置为 `"vlm-sglang-engine"`。这将启用基于多模态语言模型的新引擎。
+>
+> ```bash
+> KnowledgeExtractor(
+>     intermediate_dir="../example_data/KBCleaningPipeline/raw/",
+>     lang="en",
+>     MinerU_Backend="vlm-sglang-engine",
+> )
+> ```
+>
+> 🌟**更多详情**：有关 MinerU 的详细信息，请参考其 GitHub 仓库：[MinerU官方文档](https://github.com/opendatalab/MinerU)。
 
- 具体信息可参考https://github.com/opendatalab/mineru#local-deployment.
-
-**输入**：原始文档文件或URL **输出**：提取后的markdown文本
+**输入**：原始文档文件或URL（使用MinerU2） **输出**：提取后的markdown文本
 
 **示例**：
 
@@ -53,6 +157,7 @@ mineru-models-download #只需安装pipeline部分
 knowledge_extractor = KnowledgeExtractor(
     intermediate_dir="../example_data/KBCleaningPipeline/raw/",
     lang="en"
+    MinerU_Backend="vlm-sglang-engine",
 )
 extracted=knowledge_extractor.run(
     storage=self.storage,
@@ -104,7 +209,7 @@ extracted_path = knowledge_cleaner.run(
 
 知识被清洗之后，多跳QA合成(MultiHopQAGenerator)专门用于从文本数据中自动生成需要多步推理的问题-答案对。该过程通过大语言模型接口，实现对文本的智能分析和复杂问题构建，适用于构建高质量的多跳问答数据集。根据[MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD)的实验，这种QA格式的知识更有利于RAG准确推理。
 
-**输入**：json格式的普通文本 
+**输入**：json格式的普通文本
 
 **输出**：针对每一条文本合成一组多跳问答 输出json格式
 
@@ -122,55 +227,68 @@ multi_hop_qa_generator.run(
 )
 ```
 
+### 5. 基于Dataflow[vllm]处理教程
+
+> *由于 `MinerU` 基于最新版本 `SGLang` 部署，故 `Dataflow[vllm]` 应当使用最新版本 `vllm` 进行安装。*
+
+```bash
+conda create -n dataflow python=3.10
+conda activate dataflow
+git clone https://github.com/OpenDCAI/DataFlow.git
+cd DataFlow
+pip install -e .
+pip install -U "mineru[all]"
+pip install vllm==0.9.2
+pip install "numpy>=1.24,<2.0.0"
+```
+
 ## 3. 运行示例
 
 用户执行下面的脚本可以满足不用的数据需求，注意gpu_pipelines, api_pipelines, cpu_pipelines下面的脚本分别适用于测试机配有GPU，用户配置了API以及其他情况。
 
+> *其中基于 `Dataflow[vllm]` 可以运行 `gpu_pipelines/*_vllm.py` 脚本，基于 `Dataflow[sglang]` 可以运行 `gpu_pipelines/*_sglang.py` 脚本*
+
 - PDF文件知识库清洗构建
 
   ```shell
-  python gpu_pipelines/kbcleaning_pipeline_pdf.py
+  python gpu_pipelines/kbcleaning_pipeline_pdf_vllm.py
+  python gpu_pipelines/kbcleaning_pipeline_pdf_sglang.py
   ```
-
 - URL爬取后知识库清洗构建
 
   ```shell
-  python gpu_pipelines/kbcleaning_pipeline_url.py
+  python gpu_pipelines/kbcleaning_pipeline_url_vllm.py
+  python gpu_pipelines/kbcleaning_pipeline_url_sglang.py
   ```
 
 ## 4. 流水线示例
 
-以下给出示例流水线，演示如何使用多个算子进行知识库清洗。该示例展示了如何初始化一个知识库清洗流水线，并且顺序执行各个提取和清理步骤。
+以下给出基于`Dataflow[vllm]`环境配置的示例流水线，演示如何使用多个算子进行知识库清洗。该示例展示了如何初始化一个知识库清洗流水线，并且顺序执行各个提取和清理步骤。
 
 ```python
-from dataflow.operators.generate.KnowledgeCleaning import (
+from dataflow.operators.generate import (
     CorpusTextSplitter,
-    KnowledgeExtractor,
+    FileOrURLToMarkdownConverter,
     KnowledgeCleaner,
     MultiHopQAGenerator,
 )
 from dataflow.utils.storage import FileStorage
-from dataflow.serving import APILLMServing_request
+from dataflow.serving import LocalModelLLMServing_vllm
 
 class KBCleaningPipeline():
     def __init__(self):
 
         self.storage = FileStorage(
             first_entry_file_name="../example_data/KBCleaningPipeline/kbc_placeholder.json",
-            cache_path="./.cache/api",
+            cache_path="./.cache/gpu",
             file_name_prefix="pdf_cleaning_step",
             cache_type="json",
         )
 
-        api_llm_serving = APILLMServing_request(
-                api_url="https://api.openai.com/v1/chat/completions",
-                model_name="gpt-4o",
-                max_workers=100
-        )
-
-        self.knowledge_cleaning_step1 = KnowledgeExtractor(
+        self.knowledge_cleaning_step1 = FileOrURLToMarkdownConverter(
             intermediate_dir="../example_data/KBCleaningPipeline/raw/",
-            lang="en"
+            lang="en",
+            mineru_backend="vlm-sglang-engine",
         )
 
         self.knowledge_cleaning_step2 = CorpusTextSplitter(
@@ -179,27 +297,35 @@ class KBCleaningPipeline():
             tokenizer_name="Qwen/Qwen2.5-7B-Instruct",
         )
 
-        self.knowledge_cleaning_step3 = KnowledgeCleaner(
-            llm_serving=api_llm_serving,
-            lang="en"
-        )
-
-        self.knowledge_cleaning_step4 = MultiHopQAGenerator(
-            llm_serving=api_llm_serving,
-            lang="en"
-        )
-
     def forward(self, url:str=None, raw_file:str=None):
         extracted=self.knowledge_cleaning_step1.run(
             storage=self.storage,
             raw_file=raw_file,
             url=url,
         )
-        
+  
         self.knowledge_cleaning_step2.run(
             storage=self.storage.step(),
             input_file=extracted,
             output_key="raw_content",
+        )
+
+        local_llm_serving = LocalModelLLMServing_vllm(
+            hf_model_name_or_path="Qwen/Qwen2.5-7B-Instruct",
+            vllm_max_tokens=2048,
+            vllm_tensor_parallel_size=4,
+            vllm_gpu_memory_utilization=0.6,
+            vllm_repetition_penalty=1.2
+        )
+
+        self.knowledge_cleaning_step3 = KnowledgeCleaner(
+            llm_serving=local_llm_serving,
+            lang="en"
+        )
+
+        self.knowledge_cleaning_step4 = MultiHopQAGenerator(
+            llm_serving=local_llm_serving,
+            lang="en"
         )
 
         self.knowledge_cleaning_step3.run(
@@ -212,9 +338,8 @@ class KBCleaningPipeline():
             input_key="cleaned",
             output_key="MultiHop_QA"
         )
-        
+  
 if __name__ == "__main__":
     model = KBCleaningPipeline()
     model.forward(raw_file="../example_data/KBCleaningPipeline/test.pdf")
 ```
-
