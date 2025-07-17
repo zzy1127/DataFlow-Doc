@@ -216,36 +216,56 @@ result = answer_gen.run(
 
 **Input Parameters:**
 
-- `__init__()`
-  - `llm_serving`: Large language model interface object to use (default: predefined value above)
-  - `prompt_template`: Prompt template object for generating questions (e.g., `GeneralAnswerGeneratorPrompt()`)
-- `run()`
-  - `storage`: Storage interface object (default: predefined value above)
-  - `input_key`: Input question field name (default: "question")
-  - `output_key`: Output answer field name (default: "pseudo_answer")
+* `__init__()`
+  * `llm_serving`: LLMServingABC instance used to generate candidate answers (default: None)
+  * `max_times`: Maximum number of generation rounds to perform (default: 3)
+* `run()`
+
+  * `storage`: DataFlowStorage interface for reading the input DataFrame and writing the output
+  * `input_key`: Name of the column in the DataFrame containing the input questions (default: "instruction")
+  * `output_key_answer`: Name of the column to store the list of all generated answers per row (default: "pseudo_answers")
+  * `output_key_answer_value`: Name of the column to store the final selected answer value per row (default: "pseudo_answer_value")
+  * `output_key_solutions`: Name of the column to store all solution texts that match the selected answer (default: "pseudo_solutions")
+  * `output_key_correct_solution_example`: Name of the column to store a single example solution text (default: "pseudo_correct_solution_example")
 
 **Key Features:**
 
-- Multiple candidate answer generation strategies
-- Consistency-based answer selection
-- Uncertainty quantification support
-- Adaptive sampling mechanisms
+* Configurable multi-round answer generation (`max_times`)
+* Cleans and extracts answers via `StringCleaner`, `UnitTextManager` and `AnswerExtractor`
+* Selects final answer by frequency counting with `collections.Counter`
+* Logs progress at each generation round and filters out rows without a valid answer
+* Returns a list of the four output column keys for downstream processing
 
 **Usage Example:**
 
 ```python
-from dataflow.prompts.reasoning.general import GeneralAnswerGeneratorPrompt
+from dataflow.prompts.reasoning import AnswerGeneratorPrompt
+from dataflow.core import LLMServingABC
+from dataflow.utils.storage import DataFlowStorage
 
+# Prepare LLM serving and storage
+api_llm_serving = YourLLMServingImplementation()
+storage = DataFlowStorage(...)
+
+# Instantiate the pseudo-answer generator
 pseudo_gen = PseudoAnswerGenerator(
-          llm_serving=api_llm_serving,
-          prompt_template=GeneralAnswerGeneratorPrompt()
-          )
-result = pseudo_gen.run(
-          storage=self.storage.step(),
-          input_key="question",
-          output_key="pseudo_answer"
-          )
+    llm_serving=api_llm_serving,
+    max_times=5
+)
+
+# Run it on a DataFrame stored in 'storage'
+result_keys = pseudo_gen.run(
+    storage=storage,
+    input_key="instruction",
+    output_key_answer="pseudo_answers",
+    output_key_answer_value="pseudo_answer_value",
+    output_key_solutions="pseudo_solutions",
+    output_key_correct_solution_example="pseudo_correct_solution_example",
+)
+
+print("Generated columns:", result_keys)
 ```
+
 
 #### 3. QuestionGenerator✨🚀
 

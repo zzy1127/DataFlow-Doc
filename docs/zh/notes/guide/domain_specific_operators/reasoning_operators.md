@@ -213,36 +213,57 @@ result = answer_gen.run(
 
 **输入参数：**
 
-- `__init__()`
-  - `llm_serving`：使用的大语言模型接口对象（默认：前文预设值）
-  - `prompt_template`：生成问题的提示模板对象（例如`GeneralAnswerGeneratorPrompt()`）
-- `run()`
-  - `storage`：存储接口对象（默认：前文预设值）
-  - `input_key`：输入问题字段名（默认："question"）
-  - `output_key`：输出答案字段名（默认："pseudo_answer"）
+* `__init__()`
 
-**主要特性：**
+  * `llm_serving`：用于生成候选答案的 LLMServingABC 实例（默认值：None）
+  * `max_times`：执行生成轮次的最大次数（默认值：3）
+* `run()`
 
-- 多候选答案生成策略
-- 基于一致性的答案选择
-- 支持不确定性量化
-- 自适应采样机制
+  * `storage`：用于读取输入 DataFrame 并写入输出的 DataFlowStorage 接口
+  * `input_key`：DataFrame 中包含输入问题的列名（默认值："instruction"）
+  * `output_key_answer`：用于存储每行所有生成答案列表的列名（默认值："pseudo_answers"）
+  * `output_key_answer_value`：用于存储每行最终选择的答案值的列名（默认值："pseudo_answer_value"）
+  * `output_key_solutions`：用于存储所有与所选答案匹配的解决方案文本的列名（默认值："pseudo_solutions"）
+  * `output_key_correct_solution_example`：用于存储单个示例解决方案文本的列名（默认值："pseudo_correct_solution_example"）
+
+**主要功能：**
+
+* 可配置的多轮答案生成（`max_times`）
+* 通过 `StringCleaner`、`UnitTextManager` 和 `AnswerExtractor` 清洗并提取答案
+* 使用 `collections.Counter` 按频次计数选择最终答案
+* 记录每轮生成进度并过滤掉无效答案的行
+* 返回四个输出列键的列表以供后续处理
 
 **使用示例：**
 
 ```python
-from dataflow.prompts.reasoning.general import GeneralAnswerGeneratorPrompt
+from dataflow.prompts.reasoning import AnswerGeneratorPrompt
+from dataflow.core import LLMServingABC
+from dataflow.utils.storage import DataFlowStorage
 
+# Prepare LLM serving and storage
+api_llm_serving = YourLLMServingImplementation()
+storage = DataFlowStorage(...)
+
+# Instantiate the pseudo-answer generator
 pseudo_gen = PseudoAnswerGenerator(
-          llm_serving=api_llm_serving,
-          prompt_template=GeneralAnswerGeneratorPrompt()
-          )
-result = pseudo_gen.run(
-          storage=self.storage.step(),
-          input_key="question",
-          output_key="pseudo_answer"
-          )
+    llm_serving=api_llm_serving,
+    max_times=5
+)
+
+# Run it on a DataFrame stored in 'storage'
+result_keys = pseudo_gen.run(
+    storage=storage,
+    input_key="instruction",
+    output_key_answer="pseudo_answers",
+    output_key_answer_value="pseudo_answer_value",
+    output_key_solutions="pseudo_solutions",
+    output_key_correct_solution_example="pseudo_correct_solution_example",
+)
+
+print("Generated columns:", result_keys)
 ```
+
 
 #### 3. QuestionGenerator✨🚀
 
