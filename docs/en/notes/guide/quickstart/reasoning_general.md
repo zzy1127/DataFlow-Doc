@@ -1,5 +1,5 @@
 ---
-title: Case 4. Processing Reasoning QA Data
+title: Case 4. Synthesis and Processing of General Reasoning Data
 createTime: 2025/07/16 20:10:28
 permalink: /en/guide/reasoning_general/
 icon: basil:lightning-alt-outline
