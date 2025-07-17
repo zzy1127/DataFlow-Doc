@@ -1,5 +1,5 @@
 ---
-title: 案例4. 推理QA数据的处理
+title: 案例4. 通用推理数据的合成与处理
 createTime: 2025/07/16 20:10:28
 permalink: /zh/guide/reasoning_general/
 icon: basil:lightning-alt-outline
