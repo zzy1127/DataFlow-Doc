@@ -171,9 +171,8 @@ For parameter passing, the constructor of operator objects mainly passes informa
 
 ## Detailed Operator Descriptions
 
-### Data Generation Operators
 
-#### 1. AnswerGenerator✨
+### 1. AnswerGenerator✨
 
 **Function Description:** This operator is specifically designed to generate standard answers for mathematical problems through large language model calls for step-by-step reasoning and precise computation.
 
@@ -210,7 +209,7 @@ result = answer_gen.run(
           )
 ```
 
-#### 2. PseudoAnswerGenerator✨
+### 2. PseudoAnswerGenerator✨
 
 **Function Description:** This operator generates multiple candidate answers and uses statistical methods to select the optimal solution, achieving high-quality pseudo answer generation.
 
@@ -267,7 +266,7 @@ print("Generated columns:", result_keys)
 ```
 
 
-#### 3. QuestionGenerator✨🚀
+### 3. QuestionGenerator✨🚀
 
 **Function Description:** This operator can generate new related questions based on existing problems, supporting multiple generation strategies and difficulty control.
 
@@ -306,7 +305,7 @@ result = question_gen.run(
           )
 ```
 
-#### 4. PretrainFormatConverter✨
+### 4. PretrainFormatConverter✨
 
 **Function Description:** This operator is used to convert SFT (Supervised Fine-Tuning) format data to pretraining format, supporting custom input-output key configuration, suitable for pretraining data preparation for various generative models.
 
@@ -337,7 +336,7 @@ format_converter = PretrainFormatConverter(
 result = format_converter.run(storage=self.storage.step())
 ```
 
-#### 5. QuestionCategoryClassifier✨🚀
+### 5. QuestionCategoryClassifier✨🚀
 
 **Function Description:**  
 This operator is used to perform multi-level classification (main category and subcategory) of user questions. Through large language model semantic analysis of input questions, it outputs standardized classification codes for convenient use by downstream tasks.
@@ -369,7 +368,7 @@ result_cols = classifier.run(
 )
 ```
 
-#### 6. QuestionDifficultyClassifier✨
+### 6. QuestionDifficultyClassifier✨
 
 **Function Description:**  
 This operator is used to evaluate the difficulty level of questions. Through large language model complexity analysis of questions, it outputs numerical difficulty scores from 1-10 levels.
@@ -401,10 +400,7 @@ result_cols = difficulty.run(
 )
 ```
 
-
-### Processing Operators
-
-#### 1. AnswerFormatterFilter
+### 7. AnswerFormatterFilter
 
 **Function Description:** This operator is specifically designed to check the format compliance of mathematical answers, ensuring answers conform to standard mathematical representation formats.
 
@@ -431,7 +427,7 @@ result = filter_op.run(
           ) 
 ```
 
-#### 2. AnswerGroundTruthFilter✨
+### 8. AnswerGroundTruthFilter✨
 
 **Function Description:** This operator compares predicted answers with ground truth answers, supporting multiple comparison strategies.
 
@@ -462,7 +458,7 @@ result = filter_op.run(
           )
 ```
 
-#### 3. AnswerJudger_MathVerify✨
+### 9. AnswerJudger_MathVerify✨
 
 **Function Description:** This operator verifies mathematical answer correctness through advanced symbolic computation, supporting equivalence judgment of complex mathematical expressions.
 
@@ -491,7 +487,7 @@ result = judger_op.run(
           )
 ```
 
-#### 4. AnswerNgramFilter✨
+### 10. AnswerNgramFilter✨
 
 **Function Description:** This operator detects repetitive patterns in answers based on n-gram statistical analysis, filtering low-quality repetitive content.
 
@@ -528,7 +524,7 @@ result = ngram_filter.run(
           )
 ```
 
-#### 5. AnswerPipelineRoot✨
+### 11. AnswerPipelineRoot✨
 
 **Function Description:** Root node operator of the answer processing pipeline, responsible for intelligently distributing data to different processing branches.
 
@@ -557,7 +553,7 @@ result = root_op.run(
           )
 ```
 
-#### 6. AnswerTokenLengthFilter
+### 12. AnswerTokenLengthFilter
 
 **Function Description:** This operator controls answer length based on token count, filtering answers that are too long or too short.
 
@@ -590,7 +586,7 @@ result = length_filter.run(
           )
 ```
 
-#### 7. QuestionFilter✨🚀
+### 13. QuestionFilter✨🚀
 
 **Function Description:** This operator performs comprehensive quality checks on mathematical problems, ensuring problem correctness and solvability.
 
