@@ -29,15 +29,15 @@ export const Guide: ThemeNote = defineNoteConfig({
                 "reasoning_general",
             ],
         },
-                {
-            text: 'Dataflow 智能体',
-            collapsed: false,
-            icon: 'ri:robot-2-line',
-            prefix: 'agent',
-            items: [
-                "DataFlow-AgentPipelineOrchestration",
-            ],
-        },
+        //         {
+        //     text: 'Dataflow 智能体',
+        //     collapsed: false,
+        //     icon: 'ri:robot-2-line',
+        //     prefix: 'agent',
+        //     items: [
+        //         "DataFlow-AgentPipelineOrchestration",
+        //     ],
+        // },
         {
             text:"流水线教程",
             collapsed: false,
@@ -86,6 +86,7 @@ export const Guide: ThemeNote = defineNoteConfig({
             prefix: 'agent',
             items: [
                 "agent_for_data",
+                "DataFlow-AgentPipelineOrchestration",
                 "agent_for_dataflow_new",
             ]
         },

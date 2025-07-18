@@ -28,15 +28,15 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'conversation_synthesis'
             ],
         },
-        {
-            text: 'Dataflow Agent',
-            collapsed: false,
-            icon: 'ri:robot-2-line',
-            prefix: 'agent',
-            items: [
-                'DataFlow-AgentPipelineOrchestration'
-            ],
-        },
+        // {
+        //     text: 'Dataflow Agent',
+        //     collapsed: false,
+        //     icon: 'ri:robot-2-line',
+        //     prefix: 'agent',
+        //     items: [
+        //         'DataFlow-AgentPipelineOrchestration'
+        //     ],
+        // },
         {
             text: "Guide for Pipelines",
             collapsed: false,
@@ -83,7 +83,9 @@ export const Guide: ThemeNote = defineNoteConfig({
             icon: 'mdi:face-agent',
             prefix: 'agent',
             items: [
-                "agent_for_data"
+                "agent_for_data",
+                "DataFlow-AgentPipelineOrchestration",
+                "agent_for_dataflow_new"
             ]
         },
     ],
