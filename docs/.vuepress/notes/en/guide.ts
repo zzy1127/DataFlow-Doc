@@ -29,6 +29,7 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'reasoning_general',
                 'prompted_vqa',
                 'mathquestion_extract',
+                'knowledge_cleaning',
             ],
         },
         // {
