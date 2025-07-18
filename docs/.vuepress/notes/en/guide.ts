@@ -25,7 +25,8 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'quickstart',
                 'translation',
                 'sft_synthesis',
-                'conversation_synthesis'
+                'conversation_synthesis',
+                'reasoning_general',
             ],
         },
         // {
