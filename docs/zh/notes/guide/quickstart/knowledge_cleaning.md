@@ -1,5 +1,5 @@
 ---
-title: 案例5：批量知识库清洗
+title: 案例7：批量知识库清洗
 createTime: 2025/07/18 17:31:15
 permalink: /zh/guide/7s1yn8u5/
 icon: basil:lightning-alt-outline

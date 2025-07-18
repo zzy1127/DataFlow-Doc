@@ -27,9 +27,9 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'sft_synthesis',
                 'conversation_synthesis',
                 "reasoning_general",
-                'knowledge_cleaning',
                 "prompted_vqa",
                 "mathquestion_extract",
+                'knowledge_cleaning',
             ],
         },
         //         {
