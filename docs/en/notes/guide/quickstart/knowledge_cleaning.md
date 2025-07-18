@@ -64,6 +64,25 @@ During execution, this pipeline will sequentially call:
 
 For detailed descriptions of each operator, refer to the "Knowledge Base Cleaning and QA Generation" section. Once executed, a JSON file will be generated in the `.cache` directory with contents as shown below.
 
+> The demo only provides two sources for functionality demonstration. In addition, Dataflow also offers users 1,000 Arxiv papers for testing the functionality. The topics of the papers include LLM, databases, and more. The dataset link is: [Open-Dataflow/1k\_arxiv · Datasets at Hugging Face](https://huggingface.co/datasets/Open-Dataflow/1k_arxiv). You can download the dataset and organize it into the following format:
+>
+> ```jsonl
+> {"raw_content": "path/to/first.pdf"}
+> {"raw_content": "path/to/second.pdf"}
+> ...
+> ```
+>
+> Then, configure your path file `/path/to/all_pdf.jsonl` as shown below to enable batch cleaning of the knowledge base.
+>
+> ```python
+> self.storage = FileStorage(
+>     first_entry_file_name="/path/to/all_pdf.jsonl",
+>     cache_path="./.cache/gpu",
+>     file_name_prefix="batch_cleaning_step",
+>     cache_type="json"
+> )
+> ```
+
 ## Example of Synthesized Data
 
 ```json

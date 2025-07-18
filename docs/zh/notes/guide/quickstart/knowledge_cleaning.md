@@ -66,6 +66,25 @@ python kbcleaning_pipeline_batch_sglang.py
 
 对于算子的具体功能介绍可以参考"知识库清洗和QA合成"部分，此处调用后会在`.cache 目录下`中生成一个json文件，文件内容如下文所示。
 
+> Demo中只提供了两个Source用于功能展示。除此之外，Dataflow还为用户提供了一千篇Arxiv论文供用户测试功能。论文的主题包括LLM，数据库等。数据集链接：[Open-Dataflow/1k_arxiv · Datasets at Hugging Face](https://huggingface.co/datasets/Open-Dataflow/1k_arxiv) 您可以下载后将数据集整理成如下格式：
+>
+> ```jsonl
+> {"raw_content": "path/to/first.pdf"}
+> {"raw_content": "path/to/second.pdf"}
+> ...
+> ```
+>
+> 并通过下面方式配置您的路径文件/path/to/all_pdf.jsonl，即可实现大批量清洗知识库。
+>
+> ```python
+> self.storage = FileStorage(
+>     first_entry_file_name="/path/to/all_pdf.jsonl",
+>     cache_path="./.cache/gpu",
+>     file_name_prefix="batch_cleaning_step",
+>     cache_type="json"
+> )
+> ```
+
 ## 合成数据示例
 
 ```json
