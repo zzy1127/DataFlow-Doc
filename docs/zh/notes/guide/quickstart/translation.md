@@ -1,5 +1,5 @@
 ---
-title: 案例1. 机器翻译,答案合成,缩写
+title: 案例1. 机器翻译/答案合成/缩写
 createTime: 2025/06/30 19:19:16
 permalink: /zh/guide/translation/
 icon: basil:lightning-alt-outline
