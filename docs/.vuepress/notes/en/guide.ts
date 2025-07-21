@@ -30,6 +30,7 @@ export const Guide: ThemeNote = defineNoteConfig({
                 'prompted_vqa',
                 'mathquestion_extract',
                 'knowledge_cleaning',
+                'quick_general_text_evaluation'
             ],
         },
         // {
@@ -79,6 +80,7 @@ export const Guide: ThemeNote = defineNoteConfig({
                 "rare_operators",
                 "knowledgebase_QA_operators",
                 "agenticrag_operators",
+                "funccall_operators"
             ]
         },
         {
