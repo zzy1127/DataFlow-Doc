@@ -9,7 +9,7 @@ permalink: /zh/guide/hy4417i0/
 
 ## 1. 概述
 
-**函数调用数据合成流水线**和目标是，通过函数/工具调用多轮对话数据的合成，扩展现有文本数据集的多样性，为模型在下游任务上的优化提供更加丰富的训练数据。流水线主要包含真实任务场景的提取和生成，任务的生成与验证，函数生成，多智能体多轮对话生成等步骤，最后给出针对函数调用场景的对话数据集。
+**函数调用数据合成流水线**的目标是，通过函数/工具调用多轮对话数据的合成，扩展现有文本数据集的多样性，为模型在下游任务上的优化提供更加丰富的训练数据。流水线主要包含真实任务场景的提取和生成，任务的生成与验证，函数生成，多智能体多轮对话生成等步骤，最后给出针对函数调用场景的对话数据集。
 
 流水线的主要流程参考了论文[BUTTON](https://arxiv.org/abs/2410.12952)中提出的数据合成步骤，包括：
 
@@ -34,7 +34,7 @@ permalink: /zh/guide/hy4417i0/
 
 ```python
 self.storage = FileStorage(
-    first_entry_file_name="./dataflow/example/FuncCallPipeline/chat_data.jsonl",
+    first_entry_file_name="../example_data/FuncCallPipeline/chat_data.jsonl",
     cache_path="./cache",
     file_name_prefix="dataflow_cache_step",
     cache_type="jsonl",
@@ -170,14 +170,16 @@ multi_turn_conversations_generator = MultiTurnConversationGenerator(
 
 ## 3. 运行方式
 
-该流水线通过简单的Python命令执行：
+在`DataFlow`项目路径之外新建工作文件夹，例如`workspace`，并在其中运行`dataflow init`。该操作会将流水线及示例数据复制到工作文件夹中，切换到路径`api_pipelines/`即可执行流水线。
 
 ```bash
-python test/test_func_call.py
+cd workspace
+dataflow init
+cd api_pipelines/
+python func_call_synthesis.py 
 ```
 
 ## 4. 流水线示例
-以下给出示例流水线，演示如何使用多个算子进行推理数据处理。该示例展示了如何初始化一个函数调用数据合成流水线，并且顺序执行各个步骤。
 
 ```python
 from dataflow.utils.storage import FileStorage
@@ -197,7 +199,7 @@ class FuncCallPipeline:
     def __init__(self):
 
         self.storage = FileStorage(
-            first_entry_file_name="./dataflow/example/FuncCallPipeline/chat_data.jsonl",
+            first_entry_file_name="../example_data/FuncCallPipeline/chat_data.jsonl",
             cache_path="./cache",
             file_name_prefix="dataflow_cache_step",
             cache_type="jsonl",
