@@ -1,11 +1,11 @@
 ---
-title: 案例8. 快速数据清洗与质量评估
+title: 案例8. 快速数据质量评估
 createTime: 2025/07/19 21:30:30
 permalink: /zh/guide/91uyowwk/
 icon: basil:lightning-alt-outline
 ---
 
-# 快速开始: 简易数据清洗与质量评估
+# 快速开始: 简易数据质量评估
 
 本案例展示如何使用DataFlow中GeneralText部分的算子进行快速质量评估。
 

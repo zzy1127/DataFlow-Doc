@@ -5,7 +5,7 @@ permalink: /en/guide/c9gv10k1/
 icon: basil:lightning-alt-outline
 ---
 
-# Quick Start: Simple Data Cleaning and Quality Evaluation
+# Quick Start: Simple Data Quality Evaluation
 
 This case demonstrates how to perform quick quality evaluation using operators from the GeneralText module in DataFlow.
 
