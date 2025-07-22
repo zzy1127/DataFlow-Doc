@@ -50,3 +50,207 @@ permalink: /zh/guide/lo3cyadt/
     </tr>
   </tbody>
 </table>
+
+## 算子接口调用说明
+
+特别地，对于指定存储路径等或是调用模型的算子，我们提供了封装后的**模型接口**以及**存储对象接口**，可以通过以下方式为算子进行模型API参数预定义：
+
+```python
+from dataflow.llmserving import APILLMServing_request
+
+api_llm_serving = APILLMServing_request(
+                api_url="your_api_url",
+                model_name="model_name",
+                max_workers=5
+        )
+```
+可以通过以下方式为算子进行存储参数预定义：
+
+```python
+from dataflow.utils.storage import FileStorage
+
+ self.storage = FileStorage(
+            first_entry_file_name="your_file_path",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl", # jsonl, json, ...
+        )
+```
+
+后文使用的`api_llm_serving`以及`self.storage`即为此处已定义的接口对象，完整调用示例可参考`test/test_general_text.py`。
+
+对于传参，算子对象的构造函数主要传递与算子配置相关的信息，配置后可以一配置多调用；而`X.run()`函数传递与IO相关的`key`信息，详细可见后文算子说明示例。
+
+
+## 详细算子说明
+
+### 1. PretrainGenerator✨
+
+**功能描述：** 该算子专门用于基于给定文档内容，生成预训练格式的多轮对话问答数据。将原始文档内容转换为适合语言模型预训练的对话格式数据，通过调用大语言模型进行文档内容的重新组织和表达。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（必需，需实现LLMServingABC接口）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入文档内容字段名（默认："raw_content"）
+  - `output_key`：输出生成内容字段名（默认："generated_content"）
+
+**主要特性：**
+
+- 支持多种文档格式的内容转换
+- 自动生成适合预训练的对话格式数据
+- 保持原始文档的核心信息完整性
+- 支持批量处理大规模文档数据
+
+**使用示例：**
+
+```python
+from dataflow.prompts.general_text import PretrainGeneratorPrompt
+
+pretrain_gen = PretrainGenerator(
+          llm_serving=api_llm_serving
+          )
+result = pretrain_gen.run(
+          storage=self.storage.step(),
+          input_key="raw_content",
+          output_key="generated_content"
+          )
+```
+
+
+### 2. SFTGeneratorSeed✨
+
+**功能描述：** 该算子基于给定文档内容，生成监督微调格式的问答数据，并支持用户自定义生成内容要求。从原始文档中提取信息，生成符合SFT格式的指令-响应对，特别适用于构建高质量的监督微调数据集。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（必需，需实现LLMServingABC接口）
+  - `custom_prompt`：用户自定义提示词（必需，定义生成内容的具体要求）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入文档内容字段名（默认："raw_content"）
+
+**主要特性：**
+
+- 支持用户自定义生成内容要求
+- 自动提取和解析JSON格式的指令-响应对
+- 保留原始文档内容用于追溯
+- 智能过滤无效生成结果
+- 支持最大4096 tokens的长文本生成
+
+**输出格式：**
+
+- 包含'instruction'、'output'和'raw_content'字段的DataFrame
+- 返回包含'instruction'和'output'字段名的列表
+
+**使用示例：**
+
+```python
+from dataflow.prompts.general_text import SFTGeneratorSeedPrompt
+
+sft_gen = SFTGeneratorSeed(
+          llm_serving=api_llm_serving,
+          custom_prompt="请基于文档内容生成教学问答对"
+          )
+result_keys = sft_gen.run(
+          storage=self.storage.step(),
+          input_key="raw_content"
+          )
+```
+
+
+### 3. CondorGenerator✨🚀
+
+**功能描述：** 该算子基于预置知识树标签，通过两阶段流程从零合成SFT格式数据。第一阶段根据随机选择的主题、领域和主题标签生成不同难度级别（Easy、Medium、Hard）的问题，第二阶段为每个问题生成对应的详细答案。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（必需，需实现LLMServingABC接口）
+  - `num_samples`：生成样本总数（默认：15，建议小于5000以保证数据质量）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+
+**主要特性：**
+
+- 两阶段生成流程确保问答质量
+- 支持三个难度级别的问题生成
+- 基于预置知识树标签保证内容多样性
+- 自动解析和格式化生成结果
+- 智能错误处理和日志记录
+
+**生成流程：**
+
+1. **问题生成阶段**：根据随机选择的topic、domain、theme生成三个难度级别的问题
+2. **答案生成阶段**：为每个有效问题生成对应的详细答案
+3. **数据整理阶段**：将问题和答案组织成标准SFT格式
+
+**输出格式：**
+
+- 包含'difficulty'、'instruction'和'output'字段的DataFrame
+- difficulty字段标识问题难度级别（Easy/Medium/Hard）
+
+**使用示例：**
+
+```python
+from dataflow.prompts.general_text import CondorPrompt
+
+condor_gen = CondorGenerator(
+          llm_serving=api_llm_serving,
+          num_samples=150  # 将生成约150个问答对
+          )
+result_df = condor_gen.run(
+          storage=self.storage.step()
+          )
+```
+
+**注意事项：**
+
+- 当生成数量大于5000时，建议在`dataflow.prompts.general_text.CondorPrompt`中增加标签数量以提高数据丰富性
+- 算子会自动处理解析失败的响应，确保输出数据的有效性
+
+
+### 4. PromptedGenerator✨
+
+**功能描述：** 该算子基于用户提供的提示词（prompt）生成数据，结合系统提示词和输入内容生成符合要求的输出文本。提供了最大的灵活性，允许用户完全自定义生成逻辑和输出格式。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（必需，需实现LLMServingABC接口）
+  - `system_prompt`：系统提示词，定义模型行为（默认："You are a helpful agent."）
+- `run()`
+  - `storage`：存储接口对象（默认：前文预设值）
+  - `input_key`：输入内容字段名（默认："raw_content"）
+  - `output_key`：输出生成内容字段名（默认："generated_content"）
+
+**主要特性：**
+
+- 完全自定义的提示词控制
+- 灵活的输入输出字段配置
+- 支持任意格式的文本生成任务
+- 简单直接的系统提示词与输入内容组合
+- 批量处理能力
+
+**工作原理：**
+
+1. 将系统提示词与输入内容直接拼接
+2. 调用LLM生成对应的输出内容
+3. 将生成结果添加到指定的输出字段
+
+**使用示例：**
+
+```python
+prompted_gen = PromptedGenerator(
+          llm_serving=api_llm_serving,
+          system_prompt="你是一个专业的文档摘要生成器，请为以下内容生成简洁的摘要："
+          )
+result_key = prompted_gen.run(
+          storage=self.storage.step(),
+          input_key="raw_content",
+          output_key="summary"
+          )
+```
