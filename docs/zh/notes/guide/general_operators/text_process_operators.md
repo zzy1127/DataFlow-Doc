@@ -210,6 +210,12 @@ DataFlow目前支持的文本数据处理主要针对于数据点层面，可以
   </thead>
   <tbody>
     <tr>
+      <td class="tg-0pky">GeneralFilter</td>
+      <td class="tg-0pky">任意Dataframe</td>
+      <td class="tg-0pky">支持通过一/多个自定义lambda函数对 DataFrame 进行灵活过滤</td>
+      <td class="tg-0pky"> - </td>
+    </tr>
+    <tr>
       <td class="tg-0pky">LanguageFilter</td>
       <td class="tg-0pky">预训练、SFT</td>
       <td class="tg-0pky">使用fasttext语言识别模型过滤特定语言</td>
