@@ -256,3 +256,58 @@ result_key = prompted_gen.run(
           output_key="summary"
           )
 ```
+
+### 5. ConsistentChatGenerator ✨
+
+**Description:**  
+This operator synthesizes multi-turn dialogue data from scratch using a two-stage process based on predefined topics and user intents. In the first stage, it generates user queries under a specific topic and intent; in the second stage, it produces assistant replies for each query. It is ideal for constructing large-scale dialogue datasets with strong consistency and clearly defined categories.
+
+**Input Parameters:**
+
+- `__init__()`  
+  - `llm_serving`: An instance of an LLM interface implementing the `LLMServingABC` protocol (required)  
+  - `num_dialogs_per_intent`: Number of dialogues to generate per intent (default: 20, recommended ≤ 1000)  
+  - `num_turns_per_dialog`: Number of turns per dialogue (default: 6)  
+  - `temperature`: Sampling temperature controlling generation randomness (default: 0.9)  
+
+- `run()`  
+  - `storage`: The storage interface object (default: uses predefined context)
+
+**Key Features:**
+
+- Predefined combinations of topics and intents, covering multiple domains  
+- Two-stage generation: user queries first, assistant responses second  
+- Auto-cleaning of malformed or invalid generations  
+- Supports large-scale synthesis (recommended < 9000 dialogues; extend topic tags for more)  
+- Generates standardized multi-turn dialogue format compatible with SFT training
+
+**Output Format:**
+
+- A DataFrame with `category` and `conversation` fields  
+- The `conversation` field is a list of multi-turn Q&A items. Each turn follows the structure:  
+  ```json
+  [
+    {"role": "user", "value": "question"},
+    {"role": "assistant", "value": "answer"},
+    ...
+  ]
+
+**Usage Example:**
+```python
+from dataflow.operators.general_text import ConsistentChatGenerator
+
+consistent_gen = ConsistentChatGenerator(
+    llm_serving=api_llm_serving,
+    num_dialogs_per_intent=30,
+    num_turns_per_dialog=4,
+    temperature=0.85
+)
+
+result_df = consistent_gen.run(
+    storage=self.storage.step()
+)
+```
+
+**Notes:**
+
+When generating more than 9000 dialogues, it is recommended to expand the topic_dict in ConsistentChatPrompt to improve the diversity and coverage of the generated conversations. To ensure high-quality output, the operator automatically skips any malformed or unparseable generations, maintaining a consistent and reliable dialogue structure. During multi-turn conversation generation, the operator invokes the LLM API twice for each dialogue (once for user questions and once for assistant responses), so a stable and responsive LLM service is essential.

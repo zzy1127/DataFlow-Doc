@@ -254,3 +254,59 @@ result_key = prompted_gen.run(
           output_key="summary"
           )
 ```
+
+### 5. ConsistentChatGenerator ✨
+
+**功能描述：**  
+该算子基于预置主题和人类意图，通过两阶段流程从零合成多轮对话格式数据。第一阶段生成特定主题和意图下的多轮用户提问，第二阶段为每轮问题生成对应回复。适用于构建一致性强、类别明确的大规模对话语料。
+
+**输入参数：**
+
+- `__init__()`  
+  - `llm_serving`：使用的大语言模型接口对象（必需，需实现 LLMServingABC 接口）  
+  - `num_dialogs_per_intent`：每个意图生成的对话数量（默认：20，建议不超过1000）  
+  - `num_turns_per_dialog`：每个对话包含的轮次数量（默认：6）  
+  - `temperature`：生成温度，控制采样随机性（默认：0.9）  
+
+- `run()`  
+  - `storage`：存储接口对象（默认：前文预设值）
+
+**主要特性：**
+
+- 预置主题与意图组合，覆盖多领域场景  
+- 两阶段生成：先生成用户问题，再生成对应回答  
+- 自动清洗格式错误及无效结果  
+- 支持大规模批量合成（推荐数量 < 9000，超过建议扩展主题标签）  
+- 生成标准的多轮对话格式，适配常见 SFT 训练任务
+
+**输出格式：**
+
+- 包含 `category` 和 `conversation` 字段的 DataFrame  
+- `conversation` 字段为多轮问答组成的对话列表，每轮对话结构为：  
+  ```json
+  [
+    {"role": "user", "value": "问题"},
+    {"role": "assistant", "value": "回答"},
+    ...
+  ]
+
+**使用示例：**
+```python
+from dataflow.operators.general_text import ConsistentChatGenerator
+
+consistent_gen = ConsistentChatGenerator(
+    llm_serving=api_llm_serving,
+    num_dialogs_per_intent=30,
+    num_turns_per_dialog=4,
+    temperature=0.85
+)
+
+result_df = consistent_gen.run(
+    storage=self.storage.step()
+)
+
+```
+
+**注意事项：**
+
+当合成对话的数量超过 9000 条时，建议在 ConsistentChatPrompt 中扩展 topic_dict，以提升生成对话的多样性和覆盖范围。为了保证输出数据的质量，算子会自动跳过格式不合规或无法解析的生成结果，确保最终得到的对话结构清晰、内容合理。在生成多轮对话的过程中，该算子会对每条对话调用两次 LLM 接口（一次生成用户提问，一次生成助手回答），因此需要确保所使用的 LLM 服务稳定、响应迅速。
