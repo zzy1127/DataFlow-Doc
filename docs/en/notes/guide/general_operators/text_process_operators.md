@@ -213,6 +213,12 @@ DataFlow currently supports text data processing at the data point level, catego
   </thead>
   <tbody>
     <tr>
+      <td class="tg-0pky">GeneralFilter</td>
+      <td class="tg-0pky">Any DataFrame</td>
+      <td class="tg-0pky">Supports flexible filtering of the DataFrame using one or more custom lambda functions</td>
+      <td class="tg-0pky"> - </td>
+    </tr>
+    <tr>
       <td class="tg-0pky">LanguageFilter</td>
       <td class="tg-0pky">Pre-training, SFT</td>
       <td class="tg-0pky">Filters specific languages using the fasttext language identification model.</td>

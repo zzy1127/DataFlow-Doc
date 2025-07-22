@@ -1,7 +1,7 @@
 ---
 title: 通用文本数据评估算子
 createTime: 2025/06/09 11:43:42
-permalink: /zh/guide/f50mqhmb/
+permalink: /zh/guide/text_evaluation_operators/
 ---
 
 
@@ -632,6 +632,904 @@ permalink: /zh/guide/f50mqhmb/
   </tr>
 </tbody>
 </table>
+
+## 算子接口调用说明
+
+特别地，对于指定存储路径等或是调用模型的算子，我们提供了封装后的**模型接口**以及**存储对象接口**，可以通过以下方式为算子进行模型API参数预定义：
+
+```python
+from dataflow.llmserving import APILLMServing_request
+
+api_llm_serving = APILLMServing_request(
+                api_url="your_api_url",
+                model_name="model_name",
+                max_workers=5
+        )
+```
+
+可以通过以下方式为算子进行存储参数预定义：
+
+```python
+from dataflow.utils.storage import FileStorage
+
+ self.storage = FileStorage(
+            first_entry_file_name="your_file_path",
+            cache_path="./cache",
+            file_name_prefix="dataflow_cache_step",
+            cache_type="jsonl", # jsonl, json, ...
+        )
+```
+
+后文使用的`api_llm_serving`以及`self.storage`即为此处已定义的接口对象，完整调用示例可参考`test/test_text_evaluation.py`。
+
+对于传参，算子对象的构造函数主要传递与算子配置相关的信息，配置后可以一配置多调用；而`X.run()`函数传递与IO相关的`key`信息，详细可见后文算子说明示例。
+
+
+## 详细算子说明
+
+### APIcaller算子
+
+#### 1. AlpagasusScorer✨
+
+**功能描述：** 该算子通过调用GPT评估指令的质量，返回一个质量得分，得分越高表明指令的质量越高。基于Alpagasus方法，专门用于评估指令数据的质量和有效性。
+
+**输入参数：**
+
+- `__init__()`
+  - `llm_serving`：使用的大语言模型接口对象（必需，需实现LLMServingABC接口）
+  - `dimension`：评估维度（默认："quality"）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_instruction_key`：指令字段名
+  - `input_input_key`：输入文本字段名
+  - `input_output_key`：输出文本字段名
+  - `output_key`：输出得分字段名（默认："AlpagasusScore"）
+
+**主要特性：**
+
+- 基于GPT的智能质量评估
+- 支持自定义评估维度
+- 自动解析评分结果
+- 适用于指令微调数据质量评估
+
+**使用示例：**
+
+```python
+alpagasus_scorer = AlpagasusScorer(
+          llm_serving=api_llm_serving,
+          dimension="quality"
+          )
+alpagasus_scorer.run(
+          storage=self.storage.step(),
+          input_instruction_key="instruction",
+          input_input_key="input",
+          input_output_key="output",
+          output_key="AlpagasusScore"
+          )
+```
+
+#### 2. PerspectiveScorer✨
+
+**功能描述：** 该算子使用PerspectiveAPI评估文本的毒性，返回毒性概率，得分越高表明文本毒性越高。专门用于检测文本中的有害内容和不当言论。
+
+**输入参数：**
+
+- `__init__()`
+  - `serving`：Perspective API服务对象
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："PerspectiveScore"）
+
+**主要特性：**
+
+- 基于Google Perspective API的毒性检测
+- 自动处理文本长度限制（最大20KB）
+- 支持批量处理
+- 返回0-1范围的毒性概率
+
+**使用示例：**
+
+```python
+perspective_scorer = PerspectiveScorer(serving=perspective_api_serving)
+perspective_scorer.run(
+          storage=self.storage.step(),
+          input_key="text",
+          output_key="PerspectiveScore"
+          )
+```
+
+#### 3. TreeinstructScore✨
+
+**功能描述：** 该算子通过生成语法树的节点数来衡量指令复杂性，节点越多表示指令越复杂。基于语法分析的方法评估指令的结构复杂度。
+
+**输入参数：**
+
+- `__init__()`
+  - 无需特殊参数
+- `run()`
+  - `storage`：存储接口对象
+  - `input_instruction_key`：指令字段名
+  - `output_key`：输出得分字段名（默认："TreeinstructScore"）
+
+**主要特性：**
+
+- 基于语法树分析的复杂度评估
+- 自动解析指令语法结构
+- 量化指令复杂性
+- 适用于指令多样性分析
+
+**使用示例：**
+
+```python
+treeinstruct_scorer = TreeinstructScore()
+treeinstruct_scorer.run(
+          storage=self.storage.step(),
+          input_instruction_key="instruction",
+          output_key="TreeinstructScore"
+          )
+```
+
+
+### Diversity算子
+
+#### 1. Task2VecScorer✨
+
+**功能描述：** 该算子评估数据集的多样性，使用Task2Vec方法，高分表示数据集具有较高的多样性。基于任务嵌入的方法来计算数据集间的相似性和多样性。
+
+**输入参数：**
+
+- `__init__()`
+  - 无需特殊参数
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+
+**主要特性：**
+
+- 基于Task2Vec方法的多样性评估
+- 计算置信区间
+- 适用于任务级别的多样性分析
+- 开源首发算法
+
+**使用示例：**
+
+```python
+task2vec_scorer = Task2VecScorer()
+result = task2vec_scorer.run(
+          storage=self.storage.step(),
+          input_key="text"
+          )
+```
+
+#### 2. VendiScorer
+
+**功能描述：** 该算子通过计算VendiScore来评估数据集的多样性，使用BERT和SimCSE模型生成嵌入并计算分数。VendiScore是一种基于核矩阵特征值的多样性度量方法，能够有效评估数据集的丰富性和覆盖范围。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+
+**主要特性：**
+
+- 多模型评估：同时使用BERT、SimCSE和N-gram方法
+- 基于嵌入的多样性计算
+- 适用于整个数据集的多样性评估
+- 支持GPU加速计算
+
+**输出格式：**
+
+- `N-gramsVendiScore`：基于N-gram的多样性得分
+- `BERTVendiScore`：基于BERT的多样性得分
+- `SimCSEVendiScore`：基于SimCSE的多样性得分
+
+**使用示例：**
+
+```python
+vendi_scorer = VendiScorer(device="cuda")
+result = vendi_scorer.run(
+          storage=self.storage.step(),
+          input_key="text"
+          )
+```
+
+
+### Models算子
+
+
+#### 1. DebertaV3Scorer✨
+
+**功能描述：** 基于Nvidia Deberta V3模型的质量分类器，用于评估文本质量。该算子将文本分类为高（High）、中（Medium）、低（Low）三个质量等级，适用于大规模文本质量筛选。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `batch_size`：批处理大小（默认：32）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："DebertaV3Score"）
+
+**主要特性：**
+
+- 基于DeBERTa-v3-large模型的高精度文本质量分类
+- 三级质量分类：High、Medium、Low
+- 支持批量处理，提高处理效率
+- GPU加速计算
+- 适用于多种文本类型的质量评估
+
+**评估维度：** 内容准确性与有效性
+
+**数据类型：** 文本
+
+**取值范围：** \{Low, Medium, High\}
+
+**使用示例：**
+
+```python
+deberta_scorer = DebertaV3Scorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    batch_size=32
+)
+deberta_scorer.run(
+    storage=self.storage.step(),
+    input_key="text",
+    output_key="DebertaV3Score"
+)
+```
+
+#### 2. FineWebEduScorer✨
+
+**功能描述：** 用于评估文本教育价值的分类器，基于FineWeb-Edu数据集训练。该算子能够识别具有教育意义的文本内容，为教育资源筛选和课程内容开发提供支持。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `batch_size`：批处理大小（默认：32）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："FineWebEduScore"）
+
+**主要特性：**
+
+- 专门针对教育价值评估设计
+- 基于大规模教育文本数据训练
+- 0-5分的细粒度评分
+- 支持多语言文本评估
+- 高效的批量处理能力
+
+**评估维度：** 教育价值
+
+**数据类型：** 文本
+
+**取值范围：** [0, 5]
+
+**使用示例：**
+
+```python
+fineweb_edu_scorer = FineWebEduScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    batch_size=32
+)
+fineweb_edu_scorer.run(
+    storage=self.storage.step(),
+    input_key="text",
+    output_key="FineWebEduScore"
+)
+```
+
+#### 3. InstagScorer✨
+
+**功能描述：** 通过返回标签的数量来评估指令的内容多样性，标签越多表示内容多样性越大。该算子基于InsTagger模型，能够自动识别指令中涉及的不同主题和任务类型。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `batch_size`：批处理大小（默认：16）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_instruction_key`：指令字段名（默认："instruction"）
+  - `output_key`：输出得分字段名（默认："InstagScore"）
+
+**主要特性：**
+
+- 基于InsTagger模型的多标签分类
+- 自动识别指令涉及的任务类型和主题
+- 量化指令内容的多样性
+- 支持复杂指令的细粒度分析
+- 适用于指令数据集的多样性评估
+
+**评估维度：** 多样性与复杂性
+
+**数据类型：** 指令
+
+**取值范围：** 正整数（标签数量）
+
+**使用示例：**
+
+```python
+instag_scorer = InstagScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    batch_size=16
+)
+instag_scorer.run(
+    storage=self.storage.step(),
+    input_instruction_key="instruction",
+    output_key="InstagScore"
+)
+```
+
+#### 4. PerplexityScorer
+
+**功能描述：** 基于Kenlm模型计算文本的困惑度，困惑度越低，文本的流畅性和可理解性越高。该算子使用统计语言模型评估文本的自然度和语言质量。
+
+**输入参数：**
+
+- `__init__()`
+  - `model_path`：Kenlm模型路径（默认：预设模型路径）
+  - `language`：语言类型（默认："en"）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："PerplexityScore"）
+
+**主要特性：**
+
+- 基于n-gram统计语言模型
+- 快速计算文本困惑度
+- 支持多种语言
+- 内存占用小，计算效率高
+- 适用于大规模文本流畅性评估
+
+**评估维度：** 流畅性与可理解性
+
+**数据类型：** 文本
+
+**取值范围：** 正数（困惑度值，越小越好）
+
+**使用示例：**
+
+```python
+perplexity_scorer = PerplexityScorer(
+    model_path="./models/kenlm_model.bin",
+    language="en"
+)
+perplexity_scorer.run(
+    storage=self.storage.step(),
+    input_key="text",
+    output_key="PerplexityScore"
+)
+```
+
+
+#### 5. QuratingScorer✨
+
+**功能描述：** 通过Qurating模型评估文本的质量，得分越高表示质量越高。该算子基于多维度评估框架，能够从写作风格、教育价值、专业知识要求等多个角度评估文本质量。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `batch_size`：批处理大小（默认：16）
+  - `max_length`：最大序列长度（默认：512）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："QuratingScore"）
+
+**主要特性：**
+
+- 多维度文本质量评估
+- 基于大规模高质量文本训练
+- 支持长文本处理
+- 提供细粒度的质量评分
+- 适用于学术和专业文本评估
+
+**评估维度：** 内容准确性与有效性、教育价值
+
+**数据类型：** 文本
+
+**取值范围：** 连续数值（越高越好）
+
+**输出指标：**
+- `QuratingWritingStyleScore`：写作风格评分
+- `QuratingEducationalValueScore`：教育价值评分
+- `QuratingRequiredExpertiseScore`：专业知识要求评分
+- `QuratingFactsAndTriviaScore`：事实和知识评分
+
+**使用示例：**
+
+```python
+qurating_scorer = QuratingScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    batch_size=16,
+    max_length=512
+)
+qurating_scorer.run(
+    storage=self.storage.step(),
+    input_key="text",
+    output_key="QuratingScore"
+)
+```
+
+#### 6. PairQualScorer🚀
+
+**功能描述：** 通过PairQual模型评估文本的质量，基于bge模型，支持中英双语，使用GPT对文本成对比较打分后训练而成。这是一个自主创新的算子，专门针对中英文文本质量评估进行了优化。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `batch_size`：批处理大小（默认：32）
+  - `language`：语言类型（默认："auto"，自动检测）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："PairQualScore"）
+
+**主要特性：**
+
+- 基于BGE模型的双语质量评估
+- 使用GPT成对比较数据训练
+- 支持中英文双语评估
+- 自主创新算法
+- 高精度的质量判断能力
+
+**评估维度：** 教育价值
+
+**数据类型：** 文本
+
+**取值范围：** 连续数值（越高越好）
+
+**使用示例：**
+
+```python
+pairqual_scorer = PairQualScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    batch_size=32,
+    language="auto"
+)
+pairqual_scorer.run(
+    storage=self.storage.step(),
+    input_key="text",
+    output_key="PairQualScore"
+)
+```
+
+#### 7. PresidioScorer✨
+
+**功能描述：** 使用Microsoft Presidio模型，识别文本中的私人实体（PII）如信用卡号、姓名、位置等。打分器返回PII信息个数，用于评估文本的隐私安全性。
+
+**输入参数：**
+
+- `__init__()`
+  - `language`：语言类型（默认："en"）
+  - `entities`：要检测的实体类型列表（默认：["PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER", "CREDIT_CARD", "LOCATION"]）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："PresidioScore"）
+
+**主要特性：**
+
+- 基于Microsoft Presidio的PII检测
+- 支持多种个人信息类型识别
+- 可自定义检测的实体类型
+- 支持多语言文本处理
+- 高精度的隐私信息识别
+
+**评估维度：** 安全性
+
+**数据类型：** 文本
+
+**取值范围：** 非负整数（PII实体数量）
+
+**检测的PII类型：**
+- PERSON：人名
+- EMAIL_ADDRESS：邮箱地址
+- PHONE_NUMBER：电话号码
+- CREDIT_CARD：信用卡号
+- LOCATION：地理位置
+- 其他可配置类型
+
+**使用示例：**
+
+```python
+presidio_scorer = PresidioScorer(
+    language="en",
+    entities=["PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER", "CREDIT_CARD", "LOCATION"]
+)
+presidio_scorer.run(
+    storage=self.storage.step(),
+    input_key="text",
+    output_key="PresidioScore"
+)
+```
+
+#### 8. SuperfilteringScorer✨
+
+**功能描述：** 使用Superfiltering方法评估指令的跟随难度，得分越高表示指令越难跟随。该算子基于指令复杂性分析，帮助识别需要高级推理能力的指令。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `batch_size`：批处理大小（默认：16）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_instruction_key`：指令字段名（默认："instruction"）
+  - `input_output_key`：输出字段名（默认："output"）
+  - `output_key`：输出得分字段名（默认："SuperfilteringScore"）
+
+**主要特性：**
+
+- 基于Superfiltering方法的难度评估
+- 评估指令的跟随复杂度
+- 识别需要高级推理的指令
+- 支持指令-响应对分析
+- 适用于指令数据质量筛选
+
+**评估维度：** 流畅性与可理解性
+
+**数据类型：** 指令
+
+**取值范围：** 连续数值（越高表示越难跟随）
+
+**使用示例：**
+
+```python
+superfiltering_scorer = SuperfilteringScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    batch_size=16
+)
+superfiltering_scorer.run(
+    storage=self.storage.step(),
+    input_instruction_key="instruction",
+    input_output_key="output",
+    output_key="SuperfilteringScore"
+)
+```
+
+#### 9. TextbookScorer✨
+
+**功能描述：** 基于FastText分类器的课本质量分类器，用于评估文本的教育价值。该算子专门针对教育内容设计，能够识别具有课本质量的文本。
+
+**输入参数：**
+
+- `__init__()`
+  - `model_path`：FastText模型路径（默认：预设模型路径）
+  - `threshold`：分类阈值（默认：0.5）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："TextbookScore"）
+
+**主要特性：**
+
+- 基于FastText的高效文本分类
+- 专门针对教育内容优化
+- 快速的推理速度
+- 低内存占用
+- 适用于大规模教育文本筛选
+
+**评估维度：** 教育价值
+
+**数据类型：** 文本
+
+**取值范围：** [0, 2]
+
+**分类标准：**
+- 0：非教育内容
+- 1：一般教育内容
+- 2：高质量教育内容
+
+**使用示例：**
+
+```python
+textbook_scorer = TextbookScorer(
+    model_path="./models/textbook_classifier.bin",
+    threshold=0.5
+)
+textbook_scorer.run(
+    storage=self.storage.step(),
+    input_key="text",
+    output_key="TextbookScore"
+)
+```
+
+#### 10. DeitaQualityScorer✨
+
+**功能描述：** 基于Llama模型的Deita指令质量评估器，高分表示指令质量较高。该算子通过生成1-6分的质量评分来评估指令质量，特别适用于指令微调数据的质量筛选。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `max_length`：最大序列长度（默认：512）
+  - `batch_size`：批处理大小（默认：8）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_instruction_key`：指令文本字段名（默认："instruction"）
+  - `input_output_key`：输出文本字段名（默认："output"）
+  - `output_key`：输出得分字段名（默认："DeitaQualityScore"）
+
+**主要特性：**
+
+- 基于Llama模型的专业质量评估
+- 1-6分的细粒度评分
+- 使用softmax概率分布计算最终得分
+- 支持批量处理和GPU加速
+- 专门针对指令-响应对优化
+
+**评估维度：** 内容准确性与有效性
+
+**数据类型：** 指令
+
+**取值范围：** [1, 6]
+
+**评分标准：**
+- 1分：质量很差，指令不清晰或响应不相关
+- 2分：质量较差，存在明显问题
+- 3分：质量一般，基本可用但有改进空间
+- 4分：质量良好，指令清晰且响应合适
+- 5分：质量很好，高质量的指令-响应对
+- 6分：质量优秀，完美的指令-响应对
+
+**使用示例：**
+
+```python
+deita_quality_scorer = DeitaQualityScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    max_length=512,
+    batch_size=8
+)
+deita_quality_scorer.run(
+    storage=self.storage.step(),
+    input_instruction_key="instruction",
+    input_output_key="output",
+    output_key="DeitaQualityScore"
+)
+```
+
+#### 11. DeitaComplexityScorer✨
+
+**功能描述：** 基于Llama模型的Deita指令复杂性评估器，高分表示指令复杂性较高。该算子评估指令的认知复杂度和执行难度，帮助识别具有挑战性的指令。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `max_length`：最大序列长度（默认：512）
+  - `batch_size`：批处理大小（默认：8）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_instruction_key`：指令文本字段名（默认："instruction"）
+  - `input_output_key`：输出文本字段名（默认："output"）
+  - `output_key`：输出得分字段名（默认："DeitaComplexityScore"）
+
+**主要特性：**
+
+- 基于Llama模型的复杂性评估
+- 1-6分的复杂度评分
+- 评估指令的认知负荷
+- 识别需要高级推理的指令
+- 支持指令数据集的难度分层
+
+**评估维度：** 多样性与复杂性
+
+**数据类型：** 指令
+
+**取值范围：** [1, 6]
+
+**复杂度标准：**
+- 1分：非常简单，基础操作
+- 2分：简单，直接任务
+- 3分：中等，需要一定思考
+- 4分：复杂，需要多步推理
+- 5分：很复杂，需要高级推理
+- 6分：极其复杂，需要专业知识
+
+**使用示例：**
+
+```python
+deita_complexity_scorer = DeitaComplexityScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    max_length=512,
+    batch_size=8
+)
+deita_complexity_scorer.run(
+    storage=self.storage.step(),
+    input_instruction_key="instruction",
+    input_output_key="output",
+    output_key="DeitaComplexityScore"
+)
+```
+
+#### 12. RMScorer✨
+
+**功能描述：** 基于人类价值判断的奖励模型reward-model-deberta-v3-large-v2质量评分器。高分代表质量较高。该算子使用经过人类反馈训练的奖励模型来评估文本质量。
+
+**输入参数：**
+
+- `__init__()`
+  - `device`：计算设备（默认："cuda"）
+  - `model_cache_dir`：模型缓存目录（默认："./dataflow_cache"）
+  - `batch_size`：批处理大小（默认：16）
+  - `max_length`：最大序列长度（默认：512）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_instruction_key`：指令字段名（默认："instruction"）
+  - `input_output_key`：输出字段名（默认："output"）
+  - `output_key`：输出得分字段名（默认："RMScore"）
+
+**主要特性：**
+
+- 基于人类反馈训练的奖励模型
+- 反映人类价值判断和偏好
+- 适用于对话和指令响应评估
+- 高精度的质量判断
+- 支持多轮对话评估
+
+**评估维度：** 流畅性与可理解性
+
+**数据类型：** 指令
+
+**取值范围：** 连续数值（越高表示质量越好）
+
+**评估标准：**
+- 考虑响应的有用性
+- 评估内容的安全性
+- 判断回答的准确性
+- 衡量表达的清晰度
+
+**使用示例：**
+
+```python
+rm_scorer = RMScorer(
+    device="cuda",
+    model_cache_dir="./dataflow_cache",
+    batch_size=16,
+    max_length=512
+)
+rm_scorer.run(
+    storage=self.storage.step(),
+    input_instruction_key="instruction",
+    input_output_key="output",
+    output_key="RMScore"
+)
+```
+
+
+### Statistics算子
+
+#### 1. LexicalDiversityScorer✨
+
+**功能描述：** 该算子使用MTLD（词汇多样性测量）和HDD（移动平均类型-标记比）方法计算文本词汇多样性，评估文本的词汇丰富度和表达多样性。
+
+**输入参数：**
+
+- `__init__()`
+  - 无需特殊参数
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+
+**主要特性：**
+
+- **MTLD方法**：通过计算维持特定TTR阈值所需的单词数量来评估词汇多样性
+- **HDD方法**：基于样本的词汇丰富度估计，使用超几何分布计算
+- 自动处理标点符号和大小写
+- 支持不同长度文本的适应性评估
+
+**输入要求：**
+
+- MTLD评估：文本长度需大于50个单词
+- HDD评估：文本长度需在50-1000个单词之间
+
+**输出格式：**
+
+- `LexicalDiversityMTLDScore`：MTLD多样性得分（值越高表示多样性越好）
+- `LexicalDiversityHD-DScore`：HDD多样性得分（值越高表示多样性越好）
+
+**使用示例：**
+
+```python
+lexical_scorer = LexicalDiversityScorer()
+lexical_scorer.run(
+          storage=self.storage.step(),
+          input_key="text"
+          )
+```
+
+#### 2. LangkitScorer
+
+**功能描述：** 该算子使用Langkit工具包计算文本的统计信息，如字数、句子数、音节数等，帮助评估文本的结构复杂性和可读性。
+
+**输入参数：**
+
+- `__init__()`
+  - 无需特殊参数
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+
+**主要特性：**
+
+- 全面的文本统计分析
+- 多维度可读性评估
+- 包含Flesch可读性评分
+- 自动化可读性指标计算
+
+**输出指标：**
+
+- 文本结构：句子数、字符数、字母数、词汇数
+- 复杂性：音节数、多音节词数、单音节词数、难词数
+- 可读性：Flesch可读性评分、自动可读性指标、综合阅读难度
+
+**使用示例：**
+
+```python
+langkit_scorer = LangkitScorer()
+langkit_scorer.run(
+          storage=self.storage.step(),
+          input_key="text"
+          )
+```
+
+#### 3. NgramScorer
+
+**功能描述：** 该算子计算文本中n-gram的重复比例，用以衡量文本的重复度，得分越高表示文本中重复的n-gram比例越低。
+
+**输入参数：**
+
+- `__init__()`
+  - `n`：n-gram的长度（默认：3）
+- `run()`
+  - `storage`：存储接口对象
+  - `input_key`：输入文本字段名
+  - `output_key`：输出得分字段名（默认："NgramScore"）
+
+**主要特性：**
+
+- 基于n-gram的重复度分析
+- 可配置n-gram长度
+- 量化文本多样性
+- 计算效率高
+
+**使用示例：**
+
+```python
+ngram_scorer = NgramScorer(n=3)
+ngram_scorer.run(
+          storage=self.storage.step(),
+          input_key="text",
+          output_key="NgramScore"
+          )
+```
 
 ## 生成文本质量评估
 
