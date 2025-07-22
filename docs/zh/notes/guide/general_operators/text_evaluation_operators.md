@@ -868,7 +868,7 @@ result = vendi_scorer.run(
 
 **数据类型：** 文本
 
-**取值范围：** {Low, Medium, High}
+**取值范围：** \{Low, Medium, High\}
 
 **使用示例：**
 

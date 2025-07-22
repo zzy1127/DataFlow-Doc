@@ -845,7 +845,7 @@ result = vendi_scorer.run(
 
 **Data Type:** Text
 
-**Value Range:** {Low, Medium, High}
+**Value Range:** \{Low, Medium, High\}
 
 **Usage Example:**
 
