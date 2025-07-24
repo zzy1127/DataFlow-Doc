@@ -72,6 +72,14 @@ For detailed descriptions of each operator, refer to the "Knowledge Base Cleanin
 > ...
 > ```
 >
+>
+> Or you can just put the URLs of the papers in the JSONL file. For example:
+> ```jsonl
+> {"raw_content": "https://arxiv.org/pdf/2505.07773"}
+> {"raw_content": "https://arxiv.org/pdf/2503.09516"}
+> ...
+> ```
+>
 > Then, configure your path file `/path/to/all_pdf.jsonl` as shown below to enable batch cleaning of the knowledge base.
 >
 > ```python
