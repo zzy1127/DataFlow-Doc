@@ -121,10 +121,14 @@ Project Root/
 
 
 
-## Step 6: Chat with Fine-tuned Model
+## **Step 6: Chat with Fine-tuned Model**
 
 ```bash
-# --model can specify the path location of the chat model (optional)
-# Default value is .cache/saves/qwen2.5_7b_sft_model
+# Method 1: Specify model path with --model flag (optional)
+# Default path: .cache/saves/pdf2model_cache_{timestamp}
 dataflow chat --model ./custom_model_path
+
+# Method 2: Navigate to model directory and run dataflow chat
+cd .cache/saves/pdf2model_cache_20250901_143022
+dataflow chat
 ```
