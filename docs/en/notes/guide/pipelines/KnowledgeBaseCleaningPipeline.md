@@ -176,7 +176,7 @@ extracted=file_to_markdown_converter.run(
 
 ### 2. Text Chunking
 
-After document extraction, the text chunking step(CorpusTextSplitter) divides the extracted long text into chunks. The system supports chunking by token, character, sentence, or semantic dimensions.
+After document extraction, the text chunking step(KBCChunkGenerator) divides the extracted long text into chunks. The system supports chunking by token, character, sentence, or semantic dimensions.
 
 **Input**: Extracted Markdown text
  ​**​Output​**: Chunked JSON file
@@ -184,7 +184,7 @@ After document extraction, the text chunking step(CorpusTextSplitter) divides th
 **Example**:
 
 ```python
-text_splitter = CorpusTextSplitter(
+text_splitter = KBCChunkGenerator(
     split_method="token",
     chunk_size=512,
     tokenizer_name="Qwen/Qwen2.5-7B-Instruct",
@@ -198,13 +198,13 @@ text_splitter.run(
 
 ### 3. Knowledge Cleaning
 
-After text chunking, the Knowledge Cleaning(KnowledgeCleaner) specializes in standardizing raw knowledge content for RAG (Retrieval-Augmented Generation) systems. This process utilizes large language model interfaces to intelligently clean and format unstructured knowledge, improving the accuracy and readability of the knowledge base.
+After text chunking, the Knowledge Cleaning(KBCTextCleaner) specializes in standardizing raw knowledge content for RAG (Retrieval-Augmented Generation) systems. This process utilizes large language model interfaces to intelligently clean and format unstructured knowledge, improving the accuracy and readability of the knowledge base.
 
 **Input**: Chunked JSON file
  ​**​Output​**: Cleaned JSON file
 
 ```python
-knowledge_cleaner = KnowledgeCleaner(
+knowledge_cleaner = KBCTextCleaner(
     llm_serving=api_llm_serving,
     lang="en"
 )
@@ -217,7 +217,7 @@ extracted_path = knowledge_cleaner.run(
 
 ### 4. QA Generation
 
-After knowledge cleaning, the MultiHop-QA Generation(MultiHopQAGenerator) specializes in automatically generating multi-step reasoning question-answer pairs from text data. This process uses large language model interfaces for intelligent text analysis and complex question construction, suitable for building high-quality multi-hop QA datasets. According to experiments from [MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD), this QA-formatted knowledge significantly enhances RAG reasoning accuracy.
+After knowledge cleaning, the MultiHop-QA Generation(KBCMultiHopQAGenerator) specializes in automatically generating multi-step reasoning question-answer pairs from text data. This process uses large language model interfaces for intelligent text analysis and complex question construction, suitable for building high-quality multi-hop QA datasets. According to experiments from [MIRIAD](https://github.com/eth-medical-ai-lab/MIRIAD), this QA-formatted knowledge significantly enhances RAG reasoning accuracy.
 
 **Input**: JSON-formatted plain text
  ​**​Output​**: For each text segment, generates a set of multi-hop QAs (output in JSON format)
@@ -225,7 +225,7 @@ After knowledge cleaning, the MultiHop-QA Generation(MultiHopQAGenerator) specia
 **Usage Example**:
 
 ```python
-  multi_hop_qa_generator = MultiHopQAGenerator(
+  multi_hop_qa_generator = KBCMultiHopQAGenerator(
       llm_serving=local_llm_serving,
       lang="en"
   )
@@ -261,26 +261,31 @@ Users can execute the following scripts to meet different data requirements. Not
 - Knowledge base cleaning and construction for PDF files:
 
   ```shell
-  python gpu_pipelines/kbcleaning_pipeline_pdf_vllm.py
-  python gpu_pipelines/kbcleaning_pipeline_pdf_sglang.py
+  python gpu_pipelines/kbcleaning/kbcleaning_pipeline_pdf_vllm.py 
+  python gpu_pipelines/kbcleaningkbcleaning_pipeline_pdf_sglang.py 
   ```
+    [kbcleaning_pipeline_pdf_vllm.py](https://github.com/OpenDCAI/DataFlow/blob/main/dataflow/statics/pipelines/gpu_pipelines/kbcleaning/kbcleaning_pipeline_pdf_vllm.py) 
+    [kbcleaning_pipeline_pdf_sglang.py ](https://github.com/OpenDCAI/DataFlow/blob/main/dataflow/statics/pipelines/gpu_pipelines/kbcleaning/kbcleaning_pipeline_pdf_sglang.py)
+
 - Knowledge base cleaning and construction after URL crawling:
 
   ```shell
-  python gpu_pipelines/kbcleaning_pipeline_url_vllm.py
-  python gpu_pipelines/kbcleaning_pipeline_url_sglang.py
+  python gpu_pipelines/kbcleaning/kbcleaning_pipeline_url_vllm.py 
+  python gpu_pipelines/kbcleaning/kbcleaning_pipeline_url_sglang.py 
   ```
+    [kbcleaning_pipeline_url_vllm.py](https://github.com/OpenDCAI/DataFlow/blob/main/dataflow/statics/pipelines/gpu_pipelines/kbcleaning/kbcleaning_pipeline_url_vllm.py)
+    [kbcleaning_pipeline_url_sglang.py](https://github.com/OpenDCAI/DataFlow/blob/main/dataflow/statics/pipelines/gpu_pipelines/kbcleaning/kbcleaning_pipeline_url_sglang.py)
 
 ## 4. Pipeline Example
 
 The following provides an example pipeline configured for the `Dataflow[vllm]` environment, demonstrating how to use multiple operators for knowledge base cleaning. This example shows how to initialize a knowledge base cleaning pipeline and sequentially execute each extraction and cleaning step.
 
 ```python
-from dataflow.operators.generate import (
-    CorpusTextSplitter,
+from dataflow.operators.knowledge_cleaning import (
+    KBCChunkGenerator,
     FileOrURLToMarkdownConverter,
-    KnowledgeCleaner,
-    MultiHopQAGenerator,
+    KBCTextCleaner,
+    KBCMultiHopQAGenerator,
 )
 from dataflow.utils.storage import FileStorage
 from dataflow.serving import APILLMServing_request
@@ -308,18 +313,18 @@ class KBCleaningPDF_APIPipeline():
             raw_file = raw_file,
         )
 
-        self.knowledge_cleaning_step2 = CorpusTextSplitter(
+        self.knowledge_cleaning_step2 = KBCChunkGenerator(
             split_method="token",
             chunk_size=512,
             tokenizer_name="Qwen/Qwen2.5-7B-Instruct",
         )
 
-        self.knowledge_cleaning_step3 = KnowledgeCleaner(
+        self.knowledge_cleaning_step3 = KBCTextCleaner(
             llm_serving=self.llm_serving,
             lang="en"
         )
 
-        self.knowledge_cleaning_step4 = MultiHopQAGenerator(
+        self.knowledge_cleaning_step4 = KBCMultiHopQAGenerator(
             llm_serving=self.llm_serving,
             lang="en"
         )

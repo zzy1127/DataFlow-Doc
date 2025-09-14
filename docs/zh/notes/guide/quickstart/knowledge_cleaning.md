@@ -48,21 +48,22 @@ dataflow init
 ​	进入脚本目录：
 
 ```shell
-cd gpu_pipelines/
+cd gpu_pipelines/kbcleaning
 ```
 
 ## 第四步:一键运行
 
 ```bash
-python kbcleaning_pipeline_batch_sglang.py
+python kbcleaning_pipeline_batch_sglang.py 
 ```
+[code](https://github.com/OpenDCAI/DataFlow/blob/main/dataflow/statics/pipelines/gpu_pipelines/kbcleaning/kbcleaning_pipeline_batch_sglang.py)
 
 运行时，该流水线会先后调用：
 
 1. FileOrURLToMarkdownConverter  把原始文件/URL提取成Markdown
-2. CorpusTextSplitter  将文本分段
-3. KnowledgeCleaner  针对分段文本做全面清洗
-4. MultiHopQAGenerator  基于清洗后知识合成QA数据
+2. KBCChunkGenerator  将文本分段
+3. KBCTextCleaner  针对分段文本做全面清洗
+4. KBCMultiHopQAGenerator  基于清洗后知识合成QA数据
 
 对于算子的具体功能介绍可以参考"知识库清洗和QA合成"部分，此处调用后会在`.cache 目录下`中生成一个json文件，文件内容如下文所示。
 
