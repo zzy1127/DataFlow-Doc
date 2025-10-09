@@ -1,7 +1,7 @@
 ---
 title: ReasoningAnswerGenerator
 createTime: 2025/10/09 11:01:59
-permalink: /zh/api/u4zfvr4i/
+permalink: /en/api/u4zfvr4i/
 ---
 
 ## 📘 Overview
