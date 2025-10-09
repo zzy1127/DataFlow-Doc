@@ -9,7 +9,6 @@ permalink: /zh/api/u4zfvr4i/
 该算子可与多种 Prompt 模板（数学、通用、DIY）和 LLM 服务模块配合使用，实现自动化的问答生成流程。
 
 ## __init__函数
-init代码
 ```python
 @prompt_restrict(
     MathAnswerGeneratorPrompt,
@@ -33,7 +32,11 @@ class ReasoningAnswerGenerator(OperatorABC):
 | **prompt_template** | `PromptABC`     | 默认支持`MathAnswerGeneratorPrompt, GeneralAnswerGeneratorPrompt, DiyAnswerGeneratorPrompt`或者集成`DIYPromptABC`自定义prompt | 提示词模板对象，用于构建问题输入。支持数学、通用与自定义模板。 |
 
 ### Prompt模板说明
-- 
+| Prompt 模板名称                      | 主要用途          | 适用场景                    | 特点说明                                                  |
+| -------------------------------- | ------------- | ----------------------- | ----------------------------------------------------- |
+| **MathAnswerGeneratorPrompt**    | 生成数学类问题的推理与答案 | 数学题解、公式推导、定理证明、计算类问题    | 内置数学专用模板，强调逻辑推理与公式展示，支持逐步解题结构（Step-by-step reasoning） |
+| **GeneralAnswerGeneratorPrompt** | 生成通用推理类答案     | 日常推理、阅读理解、常识问答、分析型问题    | 模板通用性强，支持多领域的逻辑推理与解释生成，语义自然流畅                         |
+| **DiyAnswerGeneratorPrompt**     | 用户自定义推理模板     | 用户希望自行控制 Prompt 结构或生成风格 | 支持用户输入自定义提示词与规则，最大化灵活性与可控性，可与系统参数组合使用                 |
 
 ## run函数
 ```python
