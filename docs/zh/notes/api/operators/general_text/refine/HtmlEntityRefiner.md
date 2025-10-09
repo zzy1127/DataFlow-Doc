@@ -4,61 +4,7 @@ createTime: 2025/10/09 17:09:04
 permalink: /zh/api/operators/general_text/refine/htmlentityrefiner/
 ---
 
-<think>Okay, here's the plan. I need to generate a Markdown tutorial for the `HtmlEntityRefiner` class, focusing on the `__init__` and `run` methods, adhering strictly to the user's requests for format and content.
-
-**Overview**:
-`HtmlEntityRefiner` 是一个文本清理算子，用于去除文本中的 HTML 实体，如 `&nbsp;`, `&lt;` 等。它不仅能处理标准的 HTML 实体，还能识别并移除多种变体形式（例如使用全角符号 `＆` 或中文分号 `；`）。该算子支持用户自定义需要移除的 HTML 实体列表，提供了灵活的文本预处理能力。
-
-**`__init__` function**:
-```python
-def __init__(self, html_entities: list = ...)
-```
-**init参数说明**
-| 参数名 | 类型 | 默认值 | 说明 |
-| :--- | :--- | :--- | :--- |
-| **html_entities** | list | `["nbsp", "lt", ...]` | 一个包含需要移除的 HTML 实体名称的列表。默认包含常见的实体。 |
-
-**Prompt Template Descriptions**:
-(This section is intentionally left blank as per the instructions.)
-
-**`run` function**:
-```python
-def run(self, storage: DataFlowStorage, input_key: str)
-```
-**参数**
-| 名称 | 类型 | 默认值 | 说明 |
-| :--- | :--- | :--- | :--- |
-| **storage** | DataFlowStorage | 必需 | 数据流存储实例，负责读取与写入数据。 |
-| **input_key** | str | 必需 | 输入列名，指定要处理的文本字段。 |
-
-**Example Usage**:
-(This section is intentionally left blank as per the instructions.)
-
-**默认输出格式 (Output Format)**
-该算子会就地修改输入 DataFrame，并将清理后的文本写回到 `input_key` 指定的列中。
-| 字段 | 类型 | 说明 |
-| :--- | :--- | :--- |
-| {input_key} | str | 经过 HTML 实体移除处理后的文本。 |
-| ... | ... | 其他输入字段保持不变。 |
-
-示例输入:
-```json
-{
-"text": "这是一个示例文本&nbsp;包含特殊字符&amp;符号。"
-}
-```
-*假设 `input_key` 为 `"text"`*
-
-示例输出:
-```json
-{
-"text": "这是一个示例文本 包含特殊字符符号。"
-}
-```
-
-That should fulfill all the requirements. The generated markdown tutorial is now ready.
-</think>
-<answer>好的，这是根据您提供的代码和模板生成的 `HtmlEntityRefiner` 算子的中文教程 Markdown 代码。
+好的，这是根据您提供的代码和模板生成的 `HtmlEntityRefiner` 算子的中文教程 Markdown 代码。
 
 ---
 
@@ -130,4 +76,4 @@ def run(self, storage: DataFlowStorage, input_key: str):
 {
 "content":"这是一个示例文本 ，它包含了特殊实体符号"
 }
-```</answer>
+```

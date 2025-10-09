@@ -4,37 +4,7 @@ createTime: 2025/10/09 16:52:48
 permalink: /en/api/operators/code/eval/codequalitysampleevaluator/
 ---
 
-<think>Alright, time to generate that markdown document. I'm starting with the `CodeQualitySampleEvaluator` class and need to create a tutorial for it, mirroring the structure of the `ReasoningAnswerGenerator` example.
-
-First things first, understand the goal: a markdown tutorial in English, focusing on the `__init__` and `run` functions and their parameters. The template guides the sections: Overview, `__init__`, Prompt Template, `run`, Example Usage, and Output Format, plus examples.
-
-I'll analyze the template now, extracting key elements. I need to use the class docstring for the overview, and extract the parameters and their types from the `__init__` and `run` signatures.
-
-Now, onto the code itself. The docstring is crucial for that overview. It says: "CodeQualitySampleEvaluator is an operator that evaluates the quality of a generated code snippet against its source instruction. It uses an LLM to provide both a numerical score and textual feedback, acting as an automated code reviewer." Good stuff.
-
-Then, I'll look closely at the function signatures.
-*   `__init__` has `llm_serving` (LLMServingABC type) and `prompt_template` (default to None, could be `CodeQualityEvaluatorPrompt`, `DiyCodePrompt`, or a string).
-*   `run` needs the `storage` (DataFlowStorage), `input_key` (string), `output_score_key` (string, defaults to "quality_score"), and `output_feedback_key` (string, defaults to "quality_feedback").
-
-I'll use the extracted signatures and parameter descriptions to complete the tables in the markdown.
-
-For the example inputs and outputs, I need to be careful with the details. The `input_key` points to a dictionary containing "instruction" and "code". The `run` function adds `quality_score` and `quality_feedback`. I'll make sure my examples reflect this. The output will be a JSON object, showing a simple example using "instruction" and "code" as the input and added "quality_score" and "quality_feedback" keys.
-
-Specifically for the example input and output, I will make it so the input is a dictionary with keys "generated_instruction" and "generated_code" as input to the `run` function. The output is the same dictionary but with keys `quality_score` and `quality_feedback` added. I'll make sure my input-output examples follow the expected format.
-
-Now, the structure of the markdown:
-*   Class name and overview from docstring.
-*   `__init__` section with signature and parameter table.
-*   Prompt Template Description section, will be left blank.
-*   `run` section, with the signature and parameter table.
-*   Example Usage section, also left blank.
-*   Output Format: A table describing the input and output columns.
-*   Example Input/Output: With the example JSONs.
-I'll follow the instruction of only including the input formal parameters and skipping the function description.
-
-Finally, I'll check for accuracy and consistency. Time to write the markdown!
-</think>
-<answer>## 📘 Overview
+## 📘 Overview
 `CodeQualitySampleEvaluator` is an operator that evaluates the quality of a generated code snippet against its source instruction. It uses an LLM to provide both a numerical score and textual feedback, acting as an automated code reviewer.
 
 ## __init__ function
@@ -93,4 +63,4 @@ def run(self, storage: DataFlowStorage, input_key: str, output_score_key: str = 
   "quality_score": 10,
   "quality_feedback": "The code is correct, efficient, and properly handles the base case (n=0). The recursive implementation is clear and follows standard Python conventions for this problem."
 }
-```</answer>
+```

@@ -41,7 +41,7 @@ The operator adds several new columns to the input DataFrame, each corresponding
 | **CodeDocumentQualityCharCount** | int | The total number of characters in the text. |
 | **CodeDocumentQualityWordCount** | int | The total number of words in the text. |
 | **CodeDocumentQualityDuplicateLinesRatio** | float | The ratio of duplicate lines to total lines. |
-| **CodeDocumentQualityDuplicate<N>gramRatio** | float | The ratio of duplicate N-grams (e.g., 2-grams, 3-grams). |
+| **CodeDocumentQualityDuplicateNgramRatio** | float | The ratio of duplicate N-grams (e.g., 2-grams, 3-grams). |
 | **CodeDocumentQualityCurlyBracketRatio** | float | The ratio of curly bracket characters to total characters. |
 | **CodeDocumentQualityAllCapsRatio** | float | The ratio of all-caps words to total words. |
 | **CodeDocumentQualityEntropy** | float | The unigram entropy of the text. |
