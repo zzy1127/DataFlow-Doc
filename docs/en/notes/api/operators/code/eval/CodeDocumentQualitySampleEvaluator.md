@@ -73,4 +73,3 @@ Example Output (assuming `input_key="code_sample"`):
   "CodeDocumentQualityEntropy": 3.0,
   "CodeDocumentQualityScore": 0.0
 }
-```
