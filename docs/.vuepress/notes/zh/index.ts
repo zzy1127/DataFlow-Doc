@@ -14,7 +14,6 @@ export const zhNotes: ThemeNoteListOptions = defineNotesConfig({
         Guide,
         DevGuide,
         APIGuide,
-
         // themeConfig,
         // plugins,
         // tools,
