@@ -16,7 +16,6 @@ export const enNavbar = defineNavbarConfig([
         // link: '/en/guide/',
         icon: 'icon-park-outline:guide-board',
         items: [
-
             {
                 text: 'Basic Info',
                 items: [
@@ -111,6 +110,12 @@ export const enNavbar = defineNavbarConfig([
                         text: "Function Calling Data Synthesis Pipeline",
                         link: "/en/notes/guide/pipelines/FuncCallPipeline.md",
                         icon: "solar:flash-drive-outline",
+                        activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "PDF-to-Model Model Simulation Pipeline",
+                        link: "/en/notes/guide/pipelines/Pdf2ModelPipeline.md",
+                        icon: "solar:cpu-bolt-linear", 
                         activeMatch: '^/guide/'
                     }
                 ]

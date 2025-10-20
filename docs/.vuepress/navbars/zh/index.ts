@@ -114,6 +114,12 @@ export const zhNavbar = defineNavbarConfig([
                         link: "/zh/notes/guide/pipelines/FuncCallPipeline.md",
                         icon: "solar:flash-drive-outline",
                         activeMatch: '^/guide/'
+                    },
+                    {
+                        text: "Pdf-to-Model模型微调流水线",
+                        link: "/zh/notes/guide/pipelines/Pdf2ModelPipeline.md",
+                        icon: "solar:cpu-bolt-linear", 
+                        activeMatch: '^/guide/'
                     }
                 ]
             }
