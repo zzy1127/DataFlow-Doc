@@ -86,8 +86,8 @@ export const zhNavbar = defineNavbarConfig([
                         activeMatch: '^/guide/'
                     },
                     {
-                        text: "Doc-to-QA数据合成流水线",
-                        link: "/zh/notes/guide/pipelines/Doc2QAPipeline.md",
+                        text: "Text-to-QA数据合成流水线",
+                        link: "/zh/notes/guide/pipelines/Text2QAPipeline.md",
                         icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
                     },

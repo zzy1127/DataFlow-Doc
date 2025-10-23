@@ -83,8 +83,8 @@ export const enNavbar = defineNavbarConfig([
                         activeMatch: '^/guide/'
                     },
                     {
-                        text: "Doc-to-QA Pipeline",
-                        link: "/en/notes/guide/pipelines/Doc2QAPipeline.md",
+                        text: "Text-to-QA Pipeline",
+                        link: "/en/notes/guide/pipelines/Text2QAPipeline.md",
                         icon: "solar:palette-round-linear",
                         activeMatch: '^/guide/'
                     },

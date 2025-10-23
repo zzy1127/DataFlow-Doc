@@ -62,7 +62,7 @@ export const Guide: ThemeNote = defineNoteConfig({
                 "TextPipeline",
                 "ReasoningPipeline",
                 "Text2SqlPipeline",
-                "Doc2QAPipeline",
+                "Text2QAPipeline",
                 "AgenticRAGPipeline",
                 "KnowledgeBaseCleaningPipeline",
                 "FuncCallPipeline",
