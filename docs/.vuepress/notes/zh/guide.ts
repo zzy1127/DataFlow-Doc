@@ -66,7 +66,8 @@ export const Guide: ThemeNote = defineNoteConfig({
                 "AgenticRAGPipeline",
                 "KnowledgeBaseCleaningPipeline",
                 "FuncCallPipeline",
-                "Pdf2ModelPipeline"
+                "Pdf2ModelPipeline",
+                "PDFVQAExtractPipeline",
             ]
         },
         {
