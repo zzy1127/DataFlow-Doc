@@ -53,7 +53,8 @@ $env:DF_API_KEY = "sk-xxxxx"
 在脚本中设置接口：
 ```python
 self.llm_serving = APILLMServing_request(
-    api_url="https://api.openai.com/v1/chat/completions",
+    api_url="https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    key_name_of_api_key="DF_API_KEY",
     model_name="gemini-2.5-pro",
     max_workers=100,
 )
@@ -159,7 +160,7 @@ self.storage = FileStorage(
 ```python
 from dataflow.serving import APILLMServing_request
 from dataflow.utils.storage import FileStorage
-from dataflow.operators.vqa import VQAExtractor
+from dataflow.operators.pdf2vqa import VQAExtractor
 
 class VQA_extract_optimized_pipeline:
     def __init__(self):
