@@ -25,9 +25,11 @@ icon: heroicons:document-text
 ### 步骤 1：安装 Dataflow（以及 MinerU）
 ```shell
 pip install open-dataflow
-pip install mineru[pipeline]
+pip install mineru[vlm]
 mineru-models-download
 ```
+**目前这个pipeline只在`vlm`后端下经过测试，不确定是否能支持`pipeline`后端，根据官方文档两个后端格式有区别，因此建议使用`vlm`后端。**
+
 `vlm-vllm-engine` 模式需要 GPU。
 
 ### 步骤 2：创建工作区
@@ -59,10 +61,18 @@ self.llm_serving = APILLMServing_request(
     max_workers=100,
 )
 ```
+并设置MinerU后端（'vlm-vllm-engine'或者'vlm-transformers'）和LLM最大token数量（建议不要设置大于128000，否则LLM因为无法记住细节而效果不好）：
+```python
+self.vqa_extractor = VQAExtractor(
+            llm_serving=self.llm_serving,
+            mineru_backend='vlm-vllm-engine',
+            max_chunk_len=128000
+        )
+```
 
 ### 步骤 5：一键运行
 ```bash
-python pipelines/vqa_extract_optimized_pipeline.py
+python pipelines/pdf_vqa_extract_pipeline.py
 ```
 也可将各算子嵌入其他流程，下文详细介绍数据流。
 
@@ -84,11 +94,11 @@ python pipelines/vqa_extract_optimized_pipeline.py
 `FileStorage` 负责读取与缓存：
 ```python
 self.storage = FileStorage(
-    first_entry_file_name="./examples/VQA/vqa_extract_interleaved_test.jsonl",
-    cache_path="./vqa_extract_optimized_cache",
-    file_name_prefix="vqa",
-    cache_type="jsonl",
-)
+            first_entry_file_name="../example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
+            cache_path="./cache",
+            file_name_prefix="vqa",
+            cache_type="jsonl",
+        )
 ```
 
 ### 2. 文档布局解析（MinerU）
@@ -107,9 +117,10 @@ self.storage = FileStorage(
 
 `VQAExtractor` 将布局 JSON 切块以控制 token，利用 `QAExtractPrompt` 生成学科提示，并通过 `APILLMServing_request` 批量调用 LLM。主要特性：
 
+- 整合、匹配问答对，并将图片插入到正确位置。
 - 同时支持 `question_pdf_path`/`answer_pdf_path` 与单一 `pdf_path`（自动判定混排）。
 - 将 MinerU 切图复制到 `output_dir/question_images`、`answer_images`。
-- 解析 `<qa_pair>`、`<question>`、`<answer>`、`<solution>`、`<chapter>` 标签，并保留 `<pic>tag:box</pic>` 图片引用。
+- 解析 `<qa_pair>`、`<question>`、`<answer>`、`<solution>`、`<chapter>`、`<label>` 标签。
 
 ### 4. 后处理与产物
 
@@ -128,8 +139,8 @@ self.storage = FileStorage(
 
 筛选后的记录包含：
 
-- `question`：题干文本（包含 `<pic>` 标签）
-- `answer`：答案文本（若来自答案 PDF）
+- `question`：题干文本与图片
+- `answer`：答案文本与图片（若来自答案 PDF）
 - `solution`：可选的解题过程
 - `label`：原始编号，如“例 3”“习题 2”
 - `chapter_title`：所在章节/小节标题
@@ -148,56 +159,55 @@ self.storage = FileStorage(
 ## 5. 流水线示例
 
 ```python
-import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
-
 from dataflow.serving import APILLMServing_request
 from dataflow.utils.storage import FileStorage
-from operators.vqa_extractor import VQAExtractor
+from dataflow.operators.vqa import VQAExtractor
 
 class VQA_extract_optimized_pipeline:
     def __init__(self):
         self.storage = FileStorage(
-            first_entry_file_name="./examples/VQA/vqa_extract_interleaved_test.jsonl",
-            cache_path="./vqa_extract_optimized_cache",
+            first_entry_file_name="../example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
+            cache_path="./cache",
             file_name_prefix="vqa",
             cache_type="jsonl",
         )
-
+        
         self.llm_serving = APILLMServing_request(
-            api_url="https://api.openai.com/v1/chat/completions",
+            api_url="https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
             key_name_of_api_key="DF_API_KEY",
-            model_name="gpt-4o",
+            model_name="gemini-2.5-pro",
             max_workers=100,
         )
-
+        
         self.vqa_extractor = VQAExtractor(
-            llm_serving=self.llm_serving
+            llm_serving=self.llm_serving,
+            mineru_backend='vlm-vllm-engine',
+            max_chunk_len=128000
         )
-
+        
     def forward(self):
+        # 单一算子：包含预处理、QA提取、后处理的所有功能
         self.vqa_extractor.run(
             storage=self.storage.step(),
-            question_pdf_path_key="question_pdf_path",
-            answer_pdf_path_key="answer_pdf_path",
-            pdf_path_key="pdf_path",
-            subject_key="subject",
+            input_question_pdf_path_key="question_pdf_path",
+            input_answer_pdf_path_key="answer_pdf_path",
+            input_pdf_path_key="pdf_path",  # 支持 interleaved 模式
+            input_subject_key="subject",
             output_dir_key="output_dir",
             output_jsonl_key="output_jsonl_path",
-            mineru_backend='vlm-vllm-engine',
         )
 
+
+
 if __name__ == "__main__":
+    # jsonl中每一行包含question_pdf_path, answer_pdf_path, subject (math, physics, chemistry, ...), output_dir
+    # 如果question和answer在同一份pdf中，请将question_pdf_path和answer_pdf_path设置为相同的路径，会自动切换为interleaved模式
     pipeline = VQA_extract_optimized_pipeline()
     pipeline.forward()
 ```
 
 ---
 
-Pipeline 源码：`DataFlow/pipelines/vqa_extract_optimized_pipeline.py`
+Pipeline 源码：`DataFlow/pipelines/pdf_vqa_extract_pipeline.py`
 
 利用该流水线可直接从 PDF 教材中沉淀带图引用的结构化问答数据。
