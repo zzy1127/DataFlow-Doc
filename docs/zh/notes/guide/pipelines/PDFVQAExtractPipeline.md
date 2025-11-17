@@ -70,7 +70,7 @@ self.vqa_extractor = VQAExtractor(
 
 ### 步骤 5：一键运行
 ```bash
-python pipelines/pdf_vqa_extract_pipeline.py
+python api_pipelines/pdf_vqa_extract_pipeline.py
 ```
 也可将各算子嵌入其他流程，下文详细介绍数据流。
 
@@ -206,6 +206,6 @@ if __name__ == "__main__":
 
 ---
 
-Pipeline 源码：`DataFlow/pipelines/pdf_vqa_extract_pipeline.py`
+Pipeline 源码：`DataFlow/dataflow/statics/pipelines/api_pipelines/pdf_vqa_extract_pipeline.py`
 
 利用该流水线可直接从 PDF 教材中沉淀带图引用的结构化问答数据。

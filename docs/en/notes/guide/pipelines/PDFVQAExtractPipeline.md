@@ -71,7 +71,7 @@ self.vqa_extractor = VQAExtractor(
 
 ### Step 5: One-click run
 ```bash
-python pipelines/pdf_vqa_extract_pipeline.py
+python api_pipelines/pdf_vqa_extract_pipeline.py
 ```
 You can also import the operators into other workflows; the remainder of this doc explains the data flow in detail.
 
@@ -206,6 +206,6 @@ if __name__ == "__main__":
 
 ---
 
-Pipeline source: `DataFlow/pipelines/pdf_vqa_extract_pipeline.py`
+Pipeline source: `DataFlow/dataflow/statics/pipelines/api_pipelines/pdf_vqa_extract_pipeline.py`
 
 Use this pipeline whenever you need structured QA data distilled directly from PDF textbooks with figure references intact.
