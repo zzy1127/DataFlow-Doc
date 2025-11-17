@@ -25,12 +25,9 @@ Major stages:
 ### Step 1: Install Dataflow (and MinerU)
 ```shell
 pip install open-dataflow
-pip install mineru[vlm]
+pip install "mineru[vllm]"
 mineru-models-download
 ```
-**Caution: The pipeline was only tested with the `vlm` backend; compatibility with the `pipeline` backend is uncertain due to format differences. Using the `vlm` backend is recommended.**
-
-The `vlm-vllm-engine` backend requires GPU support.
 
 ### Step 2: Create a workspace
 ```shell
@@ -61,7 +58,9 @@ self.llm_serving = APILLMServing_request(
     max_workers=100,
 )
 ```
-and set MinerU backend ('vlm-vllm-engine' or 'vlm-transformers') and LLM max token length (recommended not to exceed 128000 to avoid LLM forgetting details):
+and set MinerU backend ('vlm-vllm-engine' or 'vlm-transformers') and LLM max token length (recommended not to exceed 128000 to avoid LLM forgetting details).
+**Caution: The pipeline was only tested with the `vlm` backend; compatibility with the `pipeline` backend is uncertain due to format differences. Using the `vlm` backend is recommended.**
+The `vlm-vllm-engine` backend requires GPU support.
 ```python
 self.vqa_extractor = VQAExtractor(
             llm_serving=self.llm_serving,
@@ -166,7 +165,7 @@ from dataflow.operators.vqa import VQAExtractor
 class VQA_extract_optimized_pipeline:
     def __init__(self):
         self.storage = FileStorage(
-            first_entry_file_name="../example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
+            first_entry_file_name="./example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
             cache_path="./cache",
             file_name_prefix="vqa",
             cache_type="jsonl",

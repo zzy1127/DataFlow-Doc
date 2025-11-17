@@ -25,12 +25,9 @@ icon: heroicons:document-text
 ### 步骤 1：安装 Dataflow（以及 MinerU）
 ```shell
 pip install open-dataflow
-pip install mineru[vlm]
+pip install "mineru[vllm]"
 mineru-models-download
 ```
-**目前这个pipeline只在`vlm`后端下经过测试，不确定是否能支持`pipeline`后端，根据官方文档两个后端格式有区别，因此建议使用`vlm`后端。**
-
-`vlm-vllm-engine` 模式需要 GPU。
 
 ### 步骤 2：创建工作区
 ```shell
@@ -61,7 +58,8 @@ self.llm_serving = APILLMServing_request(
     max_workers=100,
 )
 ```
-并设置MinerU后端（'vlm-vllm-engine'或者'vlm-transformers'）和LLM最大token数量（建议不要设置大于128000，否则LLM因为无法记住细节而效果不好）：
+并设置MinerU后端（'vlm-vllm-engine'或者'vlm-transformers'）和LLM最大token数量（建议不要设置大于128000，否则LLM因为无法记住细节而效果不好）。`vlm-vllm-engine` 模式需要 GPU。
+**目前这个pipeline只在`vlm`后端下经过测试，不确定是否能支持`pipeline`后端，根据官方文档两个后端格式有区别，因此建议使用`vlm`后端。**
 ```python
 self.vqa_extractor = VQAExtractor(
             llm_serving=self.llm_serving,
@@ -94,7 +92,7 @@ python pipelines/pdf_vqa_extract_pipeline.py
 `FileStorage` 负责读取与缓存：
 ```python
 self.storage = FileStorage(
-            first_entry_file_name="../example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
+            first_entry_file_name="./example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
             cache_path="./cache",
             file_name_prefix="vqa",
             cache_type="jsonl",
