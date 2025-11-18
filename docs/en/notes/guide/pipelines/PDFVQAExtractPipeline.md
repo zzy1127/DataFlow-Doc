@@ -25,10 +25,9 @@ Major stages:
 ### Step 1: Install Dataflow (and MinerU)
 ```shell
 pip install open-dataflow
-pip install mineru[pipeline]
+pip install "mineru[vllm]"
 mineru-models-download
 ```
-The `vlm-vllm-engine` backend requires GPU support.
 
 ### Step 2: Create a workspace
 ```shell
@@ -54,15 +53,26 @@ $env:DF_API_KEY = "sk-xxxxx"
 In the pipeline script, set your API endpoint:
 ```python
 self.llm_serving = APILLMServing_request(
-    api_url="https://api.openai.com/v1/chat/completions",
+    api_url="https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    key_name_of_api_key="DF_API_KEY",
     model_name="gemini-2.5-pro",
     max_workers=100,
 )
 ```
+and set MinerU backend ('vlm-vllm-engine' or 'vlm-transformers') and LLM max token length (recommended not to exceed 128000 to avoid LLM forgetting details).
+**Caution: The pipeline was only tested with the `vlm` backend; compatibility with the `pipeline` backend is uncertain due to format differences. Using the `vlm` backend is recommended.**
+The `vlm-vllm-engine` backend requires GPU support.
+```python
+self.vqa_extractor = VQAExtractor(
+            llm_serving=self.llm_serving,
+            mineru_backend='vlm-vllm-engine',
+            max_chunk_len=128000
+        )
+```
 
 ### Step 5: One-click run
 ```bash
-python pipelines/vqa_extract_optimized_pipeline.py
+python api_pipelines/pdf_vqa_extract_pipeline.py
 ```
 You can also import the operators into other workflows; the remainder of this doc explains the data flow in detail.
 
@@ -84,11 +94,11 @@ Each job is defined by a JSONL row. Two modes are supported:
 `FileStorage` handles batching/cache management:
 ```python
 self.storage = FileStorage(
-    first_entry_file_name="./examples/VQA/vqa_extract_interleaved_test.jsonl",
-    cache_path="./vqa_extract_optimized_cache",
-    file_name_prefix="vqa",
-    cache_type="jsonl",
-)
+            first_entry_file_name="../example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
+            cache_path="./cache",
+            file_name_prefix="vqa",
+            cache_type="jsonl",
+        )
 ```
 
 ### 2. Document layout extraction (MinerU)
@@ -107,9 +117,10 @@ The backend can be:
 
 `VQAExtractor` chunks the layout JSON to respect token limits, builds subject-aware prompts (`QAExtractPrompt`), and batches LLM calls via `APILLMServing_request`. Key behaviors:
 
+- Grouping and pairing Q&A based, and inserting images to proper positions.
 - Supports `question_pdf_path` + `answer_pdf_path`, or a single `pdf_path` (auto-detect interleaved mode).
 - Copies rendered images into `output_dir/question_images` and/or `answer_images`.
-- Parses `<qa_pair>`, `<question>`, `<answer>`, `<solution>`, `<chapter>` tags from the LLM response, with figure references preserved as `<pic>tag:box</pic>`.
+- Parses `<qa_pair>`, `<question>`, `<answer>`, `<solution>`, `<chapter>`, `<label>` tags from the LLM response.
 
 ### 4. Post-processing and outputs
 
@@ -128,8 +139,8 @@ Filtering keeps entries where the question exists and either `answer` or `soluti
 
 Each filtered record includes:
 
-- `question`: question text (with inline `<pic>` tags if figures are referenced)
-- `answer`: answer text (if extracted from answer PDF)
+- `question`: question text and images
+- `answer`: answer text and images(if extracted from answer PDF)
 - `solution`: optional worked solution (if present)
 - `label`: original numbering (e.g., “Example 3”, “习题2”)
 - `chapter_title`: chapter/section header detected on the same page
@@ -148,56 +159,54 @@ Example:
 ## 5. Pipeline Example
 
 ```python
-import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
-
 from dataflow.serving import APILLMServing_request
 from dataflow.utils.storage import FileStorage
-from operators.vqa_extractor import VQAExtractor
+from dataflow.operators.pdf2vqa import VQAExtractor
 
 class VQA_extract_optimized_pipeline:
     def __init__(self):
         self.storage = FileStorage(
-            first_entry_file_name="./examples/VQA/vqa_extract_interleaved_test.jsonl",
-            cache_path="./vqa_extract_optimized_cache",
+            first_entry_file_name="./example_data/PDF2VQAPipeline/vqa_extract_test.jsonl",
+            cache_path="./cache",
             file_name_prefix="vqa",
             cache_type="jsonl",
         )
-
+        
         self.llm_serving = APILLMServing_request(
-            api_url="https://api.openai.com/v1/chat/completions",
+            api_url="https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
             key_name_of_api_key="DF_API_KEY",
-            model_name="gpt-4o",
+            model_name="gemini-2.5-pro",
             max_workers=100,
         )
-
+        
         self.vqa_extractor = VQAExtractor(
-            llm_serving=self.llm_serving
+            llm_serving=self.llm_serving,
+            mineru_backend='vlm-vllm-engine',
+            max_chunk_len=128000
         )
-
+        
     def forward(self):
         self.vqa_extractor.run(
             storage=self.storage.step(),
-            question_pdf_path_key="question_pdf_path",
-            answer_pdf_path_key="answer_pdf_path",
-            pdf_path_key="pdf_path",
-            subject_key="subject",
+            input_question_pdf_path_key="question_pdf_path",
+            input_answer_pdf_path_key="answer_pdf_path",
+            input_pdf_path_key="pdf_path",  # for interleaved mode
+            input_subject_key="subject",
             output_dir_key="output_dir",
             output_jsonl_key="output_jsonl_path",
-            mineru_backend='vlm-vllm-engine',
         )
 
+
+
 if __name__ == "__main__":
+    # Each line in the JSONL contains `question_pdf_path`, `answer_pdf_path`, `subject` (math, physics, chemistry, ...), and `output_dir`
+    # If the question and the answer are in the same PDF, set both `question_pdf_path` and `answer_pdf_path` to the same path; the pipeline will automatically switch to interleaved mode.
     pipeline = VQA_extract_optimized_pipeline()
     pipeline.forward()
 ```
 
 ---
 
-Pipeline source: `DataFlow/pipelines/vqa_extract_optimized_pipeline.py`
+Pipeline source: `DataFlow/dataflow/statics/pipelines/api_pipelines/pdf_vqa_extract_pipeline.py`
 
 Use this pipeline whenever you need structured QA data distilled directly from PDF textbooks with figure references intact.
